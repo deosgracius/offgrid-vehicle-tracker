@@ -1,0 +1,15 @@
+__pycache__/
+.venv/
+*.pyc
+
+# Firmware build output
+firmware-display/build/
+firmware-display/.pio/
+*.bin
+*.elf
+*.map
+
+# Editors / OS
+.vscode/
+Thumbs.db
+.DS_Store
