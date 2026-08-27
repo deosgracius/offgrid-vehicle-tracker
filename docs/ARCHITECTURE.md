@@ -29,26 +29,30 @@ flowchart LR
 
 ## 2. Hardware architecture (one vehicle)
 
+**Radio node — Heltec WiFi LoRa 32 V4 (stock Meshtastic):**
+
 ```mermaid
-flowchart TB
-    subgraph HELTEC["Heltec WiFi LoRa 32 V4  —  radio node (stock Meshtastic)"]
-        ESP1["ESP32-S3<br/>(runs Meshtastic)"]
-        SX["SX1262 LoRa<br/>transceiver"]
-        GNSS["GNSS module<br/>(on 1.25mm 8-pin conn.)"]
-        OLED["0.96-inch OLED<br/>(debug/status)"]
-        ESP1 -- SPI --> SX
-        GNSS -- "UART (NMEA)" --> ESP1
-        ESP1 -- I2C --> OLED
-        SX --- ANT["915 MHz roof antenna<br/>(SMA, mounted OUTSIDE)"]
-    end
-    subgraph WS["Waveshare ESP32-S3-RLCD-4.2  —  display node (our firmware)"]
-        ESP2["ESP32-S3<br/>16MB flash / 8MB PSRAM"]
-        RLCD["4.2-inch reflective LCD<br/>300×400 B/W, SPI"]
-        ESP2 -- "SPI + framebuffer in PSRAM" --> RLCD
-    end
-    ESP1 <-->|"BLE 2.4 GHz (in-cab, ~1 m)"| ESP2
-    PWR["Vehicle 12 V → USB-C 5 V"] --> ESP1
-    PWR --> ESP2
+flowchart LR
+    GNSS["GNSS module<br/>(1.25mm 8-pin conn.)"] -->|"UART (NMEA)"| ESP1["ESP32-S3<br/>(runs Meshtastic)"]
+    ESP1 -->|SPI| SX["SX1262 LoRa<br/>transceiver"]
+    ESP1 -->|I2C| OLED["0.96-inch OLED<br/>(debug/status)"]
+    SX --- ANT["915 MHz roof antenna<br/>(SMA, mounted OUTSIDE)"]
+```
+
+**Display node — Waveshare ESP32-S3-RLCD-4.2 (our firmware):**
+
+```mermaid
+flowchart LR
+    ESP2["ESP32-S3<br/>16MB flash / 8MB PSRAM"] -->|"SPI, framebuffer in PSRAM"| RLCD["4.2-inch reflective LCD<br/>300×400 B/W"]
+```
+
+**In-cab interconnect and power:**
+
+```mermaid
+flowchart LR
+    PWR["Vehicle 12 V →<br/>USB-C 5 V"] --> H["Heltec V4<br/>radio node"]
+    PWR --> W["Waveshare<br/>display node"]
+    H <-->|"BLE 2.4 GHz<br/>(in-cab, ~1 m)"| W
 ```
 
 Notes that matter:
