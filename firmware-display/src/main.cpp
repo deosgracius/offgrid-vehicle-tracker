@@ -1,0 +1,45 @@
+// Group 9 display-node firmware — entry point.
+// SIM_MODE=1 (platformio.ini): simulator feeds TrackerState, no radios needed.
+// SIM_MODE=0: Deo's BLE link feeds it from the Heltec.
+#include <Arduino.h>
+#include "protocol/tracker_store.h"
+#include "protocol/ble_link.h"
+#include "ui/ui_render.h"
+#include "sim/sim_feed.h"
+
+#if SIM_MODE
+static void sim_task(void *arg) {
+    (void)arg;
+    const float DT_S = 0.2f;
+    TrackerState st;
+    for (;;) {
+        sim_feed_tick(DT_S, &st);
+        tracker_store_set(&st);
+        vTaskDelay(pdMS_TO_TICKS((int)(DT_S * 1000)));
+    }
+}
+#endif
+
+void setup() {
+    Serial.begin(115200);
+    delay(300);
+    Serial.printf("\nGroup 9 tracker display — TrackerState v%d — %s\n",
+                  TRACKER_STATE_VERSION, SIM_MODE ? "SIM_MODE" : "BLE mode");
+
+    tracker_store_init();
+    ui_render_init();
+
+#if SIM_MODE
+    sim_feed_init(SIM_PARTNER_APPROACHING);
+    Serial.printf("[sim] scenario: %s\n", sim_scenario_name(SIM_PARTNER_APPROACHING));
+    xTaskCreatePinnedToCore(sim_task, "sim", 4096, nullptr, 2, nullptr, 0);
+#else
+    ble_link_init();
+    xTaskCreatePinnedToCore(ble_link_task, "ble", 8192, nullptr, 3, nullptr, 0);
+#endif
+    xTaskCreatePinnedToCore(ui_render_task, "ui", 8192, nullptr, 1, nullptr, 1);
+}
+
+void loop() {
+    vTaskDelay(pdMS_TO_TICKS(1000)); // everything lives in tasks
+}
