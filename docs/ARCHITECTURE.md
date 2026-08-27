@@ -35,7 +35,7 @@ flowchart TB
         ESP1["ESP32-S3<br/>(runs Meshtastic)"]
         SX["SX1262 LoRa<br/>transceiver"]
         GNSS["GNSS module<br/>(on 1.25mm 8-pin conn.)"]
-        OLED["0.96&quot; OLED<br/>(debug/status)"]
+        OLED["0.96-inch OLED<br/>(debug/status)"]
         ESP1 -- SPI --> SX
         GNSS -- "UART (NMEA)" --> ESP1
         ESP1 -- I2C --> OLED
@@ -43,10 +43,10 @@ flowchart TB
     end
     subgraph WS["Waveshare ESP32-S3-RLCD-4.2  —  display node (our firmware)"]
         ESP2["ESP32-S3<br/>16MB flash / 8MB PSRAM"]
-        RLCD["4.2&quot; reflective LCD<br/>300×400 B/W, SPI"]
+        RLCD["4.2-inch reflective LCD<br/>300×400 B/W, SPI"]
         ESP2 -- "SPI + framebuffer in PSRAM" --> RLCD
     end
-    ESP1 <-- "BLE 2.4 GHz (in-cab, ~1 m)" --> ESP2
+    ESP1 <-->|"BLE 2.4 GHz (in-cab, ~1 m)"| ESP2
     PWR["Vehicle 12 V → USB-C 5 V"] --> ESP1
     PWR --> ESP2
 ```
@@ -108,7 +108,7 @@ sequenceDiagram
     MA-)P: BLE notify fromNum → read FromRadio (protobuf)
     P->>P: nanopb decode → node_table update
     P->>U: TrackerState{self, partner, ages, link}
-    U->>U: bearing − own course → arrow angle; haversine → distance
+    U->>U: bearing minus own course → arrow angle, haversine → distance
     U->>U: redraw RLCD (1 Hz)
     Note over MA,P: own position takes the same path,<br/>minus the LoRa hop
 ```
