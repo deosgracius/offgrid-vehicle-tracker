@@ -1,6 +1,6 @@
 [
   {"section": "Planning & Setup", "name": "Kickoff: roles, repo, design doc", "owner": "Team", "w0": 0, "w1": 0, "comp": 100},
-  {"section": "Planning & Setup", "name": "Order parts + verify GNSS modules included", "owner": "Victor", "w0": 0, "w1": 1, "comp": 0},
+  {"section": "Planning & Setup", "name": "Order parts + verify GNSS modules included", "owner": "Victor", "w0": 0, "w1": 1, "comp": 100},
   {"section": "Planning & Setup", "name": "TrackerState interface contract (Deo + Josiah)", "owner": "Team", "w0": 1, "w1": 1, "comp": 0},
 
   {"section": "Radio & Hardware — Victor", "name": "Flash Meshtastic, GPS fix visible in phone app", "owner": "Victor", "w0": 1, "w1": 2, "comp": 0},
