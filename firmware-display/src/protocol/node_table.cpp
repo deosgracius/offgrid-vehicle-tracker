@@ -57,7 +57,14 @@ void node_table_position(uint32_t from_num,
     e->fix.lat_deg = lat_i * 1e-7;
     e->fix.lon_deg = lon_i * 1e-7;
     if (has_track) e->fix.course_deg = ground_track_1e5 * 1e-5f;
-    if (has_speed) e->fix.speed_mps = (float)ground_speed_mps;
+    if (has_speed) {
+        // Deadband: a parked GPS with a poor sky view reports 1-3 m/s of
+        // position jitter as "speed". Wire speed is integer m/s, so <2.5
+        // zeroes 0/1/2 and keeps real driving speeds intact. Also keeps
+        // phantom speed from flipping the compass into heading-up mode.
+        float spd = (float)ground_speed_mps;
+        e->fix.speed_mps = (spd < 2.5f) ? 0.0f : spd;
+    }
     e->fix.valid = true;
     e->last_update_ms = millis();
 
