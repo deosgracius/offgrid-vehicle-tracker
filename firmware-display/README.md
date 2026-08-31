@@ -29,6 +29,30 @@ test/test_nav/             nav unit tests (pio test -e native)
 Data flow (one direction, one writer/one reader):
 `ble_link | sim_feed` → `tracker_store_set()` → `tracker_store_get()` → `nav_compute()` → `ui_render`
 
+## Status (Aug 31, 2026 bench session)
+
+**The full protocol pipeline WORKS and was bench-verified**: scan → connect →
+fixed-PIN bond → subscribe → want_config → FromRadio drain → nanopb decode →
+`config dump complete` → stable live link (`ble=1`). See commit `1598376`.
+
+**Open issue — reconnect reliability.** After the initial bond, the Heltec
+stops general (scannable) advertising; it appears to directed-advertise only
+briefly at boot, and most connect-by-address attempts time out (NimBLE
+status=13). Next experiments, in order:
+1. **No-bond mode**: factory-reset the Heltec, set `bluetooth.mode NO_PIN`,
+   and set the central to `setSecurityAuth(false, false, true)` (pair each
+   connect, never store a bond). No bond → peripheral should keep general
+   advertising forever → reconnect anytime. Trades bond persistence for
+   permanent discoverability; likely the right product behavior.
+2. Watch the Heltec's own debug log (USB serial console, NOT the API port)
+   during connect attempts to see its advertising state directly.
+3. Read Meshtastic's `NimbleBluetooth.cpp` for the actual advertising
+   restart logic; align our reconnect strategy with it.
+
+Also still pending: witnessing a live `Position` packet end-to-end (device had
+no GPS fix indoors during the session; everything up to Position decode is
+proven, and `[node] pos` logging is in place).
+
 ## Next steps
 
 - **Deo** — implement `ble_link.cpp` per the milestones in its header comment. Before

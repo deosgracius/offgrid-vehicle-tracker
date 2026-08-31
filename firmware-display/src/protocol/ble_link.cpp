@@ -149,13 +149,23 @@ static void teardown(void) {
 void ble_link_task(void *arg) {
     (void)arg;
     uint32_t last_publish_ms = 0;
+    uint32_t last_beat_ms = 0;
+    uint32_t scan_count = 0;
     int backoff_s = 1;
 
     for (;;) {
+        if (millis() - last_beat_ms >= 8000) {
+            last_beat_ms = millis();
+            Serial.printf("[ble] heartbeat: state=%d scans=%lu\n",
+                          (int)s_state, (unsigned long)scan_count);
+        }
         if (s_state == BLE_SCANNING) {
             node_table_publish(false);
-            static NimBLEAddress s_known_addr;
-            static bool s_have_addr = false;
+            // Bonded Meshtastic peripherals directed-advertise at boot (invisible
+            // to scans) — we must connect by address. Bench radio hardcoded for
+            // now; TODO(Deo): persist last-found address in NVS + UI pairing.
+            static NimBLEAddress s_known_addr("8c:fd:49:b5:ea:d5", BLE_ADDR_PUBLIC);
+            static bool s_have_addr = true;
 
             bool attempt_now = false;
             if (s_have_addr) {
@@ -166,6 +176,7 @@ void ble_link_task(void *arg) {
             } else {
                 NimBLEScan *scan = NimBLEDevice::getScan();
                 scan->setActiveScan(true);
+                scan_count++;
                 NimBLEScanResults results = scan->getResults(1500, false);
                 for (int i = 0; i < results.getCount(); i++) {
                     const NimBLEAdvertisedDevice *dev = results.getDevice(i);
