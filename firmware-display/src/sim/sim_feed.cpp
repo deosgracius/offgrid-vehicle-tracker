@@ -35,6 +35,10 @@ void sim_feed_tick(float dt_s, TrackerState *out) {
     s_t += dt_s;
     memset(out, 0, sizeof(*out));
     out->ble_connected = true;
+    // fake GPS wall clock (a Monday noon UTC in Sep 2026) so the display's
+    // location-aware clock renders in sim mode too
+    out->utc_epoch = 1789041600UL + (uint32_t)s_t;
+    out->utc_ref_ms = 0; // sim ticks fast; treat epoch as current
 
     // Default self: driving ~north at 20 m/s with a gentle weave so the
     // heading-up compass, blinkers, and course warning are visibly live.

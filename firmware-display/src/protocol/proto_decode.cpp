@@ -16,7 +16,8 @@ static void handle_position(uint32_t from_num, const meshtastic_Position *pos) {
                         pos->latitude_i, pos->longitude_i,
                         pos->has_latitude_i && pos->has_longitude_i,
                         pos->ground_track, pos->has_ground_track,
-                        pos->ground_speed, pos->has_ground_speed);
+                        pos->ground_speed, pos->has_ground_speed,
+                        pos->time);
 }
 
 static void handle_mesh_packet(const meshtastic_MeshPacket *pkt) {

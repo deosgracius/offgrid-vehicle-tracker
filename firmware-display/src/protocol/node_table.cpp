@@ -14,6 +14,8 @@ typedef struct {
 static uint32_t s_self_num;
 static uint32_t s_partner_num;
 static Entry s_self, s_partner;
+static uint32_t s_utc_epoch;   // latest GPS wall-clock seen in any packet
+static uint32_t s_utc_ref_ms;
 
 void node_table_init(void) {
     s_self_num = s_partner_num = 0;
@@ -32,7 +34,12 @@ uint32_t node_table_partner_num(void) { return s_partner_num; }
 void node_table_position(uint32_t from_num,
                          int32_t lat_i, int32_t lon_i, bool has_latlon,
                          uint32_t ground_track_1e5, bool has_track,
-                         uint32_t ground_speed_mps, bool has_speed) {
+                         uint32_t ground_speed_mps, bool has_speed,
+                         uint32_t utc_epoch) {
+    if (utc_epoch > 1600000000UL) { // sanity: after 2020 => real GPS time
+        s_utc_epoch = utc_epoch;
+        s_utc_ref_ms = millis();
+    }
     if (!has_latlon || (lat_i == 0 && lon_i == 0)) return; // no real fix
 
     Entry *e;
@@ -78,5 +85,7 @@ void node_table_publish(bool ble_connected) {
     st.self = s_self.fix;
     st.partner = s_partner.fix;
     st.ble_connected = ble_connected;
+    st.utc_epoch = s_utc_epoch;
+    st.utc_ref_ms = s_utc_ref_ms;
     tracker_store_set(&st);
 }

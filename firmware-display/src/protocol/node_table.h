@@ -13,7 +13,8 @@ void node_table_set_self_num(uint32_t node_num);
 void node_table_position(uint32_t from_num,
                          int32_t lat_i, int32_t lon_i, bool has_latlon,
                          uint32_t ground_track_1e5, bool has_track,
-                         uint32_t ground_speed_mps, bool has_speed);
+                         uint32_t ground_speed_mps, bool has_speed,
+                         uint32_t utc_epoch);  // 0 = packet carried no time
 
 // Recompute ages and push TrackerState to the store. Call ~1 Hz.
 void node_table_publish(bool ble_connected);

@@ -2,6 +2,7 @@
 #include "../protocol/tracker_store.h"
 #include "../protocol/node_table.h"
 #include "../nav/nav.h"
+#include "../nav/local_time.h"
 #include "rlcd.h"
 #include <Arduino.h>
 #include <stdio.h>
@@ -263,6 +264,16 @@ void ui_render_task(void *arg) {
                 flash_ticks--;
                 rlcd_fill_rect(0, 130, RLCD_W, 34, false);
                 ctext(139, "TRACKING RESET", 2, true);
+            }
+            // location-aware clock, top-left (GPS UTC -> local zone by position)
+            if (st.utc_epoch != 0) {
+                uint32_t now_epoch = st.utc_epoch;
+                if (st.utc_ref_ms != 0) now_epoch += (millis() - st.utc_ref_ms) / 1000;
+                double clat = st.self.valid ? st.self.lat_deg : 33.58;   // fallback: last-known region
+                double clon = st.self.valid ? st.self.lon_deg : -101.86;
+                char clock[20];
+                if (local_time_fmt(now_epoch, clat, clon, clock, sizeof(clock)))
+                    rlcd_draw_text(6, 2, clock, 1, false);
             }
             snprintf(up, sizeof(up), "up %lus", (unsigned long)(millis() / 1000));
             rlcd_draw_text(RLCD_W - 8 * (int)strlen(up) - 4, 288, up, 1, false);
