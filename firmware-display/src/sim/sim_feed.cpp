@@ -10,6 +10,12 @@ static const double M_PER_DEG_LAT = 111320.0;
 static SimScenario s_sc;
 static float s_t;          // sim time, seconds
 
+static float nav_wrap_sim(float deg) {
+    while (deg < 0.0f) deg += 360.0f;
+    while (deg >= 360.0f) deg -= 360.0f;
+    return deg;
+}
+
 static double m_per_deg_lon(double lat_deg) {
     return M_PER_DEG_LAT * cos(lat_deg * M_PI / 180.0);
 }
@@ -30,11 +36,12 @@ void sim_feed_tick(float dt_s, TrackerState *out) {
     memset(out, 0, sizeof(*out));
     out->ble_connected = true;
 
-    // Default self: driving due north at 20 m/s (~45 mph).
+    // Default self: driving ~north at 20 m/s with a gentle weave so the
+    // heading-up compass, blinkers, and course warning are visibly live.
     out->self.valid = true;
     out->self.lat_deg = BASE_LAT + (20.0 * s_t) / M_PER_DEG_LAT;
     out->self.lon_deg = BASE_LON;
-    out->self.course_deg = 0.0f;
+    out->self.course_deg = nav_wrap_sim(25.0f * sinf(0.12f * s_t));
     out->self.speed_mps = 20.0f;
 
     switch (s_sc) {
