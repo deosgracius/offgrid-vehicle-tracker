@@ -127,6 +127,21 @@ int rlcd_draw_text(int x, int y, const char *s, int scale, bool white) {
     return x;
 }
 
+void rlcd_draw_circle(int cx, int cy, int r, int thick, bool white) {
+    for (int rr = r - thick + 1; rr <= r; rr++) {
+        int x = rr, y = 0, err = 1 - rr;
+        while (x >= y) {
+            rlcd_set_pixel(cx + x, cy + y, white); rlcd_set_pixel(cx + y, cy + x, white);
+            rlcd_set_pixel(cx - y, cy + x, white); rlcd_set_pixel(cx - x, cy + y, white);
+            rlcd_set_pixel(cx - x, cy - y, white); rlcd_set_pixel(cx - y, cy - x, white);
+            rlcd_set_pixel(cx + y, cy - x, white); rlcd_set_pixel(cx + x, cy - y, white);
+            y++;
+            if (err < 0) err += 2 * y + 1;
+            else { x--; err += 2 * (y - x) + 1; }
+        }
+    }
+}
+
 void rlcd_flush(void) {
     cmd(0x2A); dat(0x12); dat(0x2A);
     cmd(0x2B); dat(0x00); dat(0xC7);

@@ -15,4 +15,5 @@ void rlcd_set_pixel(int x, int y, bool white); // bounds-checked
 void rlcd_fill_rect(int x, int y, int w, int h, bool white);
 // 8x8 font scaled by `scale` (char cell = 8*scale px). Returns x after text.
 int  rlcd_draw_text(int x, int y, const char *s, int scale, bool white);
+void rlcd_draw_circle(int cx, int cy, int r, int thick, bool white); // outline ring
 void rlcd_flush(void);                         // push framebuffer to panel

@@ -8,11 +8,23 @@
 #include "sim/sim_feed.h"
 
 #if SIM_MODE
+// BOOT button (GPIO0) cycles through the sim scenarios — live demo control.
+#define SIM_BTN_PIN 0
 static void sim_task(void *arg) {
     (void)arg;
     const float DT_S = 0.2f;
     TrackerState st;
+    SimScenario cur = SIM_PARTNER_APPROACHING;
+    pinMode(SIM_BTN_PIN, INPUT_PULLUP);
+    bool was_down = false;
     for (;;) {
+        bool down = digitalRead(SIM_BTN_PIN) == LOW;
+        if (down && !was_down) {
+            cur = (SimScenario)((cur + 1) % SIM_SCENARIO_COUNT);
+            sim_feed_init(cur);
+            Serial.printf("[sim] scenario -> %s\n", sim_scenario_name(cur));
+        }
+        was_down = down;
         sim_feed_tick(DT_S, &st);
         tracker_store_set(&st);
         vTaskDelay(pdMS_TO_TICKS((int)(DT_S * 1000)));
