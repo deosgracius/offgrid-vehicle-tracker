@@ -4,7 +4,7 @@
 import json, datetime, os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-tasks = json.load(open(os.path.join(HERE, "tasks.json"), encoding="utf-8"))
+tasks = json.load(open(os.path.join(HERE, "tasks.json"), encoding="utf-8-sig"))
 
 WEEK0 = datetime.date(2026, 8, 24)   # Monday of week 1 (semester start Aug 24)
 NWEEKS = 16                          # through Dec 7-13 (final demo Dec 10)
