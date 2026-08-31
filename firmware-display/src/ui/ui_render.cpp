@@ -1,10 +1,16 @@
 #include "ui_render.h"
 #include "../protocol/tracker_store.h"
+#include "../protocol/node_table.h"
 #include "../nav/nav.h"
 #include "rlcd.h"
 #include <Arduino.h>
 #include <stdio.h>
 #include <math.h>
+
+// KEY button (GPIO18, leftmost): hold ~1 s -> tracking reset. Discards the
+// current self+partner fixes so both re-acquire live — the driver's "I'm
+// confused, start fresh" control. Hold requirement prevents accidental taps.
+#define TRACK_RESET_PIN 18
 
 // Driver display — completed feature set:
 //   · vehicle-relative arrow in a bezel ring (Fig. 4 of the overview PDF)
@@ -21,6 +27,7 @@
 static bool s_have_panel = false;
 
 void ui_render_init(void) {
+    pinMode(TRACK_RESET_PIN, INPUT_PULLUP);
     s_have_panel = rlcd_init();
     Serial.printf("[ui] RLCD init %s\n", s_have_panel ? "OK" : "FAILED (serial only)");
     if (s_have_panel) {
@@ -108,7 +115,7 @@ static void render_tracking(const TrackerState &st, const NavOutput &nav) {
         banner(28, "PARTNER DATA STALE");
     }
 
-    const int cx = 118, cy = 162, RING = 88;
+    const int cx = 108, cy = 162, RING = 80;
     rlcd_draw_circle(cx, cy, RING, 2, false);
 
     if (nav.heading_valid) {
@@ -116,18 +123,19 @@ static void render_tracking(const TrackerState &st, const NavOutput &nav) {
     } else {
         // compass-rose mode: north-referenced arrow + cardinal ticks
         draw_arrow(cx, cy, RING - 16, nav.bearing_deg);
-        rlcd_draw_text(cx - 7, cy - RING - 22, "N", 2, false);
+        rlcd_draw_text(cx - 7, cy - RING - 20, "N", 2, false);
         rlcd_draw_text(cx + RING + 6, cy - 8, "E", 2, false);
-        rlcd_draw_text(cx - 7, cy + RING + 6, "S", 2, false);
+        rlcd_draw_text(cx - 7, cy + RING + 4, "S", 2, false);
         rlcd_draw_text(cx - RING - 22, cy - 8, "W", 2, false);
-        rlcd_draw_text(cx - 60, cy + RING + 28, "stopped - north up", 1, false);
+        rlcd_draw_text(240, 204, "stopped", 2, false);
+        rlcd_draw_text(240, 228, "north up", 2, false);
     }
 
     fmt_distance(nav.distance_m, num, sizeof(num), &unit);
     int digits = strlen(num);
     int scale = digits <= 3 ? 6 : 5;
-    rlcd_draw_text(224, 118, num, scale, false);
-    rlcd_draw_text(224, 118 + 8 * scale + 8, unit, 2, false);
+    rlcd_draw_text(240, 118, num, scale, false);
+    rlcd_draw_text(240, 118 + 8 * scale + 8, unit, 2, false);
 
     fmt_age(st.partner.age_s, age, sizeof(age));
     snprintf(buf, sizeof(buf), "updated %s ago - link %s",
@@ -151,7 +159,18 @@ void ui_render_task(void *arg) {
     (void)arg;
     char up[16];
     int tick = 0;
+    int held_ticks = 0;   // KEY held across render ticks (500 ms each)
+    int flash_ticks = 0;  // "TRACKING RESET" confirmation display
     for (;;) {
+        if (digitalRead(TRACK_RESET_PIN) == LOW) {
+            if (++held_ticks == 2) {  // ~1 s hold
+                node_table_reset();
+                flash_ticks = 4;      // show confirmation ~2 s
+            }
+        } else {
+            held_ticks = 0;
+        }
+
         TrackerState st;
         tracker_store_get(&st);
         NavOutput nav = nav_compute(&st);
@@ -159,6 +178,11 @@ void ui_render_task(void *arg) {
         if (s_have_panel) {
             if (nav.valid) render_tracking(st, nav);
             else           render_searching(st);
+            if (flash_ticks > 0) {
+                flash_ticks--;
+                rlcd_fill_rect(0, 130, RLCD_W, 34, false);
+                rlcd_draw_text((RLCD_W - 14 * 16) / 2, 139, "TRACKING RESET", 2, true);
+            }
             snprintf(up, sizeof(up), "up %lus", (unsigned long)(millis() / 1000));
             rlcd_draw_text(RLCD_W - 8 * (int)strlen(up) - 4, 2, up, 1, false);
             rlcd_flush();

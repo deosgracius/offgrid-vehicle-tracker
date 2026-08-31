@@ -65,6 +65,12 @@ static void refresh_age(Entry *e) {
     }
 }
 
+void node_table_reset(void) {
+    memset(&s_self, 0, sizeof(s_self));
+    memset(&s_partner, 0, sizeof(s_partner));
+    Serial.println("[node] tracking reset - reacquiring fixes");
+}
+
 void node_table_publish(bool ble_connected) {
     refresh_age(&s_self);
     refresh_age(&s_partner);

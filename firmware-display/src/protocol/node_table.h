@@ -18,5 +18,9 @@ void node_table_position(uint32_t from_num,
 // Recompute ages and push TrackerState to the store. Call ~1 Hz.
 void node_table_publish(bool ble_connected);
 
+// Driver "tracking reset": discard current self+partner fixes; both re-acquire
+// from the next live packets. Node identities are kept.
+void node_table_reset(void);
+
 uint32_t node_table_self_num(void);
 uint32_t node_table_partner_num(void);
