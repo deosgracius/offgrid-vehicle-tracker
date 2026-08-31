@@ -57,10 +57,13 @@ static void notify_cb(NimBLERemoteCharacteristic *chr, uint8_t *data,
 void ble_link_init(void) {
     node_table_init();
     NimBLEDevice::init("");
-    // Heltec runs bluetooth.mode FIXED_PIN (123456): passkey-entry pairing.
-    // We are the keyboard side; onPassKeyEntry injects the PIN.
-    NimBLEDevice::setSecurityAuth(/*bond*/ true, /*mitm*/ true, /*sc*/ true);
-    NimBLEDevice::setSecurityIOCap(BLE_HS_IO_KEYBOARD_ONLY);
+    // NO-BOND mode: Heltec runs bluetooth.mode NO_PIN ("Just Works"), and we
+    // never store a bond. Rationale: a bonded Meshtastic peripheral stops
+    // general advertising (only brief directed-adv at boot), making reconnects
+    // nearly impossible. With no bond it advertises forever; we re-pair on
+    // every connect (fast, still encrypted, no MITM — acceptable in-cab).
+    NimBLEDevice::setSecurityAuth(/*bond*/ false, /*mitm*/ false, /*sc*/ true);
+    NimBLEDevice::setSecurityIOCap(BLE_HS_IO_NO_INPUT_OUTPUT);
     NimBLEDevice::setMTU(517);
     NimBLEDevice::setPower(9); // +9 dBm — default TX is marginal for connect handshakes
     // NOTE: never deleteAllBonds() here — after a successful bond the Meshtastic

@@ -29,29 +29,27 @@ test/test_nav/             nav unit tests (pio test -e native)
 Data flow (one direction, one writer/one reader):
 `ble_link | sim_feed` → `tracker_store_set()` → `tracker_store_get()` → `nav_compute()` → `ui_render`
 
-## Status (Aug 31, 2026 bench session)
+## Status (Aug 31, 2026 — protocol track functionally complete)
 
-**The full protocol pipeline WORKS and was bench-verified**: scan → connect →
-fixed-PIN bond → subscribe → want_config → FromRadio drain → nanopb decode →
-`config dump complete` → stable live link (`ble=1`). See commit `1598376`.
+**Entire pipeline verified with live data**: connect → pair → subscribe →
+want_config → FromRadio drain → nanopb decode → config dump → **real GPS
+position decoded end-to-end** (`[node] pos 0x49b5ead4: 33.633..., -101.895...`
+from a 7-sat fix), with the BLE link surviving a walk across the room.
+Heltec config: `bluetooth.mode NO_PIN`. See commits `1598376`..`f73b96f`.
 
-**Open issue — reconnect reliability.** After the initial bond, the Heltec
-stops general (scannable) advertising; it appears to directed-advertise only
-briefly at boot, and most connect-by-address attempts time out (NimBLE
-status=13). Next experiments, in order:
-1. **No-bond mode**: factory-reset the Heltec, set `bluetooth.mode NO_PIN`,
-   and set the central to `setSecurityAuth(false, false, true)` (pair each
-   connect, never store a bond). No bond → peripheral should keep general
-   advertising forever → reconnect anytime. Trades bond persistence for
-   permanent discoverability; likely the right product behavior.
-2. Watch the Heltec's own debug log (USB serial console, NOT the API port)
-   during connect attempts to see its advertising state directly.
-3. Read Meshtastic's `NimbleBluetooth.cpp` for the actual advertising
-   restart logic; align our reconnect strategy with it.
+**Known Meshtastic behavior (fw 2.7.26), design consequence:** the radio
+advertises only from boot until its first BLE disconnect — after that, no new
+connection is possible until the radio reboots (regardless of bond/PIN mode).
+Validated product flow: **power both units together** ("ignition-on"); the
+display fires direct-connect attempts continuously and reliably catches the
+radio's boot window, then the link holds. Mid-drive link loss requires a radio
+power-cycle — document as a limitation; candidate fixes: newer Meshtastic
+firmware, or an upstream look at NimbleBluetooth advertising-restart logic.
 
-Also still pending: witnessing a live `Position` packet end-to-end (device had
-no GPS fix indoors during the session; everything up to Position decode is
-proven, and `[node] pos` logging is in place).
+Remaining protocol work (small): persist the radio's BLE address in NVS
+(currently hardcoded for the bench unit), partner-node selection UI hook, and
+long-run soak testing. The arrow will light up the moment a second radio
+(Victor's) broadcasts positions into the mesh — no new decode work needed.
 
 ## Next steps
 
