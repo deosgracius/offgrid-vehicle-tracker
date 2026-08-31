@@ -51,6 +51,17 @@ Remaining protocol work (small): persist the radio's BLE address in NVS
 long-run soak testing. The arrow will light up the moment a second radio
 (Victor's) broadcasts positions into the mesh — no new decode work needed.
 
+## Product requirement — location-aware clock (Deo, Aug 31)
+
+If the driver display shows a clock, local time must follow the vehicle's
+location automatically (Texas -> Alaska crosses 3 zones). We have everything
+needed on-device: GPS supplies UTC (`Position.time`) and position; derive the
+zone from a small longitude/latitude band table (US + Alaska political zones
++ DST rules) — no user setting, no network. Note: the Heltec's own OLED can't
+do this (stock Meshtastic supports only a static `tzdef` string — currently
+set to CST6CDT for the bench); that screen is not driver-facing, so cosmetic.
+Implementation slot: a `nav/local_time` helper feeding Josiah's UI.
+
 ## Next steps
 
 - **Deo** — implement `ble_link.cpp` per the milestones in its header comment. Before
