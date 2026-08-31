@@ -13,14 +13,14 @@
   {"section": "Protocol Firmware — Deo", "name": "Toolchain + nanopb + Meshtastic protobufs build", "owner": "Deo", "w0": 1, "w1": 2, "comp": 100},
   {"section": "Protocol Firmware — Deo", "name": "BLE central: scan, connect, pair to Heltec", "owner": "Deo", "w0": 2, "w1": 4, "comp": 100},
   {"section": "Protocol Firmware — Deo", "name": "Decode FromRadio: Position / NodeInfo packets", "owner": "Deo", "w0": 4, "w1": 5, "comp": 100},
-  {"section": "Protocol Firmware — Deo", "name": "TrackerState feed + auto-reconnect logic", "owner": "Deo", "w0": 5, "w1": 6, "comp": 85},
+  {"section": "Protocol Firmware — Deo", "name": "TrackerState feed + auto-reconnect logic", "owner": "Deo", "w0": 5, "w1": 6, "comp": 100},
   {"section": "Protocol Firmware — Deo", "name": "WiFi/TCP fallback (not needed - BLE works)", "owner": "Deo", "w0": 6, "w1": 7, "comp": 100},
-  {"section": "Protocol Firmware — Deo", "name": "Hardening: staleness, dropouts, edge cases", "owner": "Deo", "w0": 8, "w1": 9, "comp": 20},
+  {"section": "Protocol Firmware — Deo", "name": "Hardening: staleness, dropouts, edge cases", "owner": "Deo", "w0": 8, "w1": 9, "comp": 60},
 
   {"section": "Display & Nav Firmware — Josiah", "name": "Waveshare RLCD bring-up (driver done, handed off)", "owner": "Josiah", "w0": 1, "w1": 2, "comp": 80},
   {"section": "Display & Nav Firmware — Josiah", "name": "Rendering setup (framebuffer / LVGL)", "owner": "Josiah", "w0": 2, "w1": 3, "comp": 0},
   {"section": "Display & Nav Firmware — Josiah", "name": "Nav math: distance, bearing, heading from COG", "owner": "Josiah", "w0": 3, "w1": 4, "comp": 60},
-  {"section": "Display & Nav Firmware — Josiah", "name": "Arrow + distance UI running on fake data", "owner": "Josiah", "w0": 4, "w1": 6, "comp": 0},
+  {"section": "Display & Nav Firmware — Josiah", "name": "Arrow + distance UI running on fake data", "owner": "Josiah", "w0": 4, "w1": 6, "comp": 70},
   {"section": "Display & Nav Firmware — Josiah", "name": "Staleness + link-status indicators", "owner": "Josiah", "w0": 6, "w1": 7, "comp": 0},
   {"section": "Display & Nav Firmware — Josiah", "name": "UI polish + night readability (edge light)", "owner": "Josiah", "w0": 10, "w1": 11, "comp": 0},
 
