@@ -6,6 +6,7 @@
 #include "proto_decode.h"
 #include <Arduino.h>
 #include <NimBLEDevice.h>
+#include <Preferences.h>
 
 // Meshtastic Client API GATT UUIDs (see ble_link.h for the protocol notes).
 static const char *SVC_UUID       = "6ba1b218-15a8-461f-9fa8-5dcae273eafd";
@@ -22,6 +23,24 @@ static volatile bool s_disconnected = false;
 
 static NimBLEClient *s_client;
 static NimBLERemoteCharacteristic *s_toRadio, *s_fromRadio, *s_fromNum;
+
+// Remembered radio (persisted in NVS). A bonded Meshtastic peripheral
+// directed-advertises at boot — invisible to scans — so we must reconnect by
+// address. Scan-discovery still runs when direct connect fails, so pairing a
+// new/replacement radio just works: first successful find overwrites NVS.
+static Preferences  s_prefs;
+static NimBLEAddress s_known_addr;
+static bool          s_have_addr = false;
+
+static void remember_radio(const NimBLEAddress &addr) {
+    if (s_have_addr && addr == s_known_addr) return;
+    s_known_addr = addr;
+    s_have_addr = true;
+    s_prefs.putString("addr", addr.toString().c_str());
+    s_prefs.putUChar("addrt", addr.getType());
+    Serial.printf("[ble] remembered radio %s (type %u)\n",
+                  addr.toString().c_str(), addr.getType());
+}
 
 BleLinkState ble_link_state(void) { return s_state; }
 
@@ -69,7 +88,21 @@ void ble_link_init(void) {
     // NOTE: never deleteAllBonds() here — after a successful bond the Meshtastic
     // peripheral advertises for its bonded peer; wiping our keys at boot makes
     // it permanently unreachable until the peripheral is factory reset.
-    Serial.println("[ble] init done, scanning for Meshtastic service");
+
+    s_prefs.begin("g9tracker", false);
+    String saved = s_prefs.getString("addr", "");
+    if (saved.length()) {
+        s_known_addr = NimBLEAddress(saved.c_str(),
+                                     s_prefs.getUChar("addrt", BLE_ADDR_PUBLIC));
+        s_have_addr = true;
+        Serial.printf("[ble] remembered radio: %s\n", saved.c_str());
+    } else {
+        // First boot only: seed with the bench radio. It is already bonded to
+        // us and no longer general-advertises, so a scan could never discover
+        // it. Any radio a future scan DOES find replaces this in NVS.
+        remember_radio(NimBLEAddress("8c:fd:49:b5:ea:d5", BLE_ADDR_PUBLIC));
+    }
+    Serial.println("[ble] init done");
 }
 
 // Read FromRadio until it returns empty; feed every frame to the decoder.
@@ -164,48 +197,52 @@ void ble_link_task(void *arg) {
         }
         if (s_state == BLE_SCANNING) {
             node_table_publish(false);
-            // Bonded Meshtastic peripherals directed-advertise at boot (invisible
-            // to scans) — we must connect by address. Bench radio hardcoded for
-            // now; TODO(Deo): persist last-found address in NVS + UI pairing.
-            static NimBLEAddress s_known_addr("8c:fd:49:b5:ea:d5", BLE_ADDR_PUBLIC);
-            static bool s_have_addr = true;
 
-            bool attempt_now = false;
+            bool attempted = false, ok = false;
+
+            // 1) Direct connect to the remembered radio. The connect procedure
+            //    itself listens ~10 s for that address — our fastest way to
+            //    catch a brief (or directed-only) advertising window.
             if (s_have_addr) {
-                // Known radio: skip scanning, fire directly. The connect itself
-                // waits up to 10 s for an advertisement from that address, so
-                // this is also our fastest way to catch a brief adv window.
-                attempt_now = true;
-            } else {
+                attempted = true;
+                ok = try_connect(s_known_addr);
+                if (!ok) teardown();
+            }
+
+            // 2) Scan pass: first pairing, or the remembered radio is gone /
+            //    replaced. Whatever we find becomes the new remembered radio.
+            if (!ok) {
                 NimBLEScan *scan = NimBLEDevice::getScan();
                 scan->setActiveScan(true);
                 scan_count++;
                 NimBLEScanResults results = scan->getResults(1500, false);
+                const NimBLEAdvertisedDevice *found = nullptr;
                 for (int i = 0; i < results.getCount(); i++) {
                     const NimBLEAdvertisedDevice *dev = results.getDevice(i);
                     if (dev->isAdvertisingService(NimBLEUUID(SVC_UUID))) {
-                        s_known_addr = dev->getAddress();
-                        s_have_addr = true;
-                        attempt_now = true;
-                        Serial.printf("[ble] found %s (%s) rssi %d\n",
-                                      dev->getName().c_str(),
-                                      s_known_addr.toString().c_str(),
-                                      dev->getRSSI());
+                        found = dev;
                         break;
                     }
+                }
+                if (found) {
+                    Serial.printf("[ble] found %s (%s) rssi %d\n",
+                                  found->getName().c_str(),
+                                  found->getAddress().toString().c_str(),
+                                  found->getRSSI());
+                    remember_radio(found->getAddress());
+                    attempted = true;
+                    ok = try_connect(s_known_addr);
+                    if (!ok) teardown();
                 }
                 scan->clearResults();
             }
 
-            if (attempt_now) {
-                if (!try_connect(s_known_addr)) {
-                    teardown();
-                    Serial.printf("[ble] retry in %d s\n", backoff_s);
-                    vTaskDelay(pdMS_TO_TICKS(backoff_s * 1000));
-                    if (backoff_s < 8) backoff_s *= 2;
-                } else {
-                    backoff_s = 1;
-                }
+            if (ok) {
+                backoff_s = 1;
+            } else if (attempted) {
+                Serial.printf("[ble] retry in %d s\n", backoff_s);
+                vTaskDelay(pdMS_TO_TICKS(backoff_s * 1000));
+                if (backoff_s < 8) backoff_s *= 2;
             }
             continue;
         }
