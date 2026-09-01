@@ -4,6 +4,10 @@ Detailed architecture: hardware blocks and buses, firmware structure, data flow,
 rationale for every major decision. Companion to [DESIGN.md](../DESIGN.md) (plan/risks) and
 [TELECOM_ANALYSIS.md](TELECOM_ANALYSIS.md) (link budget). All equipment is in hand.
 
+**Start here — the complete system on one page** (sections below are the detail views):
+
+![Complete system diagram](system-diagram.png)
+
 ---
 
 ## 1. System context
@@ -99,6 +103,9 @@ Key structural choices:
 
 ## 4. End-to-end data flow
 
+> Narrative version, one packet's journey step by step:
+> [BLE_LINK_WALKTHROUGH.md — end-to-end data flow](BLE_LINK_WALKTHROUGH.md#end-to-end-data-flow--one-packets-journey-step-by-step)
+
 ```mermaid
 sequenceDiagram
     participant GB as GPS (Vehicle B)
@@ -118,6 +125,9 @@ sequenceDiagram
 ```
 
 ## 5. BLE link state machine (the risky component, made explicit)
+
+> How each state works in the shipped code, and why:
+> [BLE_LINK_WALKTHROUGH.md](BLE_LINK_WALKTHROUGH.md)
 
 ```mermaid
 stateDiagram-v2
