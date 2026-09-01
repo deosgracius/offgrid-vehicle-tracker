@@ -74,21 +74,21 @@ right half; `TrackerState` is the contract in the middle.
 ```mermaid
 flowchart LR
     subgraph DEO["protocol/  (Deo)"]
-        BLE["ble_link task<br/>NimBLE central<br/>scan → connect → bond →<br/>subscribe fromNum →<br/>drain FromRadio"]
+        BLE["ble_link task<br/>NimBLE central<br/>direct connect (NVS addr) →<br/>encrypt → subscribe fromNum →<br/>drain FromRadio"]
         DEC["proto_decode<br/>nanopb<br/>FromRadio → Position,<br/>NodeInfo, MyNodeInfo"]
         NODES["node_table<br/>own node + partner node<br/>last fix + timestamp"]
         BLE --> DEC --> NODES
     end
-    TS[("TrackerState<br/>(mutex-protected)<br/>self fix · partner fix ·<br/>ages · ble_connected")]
+    TS[("TrackerState v2<br/>(mutex-protected)<br/>self fix · partner fix · ages ·<br/>ble_connected · GPS clock")]
     subgraph JOS["ui/ + nav/  (Josiah)"]
         NAV["nav engine<br/>haversine distance<br/>initial bearing<br/>heading from COG<br/>+ slow-speed fallback"]
-        UI["ui_render task (1 Hz)<br/>arrow · distance ·<br/>data age · link status"]
+        UI["ui_render task (2 Hz)<br/>arrow · distance · age ·<br/>link status · local clock"]
         SIM["sim feed (dev only)<br/>fake TrackerState<br/>scenarios"]
         NAV --> UI
     end
     NODES --> TS --> NAV
     SIM -.-> TS
-    NVS["config in NVS<br/>partner node ID · units ·<br/>BLE bond keys"] --- BLE
+    NVS["config in NVS<br/>radio BLE addr · units ·<br/>partner node ID (planned)"] --- BLE
     NVS --- UI
 ```
 
@@ -98,8 +98,9 @@ Key structural choices:
 - **The sim feed is a first-class component**, not a hack: Josiah's entire UI, including the
   arrow math, is testable on a bench with no radio at all (scenarios: partner approaching,
   stationary, stale data, BLE dropped).
-- **Pairing is configuration, not code**: the partner's Meshtastic node ID is stored in NVS
-  and selectable from the UI, so the same firmware runs in both vehicles.
+- **Pairing is configuration, not code**: the radio's BLE address is learned and stored in
+  NVS automatically; the partner's node ID will be too (planned — bring-up rule today is
+  first-heard-node-becomes-partner). The same firmware runs in both vehicles.
 
 ## 4. End-to-end data flow
 
@@ -115,12 +116,12 @@ sequenceDiagram
     participant U as ui/+nav/ (Josiah)
     GB->>MB: NMEA fix (UART, 1 Hz)
     Note over MB: every 30–60 s
-    MB-)MA: LoRa broadcast: Position{lat,lon,course} (AES, ~0.5 s airtime)
+    MB-)MA: LoRa broadcast: Position{lat,lon,speed,track,time} (AES, ~0.5 s airtime)
     MA-)P: BLE notify fromNum → read FromRadio (protobuf)
     P->>P: nanopb decode → node_table update
-    P->>U: TrackerState{self, partner, ages, link}
+    P->>U: TrackerState{self, partner, ages, link, clock}
     U->>U: bearing minus own course → arrow angle, haversine → distance
-    U->>U: redraw RLCD (1 Hz)
+    U->>U: redraw RLCD (2 Hz)
     Note over MA,P: own position takes the same path,<br/>minus the LoRa hop
 ```
 
@@ -132,10 +133,10 @@ sequenceDiagram
 ```mermaid
 stateDiagram-v2
     [*] --> SCANNING
-    SCANNING --> CONNECTING: Heltec found (by name/MAC)
-    CONNECTING --> BONDING: connected
-    BONDING --> SUBSCRIBED: bonded (PIN once,<br/>keys stored in NVS)
-    SUBSCRIBED --> DRAINING: notify on fromNum
+    SCANNING --> CONNECTING: direct connect by NVS addr<br/>(scan fallback finds new radios)
+    CONNECTING --> BONDING: connected (3 tries, 10 s)
+    BONDING --> SUBSCRIBED: encrypted (Just Works,<br/>no stored bond — by design)
+    SUBSCRIBED --> DRAINING: notify on fromNum<br/>(after want_config handshake)
     DRAINING --> SUBSCRIBED: queue empty
     SUBSCRIBED --> SCANNING: disconnect/timeout<br/>(UI shows "link lost")
     CONNECTING --> SCANNING: fail (backoff)
