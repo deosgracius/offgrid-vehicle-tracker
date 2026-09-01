@@ -8,7 +8,13 @@
 
 typedef struct {
     Fix      fix;
-    uint32_t last_update_ms;  // millis() of last position update; 0 = never
+    uint32_t last_update_ms;  // millis() of last NEW fix; 0 = never
+    // Raw wire values of the last accepted fix, for re-broadcast detection:
+    // a radio with no GPS lock re-sends its last known position every cycle,
+    // bit-identical. A live fix always jitters in the low digits, so an exact
+    // repeat means "no new measurement" and must NOT reset the data age.
+    int32_t  raw_lat_i, raw_lon_i;
+    uint32_t raw_trk, raw_spd;
 } Entry;
 
 static uint32_t s_self_num;
@@ -36,9 +42,10 @@ void node_table_position(uint32_t from_num,
                          uint32_t ground_track_1e5, bool has_track,
                          uint32_t ground_speed_kmh, bool has_speed,
                          uint32_t utc_epoch) {
-    if (utc_epoch > 1600000000UL) { // sanity: after 2020 => real GPS time
-        s_utc_epoch = utc_epoch;
-        s_utc_ref_ms = millis();
+    if (utc_epoch > 1600000000UL &&        // sanity: after 2020 => real GPS time
+        utc_epoch >= s_utc_epoch) {        // monotonic: a stale re-broadcast may
+        s_utc_epoch = utc_epoch;           // carry the old fix time - never let
+        s_utc_ref_ms = millis();           // the clock run backwards
     }
     if (!has_latlon || (lat_i == 0 && lon_i == 0)) return; // no real fix
 
@@ -54,6 +61,19 @@ void node_table_position(uint32_t from_num,
         e = &s_partner;
     }
 
+    if (e->fix.valid && lat_i == e->raw_lat_i && lon_i == e->raw_lon_i &&
+        ground_track_1e5 == e->raw_trk && ground_speed_kmh == e->raw_spd) {
+        // Exact repeat of the previous fix: the radio has no new measurement
+        // and is re-broadcasting the old one. Keep the age counting so the
+        // driver sees honest staleness (and the STALE banner past 120 s).
+        Serial.printf("[node] dup pos 0x%08lx - stale rebroadcast, age keeps counting\n",
+                      (unsigned long)from_num);
+        return;
+    }
+    e->raw_lat_i = lat_i;
+    e->raw_lon_i = lon_i;
+    e->raw_trk = ground_track_1e5;
+    e->raw_spd = ground_speed_kmh;
     e->fix.lat_deg = lat_i * 1e-7;
     e->fix.lon_deg = lon_i * 1e-7;
     if (has_track) e->fix.course_deg = ground_track_1e5 * 1e-5f;
