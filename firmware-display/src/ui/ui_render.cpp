@@ -191,7 +191,7 @@ static void render_status(const TrackerState &st, const NavOutput &nav) {
         snprintf(buf, sizeof(buf), "ME  %.5f %.5f", st.self.lat_deg, st.self.lon_deg);
         ctext(80, buf, 2, false);
         fmt_age(st.self.age_s, age, sizeof(age));
-        snprintf(buf, sizeof(buf), "spd %.0f m/s - age %s", st.self.speed_mps, age);
+        snprintf(buf, sizeof(buf), "spd %.0f mph - age %s", st.self.speed_mps * 2.23694f, age);
         ctext(104, buf, 2, false);
     } else {
         ctext(80, "ME  waiting for GPS fix", 2, false);

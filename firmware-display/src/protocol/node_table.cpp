@@ -34,7 +34,7 @@ uint32_t node_table_partner_num(void) { return s_partner_num; }
 void node_table_position(uint32_t from_num,
                          int32_t lat_i, int32_t lon_i, bool has_latlon,
                          uint32_t ground_track_1e5, bool has_track,
-                         uint32_t ground_speed_mps, bool has_speed,
+                         uint32_t ground_speed_kmh, bool has_speed,
                          uint32_t utc_epoch) {
     if (utc_epoch > 1600000000UL) { // sanity: after 2020 => real GPS time
         s_utc_epoch = utc_epoch;
@@ -58,12 +58,12 @@ void node_table_position(uint32_t from_num,
     e->fix.lon_deg = lon_i * 1e-7;
     if (has_track) e->fix.course_deg = ground_track_1e5 * 1e-5f;
     if (has_speed) {
-        // Deadband: a parked GPS with a poor sky view reports 1-3 m/s of
-        // position jitter as "speed". Wire speed is integer m/s, so <2.5
-        // zeroes 0/1/2 and keeps real driving speeds intact. Also keeps
-        // phantom speed from flipping the compass into heading-up mode.
-        float spd = (float)ground_speed_mps;
-        e->fix.speed_mps = (spd < 2.5f) ? 0.0f : spd;
+        // Wire unit is km/h (mesh.proto: "Ground speed in km/h"), integer.
+        // Deadband first: a parked GPS with a poor sky view reports its
+        // position jitter as 1-3 km/h of phantom speed; <4.5 zeroes that and
+        // keeps it from flipping the compass into heading-up mode.
+        float kmh = (float)ground_speed_kmh;
+        e->fix.speed_mps = (kmh < 4.5f) ? 0.0f : kmh / 3.6f;
     }
     e->fix.valid = true;
     e->last_update_ms = millis();

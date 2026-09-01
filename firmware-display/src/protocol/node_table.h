@@ -9,11 +9,11 @@ void node_table_set_self_num(uint32_t node_num);
 
 // Called by proto_decode for every position learned (live packet or config-dump
 // snapshot). lat/lon in 1e-7 deg (Meshtastic wire format), track in 1e-5 deg,
-// speed in m/s. has_* mirror the protobuf optional flags.
+// speed in km/h (converted to m/s internally). has_* mirror the proto flags.
 void node_table_position(uint32_t from_num,
                          int32_t lat_i, int32_t lon_i, bool has_latlon,
                          uint32_t ground_track_1e5, bool has_track,
-                         uint32_t ground_speed_mps, bool has_speed,
+                         uint32_t ground_speed_kmh, bool has_speed,
                          uint32_t utc_epoch);  // 0 = packet carried no time
 
 // Recompute ages and push TrackerState to the store. Call ~1 Hz.
