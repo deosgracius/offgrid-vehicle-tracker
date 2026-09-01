@@ -164,31 +164,12 @@ function dart(slide, cx, cy, r, deg, color) {
   title(s, "System Context — Nothing Is a Server", false);
   presenter(s, "Deo");
 
-  function miniVehicle(x, label) {
-    s.addShape("roundRect", { x, y: 2.3, w: 3.2, h: 2.7, rectRadius: 0.1,
-      fill: { color: CARD }, line: { color: NAVY, width: 1.25 } });
-    s.addText(label, { x, y: 2.4, w: 3.2, h: 0.32, align: "center", fontSize: 13, bold: true,
-      color: NAVY, fontFace: "Calibri", isTextBox: true, margin: 0 });
-    box(s, x + 0.25, 2.8, 2.7, 0.75, "Radio node", "Meshtastic · GNSS", {});
-    varrow(s, x + 1.6, 3.55, 0.5, "BLE", { color: AMBER });
-    box(s, x + 0.25, 4.05, 2.7, 0.75, "Display node", "custom firmware", { line: "6D4BDB" });
-  }
-  miniVehicle(1.0, "VEHICLE A");
-  miniVehicle(5.15, "VEHICLE B");
-  harrow(s, 4.2, 3.2, 0.95, "LoRa 915 MHz", { both: true, lw: 2.5 });
-  s.addText("Position broadcasts flow symmetrically — identical installs, no master.",
-    { x: 1.0, y: 5.2, w: 7.4, h: 0.35, fontSize: 11.5, italic: true, color: MUT,
+  // Rendered from docs/ARCHITECTURE.md §1 (mermaid) — aspect 1283×439
+  s.addImage({ path: "C:/Users/deogr/AppData/Local/Temp/claude/C--Users-deogr-Documents-Fall-Project-Off-Grid-Vehicle-dection-project/e8b2e8fa-1513-4aa8-a8f6-ce4fcd20e664/scratchpad/mermaid_png/diag1.png",
+    x: 0.45, y: 1.55, w: 8.6, h: 2.94 });
+  s.addText("Position broadcasts flow symmetrically — identical installs, no master. (ARCHITECTURE.md §1)",
+    { x: 0.55, y: 4.65, w: 8.4, h: 0.35, fontSize: 11.5, italic: true, color: MUT,
       fontFace: "Calibri", isTextBox: true, margin: 0 });
-
-  // relay node
-  s.addShape("roundRect", { x: 3.35, y: 1.15, w: 2.6, h: 0.8, rectRadius: 0.35,
-    fill: { color: WHITE }, line: { color: GREEN, width: 1.5, dashType: "dash" } });
-  s.addText([{ text: "optional relay node", options: { bold: true, breakLine: true } },
-    { text: "any Meshtastic device on high ground", options: { fontSize: 9, color: MUT } }],
-    { x: 3.45, y: 1.15, w: 2.4, h: 0.8, fontSize: 10.5, fontFace: "Calibri", color: GREEN,
-      isTextBox: true, margin: 0, align: "center", valign: "middle" });
-  s.addShape("line", { x: 2.6, y: 1.95, w: 0.8, h: 0.85, flipH: true, line: { color: GREEN, width: 1.5, dashType: "dash" } });
-  s.addShape("line", { x: 5.9, y: 1.95, w: 0.85, h: 0.85, line: { color: GREEN, width: 1.5, dashType: "dash" } });
 
   s.addText("Context facts", { x: 9.15, y: 1.3, w: 3.6, h: 0.4, fontSize: 17, ...HDR, isTextBox: true, margin: 0 });
   s.addText([
@@ -211,41 +192,17 @@ function dart(slide, cx, cy, r, deg, color) {
   title(s, "Hardware Architecture — One Vehicle", false);
   presenter(s, "Deo");
 
-  // Panel A: radio node
-  s.addText("Radio node — Heltec WiFi LoRa 32 V4 (stock Meshtastic)", { x: 0.55, y: 1.15, w: 8.4, h: 0.35,
+  // Three panels rendered from docs/ARCHITECTURE.md §2 (mermaid)
+  const MPNG = "C:/Users/deogr/AppData/Local/Temp/claude/C--Users-deogr-Documents-Fall-Project-Off-Grid-Vehicle-dection-project/e8b2e8fa-1513-4aa8-a8f6-ce4fcd20e664/scratchpad/mermaid_png/";
+  s.addText("Radio node — Heltec WiFi LoRa 32 V4 (stock Meshtastic)", { x: 0.55, y: 1.12, w: 8.4, h: 0.35,
     fontSize: 14, ...HDR, isTextBox: true, margin: 0 });
-  s.addShape("roundRect", { x: 0.55, y: 1.55, w: 8.5, h: 1.75, rectRadius: 0.1,
-    fill: { color: CARD }, line: { color: "C9D9EE", width: 1 } });
-  box(s, 0.85, 1.8, 1.7, 0.7, "GNSS module", "1.25 mm 8-pin conn.");
-  harrow(s, 2.55, 2.15, 0.75, "UART (NMEA)");
-  box(s, 3.3, 1.8, 1.7, 0.7, "ESP32-S3", "runs Meshtastic");
-  harrow(s, 5.0, 2.15, 0.75, "SPI");
-  box(s, 5.75, 1.8, 1.55, 0.7, "SX1262", "LoRa transceiver");
-  harrow(s, 7.3, 2.15, 0.5, "");
-  box(s, 7.8, 1.8, 1.05, 0.7, "antenna", "915 MHz roof", { line: AMBER, tc: "B06207" });
-  varrow(s, 4.15, 2.5, 0.45, "I2C");
-  box(s, 3.3, 2.95, 1.7, 0.28, "0.96″ OLED — field debug for free", null, { fs: 8.5, lw: 1 });
-
-  // Panel B: display node
-  s.addText("Display node — Waveshare ESP32-S3-RLCD-4.2 (our firmware)", { x: 0.55, y: 3.55, w: 8.4, h: 0.35,
+  s.addImage({ path: MPNG + "diag2.png", x: 0.55, y: 1.52, w: 8.5, h: 1.73 }); // 1089x222
+  s.addText("Display node — Waveshare ESP32-S3-RLCD-4.2 (our firmware)", { x: 0.55, y: 3.42, w: 8.4, h: 0.35,
     fontSize: 14, ...HDR, isTextBox: true, margin: 0 });
-  s.addShape("roundRect", { x: 0.55, y: 3.95, w: 8.5, h: 1.15, rectRadius: 0.1,
-    fill: { color: CARD }, line: { color: "C9D9EE", width: 1 } });
-  box(s, 0.85, 4.15, 2.3, 0.75, "ESP32-S3", "16 MB flash · 8 MB PSRAM", { line: "6D4BDB" });
-  harrow(s, 3.15, 4.52, 1.3, "SPI · framebuffer in PSRAM", { color: "6D4BDB" });
-  box(s, 4.45, 4.15, 2.5, 0.75, "4.2″ reflective LCD", "400×300 · 1 bpp · sunlight-readable", { line: "6D4BDB" });
-
-  // Panel C: interconnect
-  s.addText("In-cab interconnect & power", { x: 0.55, y: 5.35, w: 5.0, h: 0.35,
+  s.addImage({ path: MPNG + "diag3.png", x: 0.55, y: 3.82, w: 7.0, h: 0.92 }); // 715x94
+  s.addText("In-cab interconnect & power", { x: 0.55, y: 4.92, w: 5.0, h: 0.35,
     fontSize: 14, ...HDR, isTextBox: true, margin: 0 });
-  s.addShape("roundRect", { x: 0.55, y: 5.75, w: 8.5, h: 1.15, rectRadius: 0.1,
-    fill: { color: CARD }, line: { color: "C9D9EE", width: 1 } });
-  box(s, 0.85, 5.95, 1.9, 0.75, "Vehicle 12 V", "→ USB-C 5 V");
-  harrow(s, 2.75, 6.2, 0.7, "");
-  box(s, 3.45, 5.95, 1.7, 0.75, "Radio node", null, {});
-  harrow(s, 5.15, 6.32, 1.15, "BLE 2.4 GHz (~1 m)", { color: AMBER, both: true });
-  box(s, 6.3, 5.95, 1.7, 0.75, "Display node", null, { line: "6D4BDB" });
-  harrow(s, 2.75, 6.5, 3.55, "", { lw: 1 });
+  s.addImage({ path: MPNG + "diag4.png", x: 0.55, y: 5.32, w: 6.0, h: 1.17 }); // 673x131
 
   s.addText("Notes that matter", { x: 9.35, y: 1.15, w: 3.4, h: 0.4, fontSize: 15, ...HDR, isTextBox: true, margin: 0 });
   s.addText([
@@ -263,56 +220,15 @@ function dart(slide, cx, cy, r, deg, color) {
   title(s, "Firmware Architecture — Display Node", false);
   presenter(s, "Deo");
 
-  // protocol column
-  s.addShape("roundRect", { x: 0.55, y: 1.3, w: 3.9, h: 4.35, rectRadius: 0.1,
-    fill: { color: CARD }, line: { color: M.Deo, width: 1.5 } });
-  s.addText("protocol/  (Deo)", { x: 0.75, y: 1.42, w: 3.5, h: 0.32, fontSize: 13, bold: true,
-    color: M.Deo, fontFace: "Calibri", isTextBox: true, margin: 0 });
-  box(s, 0.85, 1.85, 3.3, 1.0, "ble_link task — NimBLE central",
-    "scan → connect → bond → subscribe → drain FromRadio", { line: M.Deo, subFs: 10 });
-  varrow(s, 2.5, 2.85, 0.4, "");
-  box(s, 0.85, 3.25, 3.3, 0.85, "proto_decode (nanopb)",
-    "FromRadio → Position · NodeInfo · MyNodeInfo", { line: M.Deo, subFs: 10 });
-  varrow(s, 2.5, 4.1, 0.4, "");
-  box(s, 0.85, 4.5, 3.3, 0.85, "node_table",
-    "own + partner fix · age tracking", { line: M.Deo, subFs: 10 });
-
-  // TrackerState center
-  s.addShape("roundRect", { x: 5.0, y: 3.2, w: 2.85, h: 1.5, rectRadius: 0.15, fill: { color: NAVY } });
-  s.addText([{ text: "TrackerState", options: { bold: true, fontSize: 15, breakLine: true } },
-    { text: "mutex-protected\nself · partner · ble_connected", options: { fontSize: 10.5, color: ICE } }],
-    { x: 5.1, y: 3.2, w: 2.65, h: 1.5, fontFace: "Calibri", color: WHITE, isTextBox: true,
-      margin: 0, align: "center", valign: "middle" });
-  harrow(s, 4.45, 3.95, 0.55, "");
-  harrow(s, 7.85, 3.95, 0.55, "");
-  s.addText("ONE writer", { x: 4.3, y: 4.15, w: 1.0, h: 0.26, fontSize: 9, bold: true, color: MUT,
-    fontFace: "Calibri", isTextBox: true, margin: 0 });
-  s.addText("ONE reader", { x: 7.75, y: 4.15, w: 1.0, h: 0.26, fontSize: 9, bold: true, color: MUT,
-    fontFace: "Calibri", isTextBox: true, margin: 0 });
-
-  // ui column
-  s.addShape("roundRect", { x: 8.85, y: 1.3, w: 3.9, h: 4.35, rectRadius: 0.1,
-    fill: { color: CARD }, line: { color: M.Josiah, width: 1.5 } });
-  s.addText("ui/ + nav/  (Josiah)", { x: 9.05, y: 1.42, w: 3.5, h: 0.32, fontSize: 13, bold: true,
-    color: M.Josiah, fontFace: "Calibri", isTextBox: true, margin: 0 });
-  box(s, 9.15, 1.85, 3.3, 1.0, "nav engine",
-    "haversine · bearing · COG heading + stationary fallback", { line: M.Josiah, subFs: 10 });
-  varrow(s, 10.8, 2.85, 0.4, "");
-  box(s, 9.15, 3.25, 3.3, 0.85, "ui_render task (2 Hz)",
-    "arrow · distance · data age · link status", { line: M.Josiah, subFs: 10 });
-  box(s, 9.15, 4.5, 3.3, 0.85, "sim feed (dev only)",
-    "5 fake-data scenarios — UI runs with zero radios", { line: M.Josiah, dash: true, subFs: 10 });
-  s.addShape("line", { x: 7.85, y: 4.45, w: 1.3, h: 0.45, flipH: true, flipV: true,
-    line: { color: M.Josiah, width: 1.5, dashType: "dash", endArrowType: "triangle" } });
-
-  // NVS
-  box(s, 5.0, 5.35, 2.85, 0.6, "NVS config", "radio BLE addr · units · partner ID (planned)", { dash: true, subFs: 9.5 });
+  // Rendered from docs/ARCHITECTURE.md §3 (mermaid) — 2044x577
+  s.addImage({ path: "C:/Users/deogr/AppData/Local/Temp/claude/C--Users-deogr-Documents-Fall-Project-Off-Grid-Vehicle-dection-project/e8b2e8fa-1513-4aa8-a8f6-ce4fcd20e664/scratchpad/mermaid_png/diag5.png",
+    x: 0.7, y: 1.4, w: 11.9, h: 3.36 });
 
   s.addText([
     { text: "One writer, one reader — a single mutex, no ordering bugs, and the halves never call each other.", options: { bullet: true, breakLine: true, paraSpaceAfter: 5 } },
     { text: "The sim feed is a first-class component: the entire UI is testable on a bench with no radios.", options: { bullet: true, breakLine: true, paraSpaceAfter: 5 } },
     { text: "Pairing is configuration, not code — the same firmware runs in both vehicles.", options: { bullet: true } },
-  ], { x: 0.55, y: 6.15, w: 12.2, h: 1.2, fontSize: 12, ...BODY, isTextBox: true, margin: 0 });
+  ], { x: 0.7, y: 5.1, w: 12.0, h: 1.5, fontSize: 12.5, ...BODY, isTextBox: true, margin: 0 });
 }
 
 // ================================================== S7 · End-to-End Data Flow (Deo)
@@ -322,37 +238,17 @@ function dart(slide, cx, cy, r, deg, color) {
   title(s, "End-to-End Data Flow — Partner Fix to Arrow", false);
   presenter(s, "Deo");
 
-  // ONE continuous pipeline, numbered 1→7, both rows reading left to right.
-  s.addText("Across vehicles", { x: 0.55, y: 1.25, w: 3.0, h: 0.35, fontSize: 14, ...HDR, isTextBox: true, margin: 0 });
-  box(s, 0.55, 1.7, 1.8, 0.95, "1 · GPS fix", "partner vehicle · 1 Hz NMEA", {});
-  harrow(s, 2.35, 2.17, 0.55, "UART");
-  box(s, 2.9, 1.7, 2.0, 0.95, "2 · Meshtastic B", "builds Position packet", {});
-  harrow(s, 4.9, 2.17, 1.55, "LoRa · every 30–60 s", { color: "B06207", lw: 2.5 });
-  s.addText("~0.5 s airtime · AES-256 · mesh relay", { x: 4.6, y: 2.45, w: 2.2, h: 0.5, align: "center",
-    fontSize: 9, color: "B06207", fontFace: "Calibri", isTextBox: true, margin: 0 });
-  box(s, 6.45, 1.7, 1.95, 0.95, "3 · Meshtastic A", "receives · node DB · queues FromRadio", { subFs: 9 });
-  harrow(s, 8.4, 2.17, 1.3, "BLE notify → drain", { color: AMBER });
-  box(s, 9.7, 1.7, 3.05, 0.95, "4 · protocol/ (Deo)", "read FromRadio until empty · nanopb decode → node_table", { line: M.Deo, subFs: 9 });
+  // Rendered from docs/ARCHITECTURE.md §4 (mermaid sequence) — 1915x700
+  s.addImage({ path: "C:/Users/deogr/AppData/Local/Temp/claude/C--Users-deogr-Documents-Fall-Project-Off-Grid-Vehicle-dection-project/e8b2e8fa-1513-4aa8-a8f6-ce4fcd20e664/scratchpad/mermaid_png/diag6.png",
+    x: 1.15, y: 1.2, w: 11.0, h: 4.02 });
 
-  // elbow: out of step 4, down and across to step 5
-  s.addShape("line", { x: 11.22, y: 2.65, w: 0, h: 0.7, line: { color: NAVY, width: 2 } });
-  s.addShape("line", { x: 1.9, y: 3.35, w: 9.32, h: 0, line: { color: NAVY, width: 2 } });
-  s.addShape("line", { x: 1.9, y: 3.35, w: 0, h: 0.5, line: { color: NAVY, width: 2, endArrowType: "triangle" } });
-
-  s.addText("Inside the display node", { x: 2.1, y: 3.44, w: 4.0, h: 0.32, fontSize: 14, ...HDR, isTextBox: true, margin: 0 });
-  box(s, 0.55, 3.85, 2.7, 0.95, "5 · TrackerState", "self · partner · ages · clock (mutex · 1 Hz publish)", { fill: NAVY, tc: WHITE, subc: ICE, subFs: 9 });
-  harrow(s, 3.25, 4.32, 0.6, "");
-  box(s, 3.85, 3.85, 3.1, 0.95, "6 · nav engine (Josiah)", "d = haversine · arrow = θ − COG · rose fallback when stopped", { line: M.Josiah, subFs: 9 });
-  harrow(s, 6.95, 4.32, 0.6, "");
-  box(s, 7.55, 3.85, 3.3, 0.95, "7 · RLCD redraw @ 2 Hz", "arrow · miles · age · link · local clock", { line: M.Josiah });
-
-  s.addShape("roundRect", { x: 0.55, y: 5.25, w: 12.2, h: 1.6, rectRadius: 0.1, fill: { color: CARD },
+  s.addShape("roundRect", { x: 0.55, y: 5.45, w: 12.2, h: 1.55, rectRadius: 0.1, fill: { color: CARD },
     line: { color: "C9D9EE", width: 1 } });
   s.addText([
     { text: "Own position rides the SAME pipeline minus steps 2–3 — the local radio streams its own GPS over BLE too, so ME and PARTNER stay symmetric.", options: { bullet: true, breakLine: true, paraSpaceAfter: 6 } },
     { text: "No ACKs anywhere: a newer position supersedes an older one; the reliability metric is data age, shown to the driver.", options: { bullet: true, breakLine: true, paraSpaceAfter: 6 } },
     { text: "End-to-end latency ≈ airtime (~0.5 s) — negligible next to the 30–60 s broadcast cadence.", options: { bullet: true } },
-  ], { x: 0.8, y: 5.42, w: 11.7, h: 1.3, fontSize: 11.5, ...BODY, isTextBox: true, margin: 0 });
+  ], { x: 0.8, y: 5.6, w: 11.7, h: 1.3, fontSize: 11.5, ...BODY, isTextBox: true, margin: 0 });
 
   s.addNotes("One packet's journey, numbered: (1) partner GNSS computes a fix, 1 Hz NMEA over UART. (2) Meshtastic B builds a Position packet — lat/lon, speed, track, GPS time — and broadcasts over LoRa every 30-60 s (smart: 30 s / 50 m while moving). (3) Meshtastic A decrypts, files it in its node DB, queues it on FromRadio, rings the FromNum doorbell. (4) protocol/ drains the queue over BLE and nanopb-decodes each frame into node_table. (5) node_table publishes TrackerState once a second — one writer. (6) nav engine reads it — one reader — haversine distance, bearing minus own COG. (7) ui_render redraws at 2 Hz. Full narrative with code: docs/BLE_LINK_WALKTHROUGH.md.");
 }
@@ -364,47 +260,27 @@ function dart(slide, cx, cy, r, deg, color) {
   title(s, "BLE Link State Machine — The Risky Component, Made Explicit", false);
   presenter(s, "Deo");
 
-  const states = [
-    ["SCANNING", "direct connect by NVS addr · scan fallback", 0.7, CARD, NAVY],
-    ["CONNECTING", "3 tries · 10 s timeout", 3.15, CARD, NAVY],
-    ["BONDING", "encrypted pairing (Just Works, NO_PIN)", 5.6, "FDF1E2", "B06207"],
-    ["SUBSCRIBED", "fromNum notify + want_config handshake", 8.05, "E7F5EE", GREEN],
-    ["DRAINING", "read FromRadio → empty", 10.5, "E7F5EE", GREEN]];
-  states.forEach(st => {
-    box(s, st[2], 2.2, 2.15, 1.0, st[0], st[1], { fill: st[3], line: st[4], tc: st[4], subFs: 9.5 });
-  });
-  harrow(s, 2.85, 2.7, 0.3, "");
-  harrow(s, 5.3, 2.7, 0.3, "");
-  harrow(s, 7.75, 2.7, 0.3, "");
-  // subscribed <-> draining
-  harrow(s, 10.2, 2.5, 0.3, "", { color: GREEN });
-  s.addShape("line", { x: 10.2, y: 2.95, w: 0.3, h: 0, flipH: true, line: { color: GREEN, width: 2, endArrowType: "triangle" } });
-  s.addText("notify / empty", { x: 9.95, y: 3.25, w: 1.4, h: 0.26, fontSize: 9, bold: true,
-    color: GREEN, fontFace: "Calibri", isTextBox: true, margin: 0, align: "center" });
+  // Rendered from docs/ARCHITECTURE.md §5 (mermaid state diagram) — 511x744, tall
+  s.addImage({ path: "C:/Users/deogr/AppData/Local/Temp/claude/C--Users-deogr-Documents-Fall-Project-Off-Grid-Vehicle-dection-project/e8b2e8fa-1513-4aa8-a8f6-ce4fcd20e664/scratchpad/mermaid_png/diag7.png",
+    x: 0.75, y: 1.45, w: 3.85, h: 5.6 });
 
-  // failure edges back to scanning
-  s.addShape("line", { x: 4.2, y: 3.2, w: 0, h: 0.9, line: { color: "C0392B", width: 1.75 } });
-  s.addShape("line", { x: 6.7, y: 3.2, w: 0, h: 0.9, line: { color: "C0392B", width: 1.75 } });
-  s.addShape("line", { x: 9.1, y: 3.2, w: 0, h: 0.9, line: { color: "C0392B", width: 1.75 } });
-  s.addShape("line", { x: 1.75, y: 4.1, w: 7.35, h: 0, line: { color: "C0392B", width: 1.75 } });
-  s.addShape("line", { x: 1.75, y: 3.2, w: 0, h: 0.9, flipV: true, line: { color: "C0392B", width: 1.75, endArrowType: "triangle" } });
-  s.addText("connect fail (backoff) · bond fail · disconnect → back to SCANNING",
-    { x: 2.3, y: 4.18, w: 6.5, h: 0.3, fontSize: 10.5, bold: true, color: "C0392B",
-      fontFace: "Calibri", isTextBox: true, margin: 0 });
-
-  s.addShape("roundRect", { x: 0.7, y: 5.0, w: 5.9, h: 1.8, rectRadius: 0.1, fill: { color: NAVY } });
-  s.addText("Degradation rule", { x: 0.95, y: 5.15, w: 5.4, h: 0.32, fontSize: 13, bold: true,
+  s.addShape("roundRect", { x: 5.15, y: 1.75, w: 7.5, h: 1.9, rectRadius: 0.1, fill: { color: NAVY } });
+  s.addText("Degradation rule", { x: 5.4, y: 1.92, w: 7.0, h: 0.32, fontSize: 13.5, bold: true,
     color: AMBER, fontFace: "Calibri", isTextBox: true, margin: 0 });
   s.addText("The UI always renders — last known data plus an honest age and link flag — no matter what state the BLE link is in. Link loss degrades the display; it never blanks it.",
-    { x: 0.95, y: 5.5, w: 5.4, h: 1.2, fontSize: 12.5, color: WHITE, fontFace: "Calibri",
+    { x: 5.4, y: 2.3, w: 7.0, h: 1.2, fontSize: 13, color: WHITE, fontFace: "Calibri",
       isTextBox: true, margin: 0 });
 
-  s.addShape("roundRect", { x: 6.9, y: 5.0, w: 5.9, h: 1.8, rectRadius: 0.1, fill: { color: CARD },
+  s.addShape("roundRect", { x: 5.15, y: 3.95, w: 7.5, h: 1.9, rectRadius: 0.1, fill: { color: CARD },
     line: { color: AMBER, width: 1.25 } });
-  s.addText("Risk gate — Week 5", { x: 7.15, y: 5.15, w: 5.4, h: 0.32, fontSize: 13, bold: true,
+  s.addText("Fallback (was the Week-5 risk gate — now retired: link is road-proven)", { x: 5.4, y: 4.12, w: 7.0, h: 0.32, fontSize: 13.5, bold: true,
     color: "B06207", fontFace: "Calibri", isTextBox: true, margin: 0 });
-  s.addText("BONDING is the highest-uncertainty transition. If pairing is still blocked after two weeks, the transport swaps to Meshtastic's identical API over WiFi/TCP :4403 — decoder, state, and UI untouched.",
-    { x: 7.15, y: 5.5, w: 5.4, h: 1.2, fontSize: 12.5, ...BODY, isTextBox: true, margin: 0 });
+  s.addText("If BLE ever becomes hostile, the transport swaps to Meshtastic's identical protobuf API over WiFi/TCP :4403 — decoder, node table, and UI untouched.",
+    { x: 5.4, y: 4.5, w: 7.0, h: 1.2, fontSize: 13, ...BODY, isTextBox: true, margin: 0 });
+
+  s.addText("Bench-derived design choices: direct connect by remembered address (the radio only advertises briefly at boot) · no stored bond on purpose (a bonded Meshtastic radio stops advertising) · every failure funnels through one teardown back to SCANNING, so no state can wedge.",
+    { x: 5.15, y: 6.1, w: 7.5, h: 1.1, fontSize: 12, italic: true, color: MUT,
+      fontFace: "Calibri", isTextBox: true, margin: 0 });
 
   s.addNotes("How each state works in the shipped code (docs/BLE_LINK_WALKTHROUGH.md has the full excerpts): SCANNING - direct connect to the radio address remembered in NVS first (a Meshtastic radio only general-advertises from boot until its first disconnect, so a scan alone can never reconnect); 1.5 s scan fallback handles first pairing and radio replacement, exponential backoff 1-8 s. CONNECTING - 3 attempts, 10 s each; +9 dBm TX because default power was marginal; MTU 517 so a protobuf frame fits one read. BONDING - Just Works encrypted pairing on every connect; no stored bond ON PURPOSE: a bonded Meshtastic peripheral stops advertising entirely (bench-proven trap). SUBSCRIBED - subscribe FromNum (the doorbell), then write want_config_id with a random nonce so the radio replays its whole node DB; nonce back = snapshot complete. DRAINING - read FromRadio until a zero-length read; one notify can mean many queued frames. Every failure funnels through one teardown back to SCANNING - no state can wedge. Road-proven: mid-carry disconnect on Sep 1 self-recovered with no user action.");
 }
