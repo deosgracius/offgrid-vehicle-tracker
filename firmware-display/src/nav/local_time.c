@@ -29,6 +29,10 @@ static int zone_offset(double lat, double lon, const char **std_ab, const char *
     if (lat > 51.0 && lon < -129.0) { *std_ab = "AKST"; *dst_ab = "AKDT"; return -9; }
     if (lon >= -85.0)               { *std_ab = "EST";  *dst_ab = "EDT";  return -5; }
     if (lon >= -97.5)               { *std_ab = "CST";  *dst_ab = "CDT";  return -6; }
+    // Central Time extends west of -97.5 through West Texas and the Oklahoma
+    // panhandle, out to the TX/NM border (-103.05) below lat 36.65 (Lubbock,
+    // Amarillo, Midland). El Paso (lon < -104.9) stays Mountain via the band.
+    if (lon >= -103.05 && lat < 36.65) { *std_ab = "CST"; *dst_ab = "CDT"; return -6; }
     if (lon >= -111.0)              { *std_ab = "MST";  *dst_ab = "MDT";  return -7; }
     if (lon >= -129.0)              { *std_ab = "PST";  *dst_ab = "PDT";  return -8; }
     *std_ab = "AKST"; *dst_ab = "AKDT"; return -9;
