@@ -1,6 +1,7 @@
 // Nav-math unit tests — run on your laptop, no hardware:  pio test -e native
 #include <unity.h>
 #include "../../src/nav/nav.h"
+#include "../../src/nav/dead_reckon.h"
 
 void setUp(void) {}
 void tearDown(void) {}
@@ -68,8 +69,54 @@ void test_invalid_fix_gives_invalid_output(void) {
     TEST_ASSERT_FALSE(nav.valid);
 }
 
+void test_dr_projects_north(void) {
+    // 10 m/s due north for 10 s = 100 m = ~0.000899 deg lat, lon unchanged
+    Fix f = {}; f.valid = true; f.lat_deg = 33.0; f.lon_deg = -101.0;
+    f.course_deg = 0.0f; f.speed_mps = 10.0f; f.age_s = 10;
+    dr_project_fix(&f);
+    TEST_ASSERT_FLOAT_WITHIN(0.5f, 100.0f, nav_haversine_m(33.0, -101.0, f.lat_deg, f.lon_deg));
+    TEST_ASSERT_TRUE(f.lon_deg == -101.0);  // exactly untouched
+    TEST_ASSERT_TRUE(f.lat_deg > 33.0);
+    TEST_ASSERT_EQUAL_UINT32(10, f.age_s); // age must be untouched
+}
+
+void test_dr_projects_east_scales_by_latitude(void) {
+    // Due east at 20 m/s for 30 s = 600 m along the 33N parallel
+    Fix f = {}; f.valid = true; f.lat_deg = 33.0; f.lon_deg = -101.0;
+    f.course_deg = 90.0f; f.speed_mps = 20.0f; f.age_s = 30;
+    dr_project_fix(&f);
+    TEST_ASSERT_FLOAT_WITHIN(3.0f, 600.0f, nav_haversine_m(33.0, -101.0, f.lat_deg, f.lon_deg));
+    TEST_ASSERT_TRUE(f.lat_deg == 33.0);  // exactly untouched
+    TEST_ASSERT_TRUE(f.lon_deg > -101.0);
+}
+
+void test_dr_parked_and_fresh_are_noops(void) {
+    Fix parked = {}; parked.valid = true; parked.lat_deg = 33.0; parked.lon_deg = -101.0;
+    parked.speed_mps = 0.0f; parked.age_s = 60;
+    dr_project_fix(&parked);
+    TEST_ASSERT_TRUE(parked.lat_deg == 33.0 && parked.lon_deg == -101.0);
+
+    Fix fresh = {}; fresh.valid = true; fresh.lat_deg = 33.0; fresh.lon_deg = -101.0;
+    fresh.course_deg = 45.0f; fresh.speed_mps = 20.0f; fresh.age_s = 0;
+    dr_project_fix(&fresh);
+    TEST_ASSERT_TRUE(fresh.lat_deg == 33.0 && fresh.lon_deg == -101.0);
+}
+
+void test_dr_caps_at_stale_horizon(void) {
+    // 10 min old: projection must clamp to DR_MAX_PROJECT_S worth of travel
+    Fix f = {}; f.valid = true; f.lat_deg = 33.0; f.lon_deg = -101.0;
+    f.course_deg = 0.0f; f.speed_mps = 30.0f; f.age_s = 600;
+    dr_project_fix(&f);
+    TEST_ASSERT_FLOAT_WITHIN(20.0f, 30.0f * DR_MAX_PROJECT_S,
+        nav_haversine_m(33.0, -101.0, f.lat_deg, f.lon_deg));
+}
+
 int main(int, char **) {
     UNITY_BEGIN();
+    RUN_TEST(test_dr_projects_north);
+    RUN_TEST(test_dr_projects_east_scales_by_latitude);
+    RUN_TEST(test_dr_parked_and_fresh_are_noops);
+    RUN_TEST(test_dr_caps_at_stale_horizon);
     RUN_TEST(test_one_degree_longitude_at_equator);
     RUN_TEST(test_one_degree_latitude);
     RUN_TEST(test_zero_distance);

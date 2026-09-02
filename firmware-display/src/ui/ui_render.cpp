@@ -2,6 +2,7 @@
 #include "../protocol/tracker_store.h"
 #include "../protocol/node_table.h"
 #include "../nav/nav.h"
+#include "../nav/dead_reckon.h"
 #include "../nav/local_time.h"
 #include "rlcd.h"
 #include <Arduino.h>
@@ -245,6 +246,7 @@ void ui_render_task(void *arg) {
 
         TrackerState st;
         tracker_store_get(&st);
+        dr_apply(&st);  // project both fixes forward along course/speed (age untouched)
         NavOutput nav = nav_compute(&st);
 
         // off-course warning state machine (5 s on, clears when back on course)
