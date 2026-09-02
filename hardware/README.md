@@ -10,8 +10,8 @@ cannot decrypt each other. After flashing radio #2 + setting `lora.region US`:
 ```
 python -m meshtastic --port COMx --seturl "https://meshtastic.org/e/#Ci4SIC0URMiOXgfkbAVS687btSBj1NwlgUQFVPeHuTw59xsGGgZHcm91cDk6AgggEhQIARj6ASALOAFAA0gBUB5oAdAGAQ"
 python -m meshtastic --port COMx --set position.position_broadcast_secs 60
-python -m meshtastic --port COMx --set position.broadcast_smart_minimum_interval_secs 30
-python -m meshtastic --port COMx --set position.broadcast_smart_minimum_distance 50
+python -m meshtastic --port COMx --set position.broadcast_smart_minimum_interval_secs 10
+python -m meshtastic --port COMx --set position.broadcast_smart_minimum_distance 20
 python -m meshtastic --port COMx --set position.gps_update_interval 30
 python -m meshtastic --port COMx --set bluetooth.mode NO_PIN   # only if a display pairs to it
 ```
@@ -22,7 +22,10 @@ channel default of 13 truncates every broadcast to a ~6 km grid, which froze
 the displayed location during the 2026-08-31 drive test; if positions ever
 look quantized/stuck, check `positionPrecision` in `--info` first.)
 Radio #1 config summary: region US · channel Group9 (private PSK, precision 32) ·
-broadcast 60 s / smart 30 s + 50 m · gps_update_interval 30 · bluetooth NO_PIN.
+broadcast 60 s / smart 10 s + 20 m · gps_update_interval 30 · bluetooth NO_PIN.
+(10 s ≈ 5% channel airtime per moving node at SF11 — do not go faster; Meshtastic
+throttles position broadcasts above ~25% utilization, and 1 Hz is physically
+impossible at this range setting: each broadcast costs ~0.5 s of airtime.)
 
 Heltec WiFi LoRa 32 V4 setup, radio configuration, antennas, and range testing.
 
