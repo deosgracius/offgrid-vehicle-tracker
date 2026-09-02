@@ -16,6 +16,21 @@ python -m meshtastic --port COMx --set position.gps_update_interval 30
 python -m meshtastic --port COMx --set bluetooth.mode NO_PIN   # only if a display pairs to it
 ```
 
+**Config-write trap (cost us an afternoon):** settings that trigger a reboot
+(`lora.region`, `bluetooth.mode`) may silently revert when set via
+`meshtastic --set ...` — the CLI's serial-port close toggles DTR/RTS, which
+hard-resets the ESP32 *before* it finishes saving. Always `--get` to verify;
+if a value keeps reverting, set it via the Python API and hold the port open
+~20 s (see `git log` for the recovery session), or use the phone app.
+
+**Flashing trap:** `pio run -t upload` auto-picks the only COM port — with two
+identical ESP32-S3 boards, ALWAYS pass `--upload-port` and verify which board
+is on which port first (unplug one and watch which port disappears). We once
+overwrote the radio's Meshtastic with display firmware this way. Full radio
+recovery = flash `firmware-heltec-v4-*.factory.bin` at 0x0 with esptool, then
+re-apply this section top to bottom (node number survives — it derives from
+the MAC).
+
 (The URL embeds the channel key — fine in this team repo, don't post publicly.
 It also carries `position_precision 32` — full-resolution positions. The
 channel default of 13 truncates every broadcast to a ~6 km grid, which froze
