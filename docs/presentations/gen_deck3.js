@@ -317,29 +317,30 @@ lon += d*sin(course)/(111320*cos(lat));`, M.JOSIAH);
     ["Partner over LoRa", "second radio joins the encrypted channel", "NEXT", "PTR no partner heard yet"]];
   layers.forEach((L, i) => {
     const y = 1.2 + i * 1.06, pending = L[2] === "NEXT";
-    s.addShape("rect", { x: 0.5, y, w: 6.3, h: 0.88, fill: { color: pending ? PAPER : CARD },
+    s.addShape("rect", { x: 0.5, y, w: 5.6, h: 0.88, fill: { color: pending ? PAPER : CARD },
       line: { color: pending ? ACC : M.CANNON, width: 1.25, ...(pending ? { dashType: "dash" } : {}) } });
     s.addText([{ text: L[0], options: { bold: true, breakLine: true } },
-      { text: L[1], options: { fontSize: 9.5, color: MUT } }],
-      { x: 0.65, y: y + 0.06, w: 4.2, h: 0.78, fontSize: 11.5, fontFace: BFONT, color: INK, isTextBox: true, margin: 0 });
-    s.addText(L[2], { x: 4.95, y: y + 0.08, w: 0.95, h: 0.3, align: "center", fontSize: 9.5, bold: true,
+      { text: L[1], options: { fontSize: 9, color: MUT } }],
+      { x: 0.65, y: y + 0.06, w: 3.6, h: 0.78, fontSize: 11, fontFace: BFONT, color: INK, isTextBox: true, margin: 0 });
+    s.addText(L[2], { x: 4.35, y: y + 0.08, w: 0.85, h: 0.3, align: "center", fontSize: 9, bold: true,
       fontFace: MONO, color: pending ? "B06207" : "1F9D68", isTextBox: true, margin: 0 });
-    s.addText('"' + L[3] + '"', { x: 4.95, y: y + 0.4, w: 1.8, h: 0.42, fontSize: 8,
+    s.addText('"' + L[3] + '"', { x: 4.32, y: y + 0.4, w: 1.72, h: 0.42, fontSize: 7.5,
       fontFace: MONO, color: MUT, isTextBox: true, margin: 0 });
-    if (i < 4) varrow(s, 1.15, y + 0.88, 0.18, M.CANNON);
+    if (i < 4) varrow(s, 1.1, y + 0.88, 0.18, M.CANNON);
   });
-  pic(s, D3 + "p_overall.jpg", 7.15, 1.2, 2.7, 1.94, "Our display: ME 33.60719 -101.89643");
-  s.addShape("rect", { x: 10.0, y: 1.2, w: 2.85, h: 2.26, fill: { color: CARD }, line: { color: "1F9D68", width: 1.25 } });
-  s.addText("POSITION CROSS-CHECK", { x: 10.15, y: 1.32, w: 2.6, h: 0.3, fontSize: 10.5, bold: true,
+  pic(s, D3 + "p_search.jpg", 6.4, 1.2, 1.95, 1.53, "Boot: link + GPS proven");
+  pic(s, D3 + "p_overall.jpg", 8.5, 1.2, 2.1, 1.51, "ME 33.60719 -101.89643");
+  s.addShape("rect", { x: 10.75, y: 1.2, w: 2.1, h: 2.0, fill: { color: CARD }, line: { color: "1F9D68", width: 1.25 } });
+  s.addText("POSITION CROSS-CHECK", { x: 10.87, y: 1.3, w: 1.9, h: 0.5, fontSize: 10, bold: true,
     charSpacing: 1, fontFace: HFONT, color: "1F9D68", isTextBox: true, margin: 0 });
-  s.addText("The fix on our display and the marker on the standard Meshtastic web client are the same position, read from the same radio by two independent programs. Agreement between clients that share no code is the accuracy check. Radio two will fill the PTR row through this same pipeline.",
-    { x: 10.15, y: 1.64, w: 2.6, h: 1.76, fontSize: 9.5, fontFace: BFONT, color: "222A3F", isTextBox: true, margin: 0 });
+  s.addText("Display and web-client marker show the same fix from the same radio, via two programs sharing no code. Independent agreement is the accuracy check.",
+    { x: 10.87, y: 1.78, w: 1.88, h: 1.38, fontSize: 8.5, fontFace: BFONT, color: "222A3F", isTextBox: true, margin: 0 });
   s.addText("INDEPENDENT CLIENT: MESHTASTIC WEB APP, SAME RADIO, NODE ead4 CONNECTED",
-    { x: 7.15, y: 3.58, w: 5.7, h: 0.26, fontSize: 8.5, bold: true, fontFace: MONO, color: MUT, isTextBox: true, margin: 0 });
-  s.addImage({ path: D3 + "p_map.png", x: 7.15, y: 3.86, w: 4.05, h: 2.92 });
-  s.addShape("rect", { x: 7.15, y: 3.86, w: 4.05, h: 2.92, fill: { type: "none" }, line: { color: RULE, width: 1 } });
-  s.addText("One device proves four of five layers at zero coordination cost. The dashed layer waits only for radio two; no display code changes.",
-    { x: 11.35, y: 3.86, w: 1.5, h: 2.92, fontSize: 9, fontFace: BFONT, color: MUT, isTextBox: true, margin: 0, valign: "middle" });
+    { x: 6.4, y: 3.28, w: 6.45, h: 0.24, fontSize: 8.5, bold: true, fontFace: MONO, color: MUT, isTextBox: true, margin: 0 });
+  s.addImage({ path: D3 + "p_map_zoom.png", x: 6.4, y: 3.56, w: 4.35, h: 3.21 });
+  s.addShape("rect", { x: 6.4, y: 3.56, w: 4.35, h: 3.21, fill: { type: "none" }, line: { color: RULE, width: 1 } });
+  s.addText("One device proves four of five layers at zero coordination cost. Every bug found here never reaches the two-vehicle test. The dashed layer waits only for radio two; no display code changes.",
+    { x: 10.95, y: 3.56, w: 1.9, h: 3.21, fontSize: 9, fontFace: BFONT, color: MUT, isTextBox: true, margin: 0, valign: "middle" });
   s.addNotes("This sheet is the integration story: the two halves of the firmware are joined and running on real hardware. Walk the stack top to bottom, and point at the photo text that proves each layer: own GPS locked proves layer one, radio link connected proves layer two, the live coordinates prove decoding, and the clock reading Central time proves the navigation layer is deriving timezone from position. The dashed layer is the honest gap, and the display itself says it: no partner heard yet. The strategy: one device tracking itself exercises everything except the LoRa hop, so integration bugs get found cheaply before the two-vehicle test. Radio two closes the loop without changing a line of display code.");
 }
 
