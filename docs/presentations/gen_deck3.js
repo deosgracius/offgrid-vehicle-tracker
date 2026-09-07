@@ -123,7 +123,41 @@ const B = (text, last) => ({ text, options: { bullet: { code: "25AA" }, breakLin
   s.addNotes("Open with the whole system so every later sheet has a home. Walk left region (hardware per vehicle), right region (firmware split with TrackerState as the single interface), bottom strip (telecom layers). Close on symmetry: vehicle B is identical, nothing is a server.");
 }
 
-// ============================================================ SHEET 03 · DEO, backend architecture
+// ============================================================ SHEET 03 · DEO, inside the transceiver
+{
+  const s = pres.addSlide();
+  frame(s, "DEO", "inside the sx1262");
+  title(s, "Inside the Transceiver (Datasheet Rev 2.2)");
+  s.addImage({ path: D3 + "fig_block.png", x: 0.5, y: 1.15, w: 7.35, h: 3.5 });
+  s.addShape("rect", { x: 0.5, y: 1.15, w: 7.35, h: 3.5, fill: { type: "none" }, line: { color: RULE, width: 1 } });
+  s.addText("SX1262 BLOCK DIAGRAM, DS FIG 4-1 p.23. TWO MODEMS SHARE ONE FRONT END; WE USE ONLY THE LoRa ONE.",
+    { x: 0.5, y: 4.7, w: 7.35, h: 0.24, fontSize: 8, fontFace: MONO, color: MUT, isTextBox: true, margin: 0 });
+  s.addImage({ path: D3 + "fig_modes.png", x: 8.3, y: 1.15, w: 3.5, h: 3.5 });
+  s.addShape("rect", { x: 8.3, y: 1.15, w: 3.5, h: 3.5, fill: { type: "none" }, line: { color: RULE, width: 1 } });
+  s.addText("OPERATING MODES, DS FIG 9-1 p.64", { x: 8.3, y: 4.7, w: 3.5, h: 0.24, fontSize: 8,
+    fontFace: MONO, color: MUT, isTextBox: true, margin: 0 });
+  // one broadcast traced over the state machine
+  const steps = [["RX", "always listening"], ["CAD", "channel clear? 6.1.5 p.41"], ["FS", "PLL locks channel"],
+    ["TX", "chirps, ~0.5 s"], ["TxDone", "IRQ on DIO1"], ["RX", "back to listening"]];
+  steps.forEach((st, i) => {
+    const x = 0.5 + i * 2.1;
+    s.addShape("rect", { x, y: 5.1, w: 1.85, h: 0.68, fill: { color: CARD }, line: { color: ACC, width: 1.25 } });
+    s.addText([{ text: st[0], options: { bold: true, fontFace: MONO, breakLine: true } },
+      { text: st[1], options: { fontSize: 8, color: MUT } }],
+      { x: x + 0.06, y: 5.13, w: 1.73, h: 0.62, fontSize: 10.5, fontFace: BFONT, color: INK,
+        isTextBox: true, margin: 0, align: "center" });
+    if (i < 5) harrow(s, x + 1.85, 5.44, 0.25, ACC);
+  });
+  s.addText("ONE POSITION BROADCAST TRACED ON THE STATE MACHINE. CAD IS THE PHYSICAL LISTEN-BEFORE-TALK: BELOW THE NOISE FLOOR RSSI IS USELESS, SO THE CHIP CORRELATES FOR LoRa SYMBOLS INSTEAD.",
+    { x: 0.5, y: 5.85, w: 12.35, h: 0.24, fontSize: 8, fontFace: MONO, color: MUT, isTextBox: true, margin: 0 });
+  codebox(s, 0.5, 6.15, 8.1, 0.62, "meshtastic RadioInterface.cpp  how region US becomes a frequency",
+`RDEF(US, 902.0f, 928.0f, ...);  freq = start + bw/2000 + hash(name)*(bw/1000);`, ACC);
+  s.addText("Both radios hash the same channel name, so they meet on the same frequency with no coordination message. Full walkthrough: docs/RADIO_PHY_DEEP_DIVE.pdf",
+    { x: 8.75, y: 6.15, w: 4.1, h: 0.62, fontSize: 8.5, fontFace: BFONT, color: MUT, isTextBox: true, margin: 0, valign: "middle" });
+  s.addNotes("Presented by Deo as the descent from the system map into the machine my protocol rides on. This sheet is the silicon-level story, all from the Semtech datasheet in our repo of references. Left: the block diagram - antenna, matching, LNA, mixer, ADC, then everything is digital: the LoRa modem correlates chirps (that is the processing gain), the protocol engine handles preamble, header, FEC and CRC, and a 256-byte buffer meets the ESP32 over SPI. Note the FSK modem sitting beside the LoRa modem: present, powered, and unused - FSK needs positive SNR, LoRa decodes at minus 17.5 dB. Right: the operating-mode state machine, and below it one of our broadcasts traced across it: park in RX, CAD to check the channel (the physical CSMA - below the noise floor RSSI is meaningless so the chip listens for LoRa symbols), FS while the PLL locks, half a second of TX, TxDone interrupt, back to RX. Bottom code: the region line that sets 902 to 928 MHz and the hash that picks the channel - both radios compute the same hash from the channel name, so the shared URL is simultaneously the encryption domain and the frequency agreement. Close by handing the physics forward: Victor will quantify what this silicon buys and what it costs.");
+}
+
+// ============================================================ SHEET 04 · DEO, backend architecture
 {
   const s = pres.addSlide();
   frame(s, "DEO", "backend architecture");
@@ -178,7 +212,7 @@ NavOutput nav = nav_compute(&st);
   s.addNotes("Read the arrows aloud: the GATT loop reads until the radio reports empty; nanopb decodes with code generated from Meshtastic's own schema; node_table publishes once per second; the UI copies its own snapshot at 2 Hz, projects it forward, and computes the arrow. Every hardening item in the bottom card came out of an actual drive test.");
 }
 
-// ============================================================ SHEET 05 · JOSIAH, frontend architecture
+// ============================================================ SHEET 06 · JOSIAH, frontend architecture
 {
   const s = pres.addSlide();
   frame(s, "JOSIAH", "frontend architecture");
@@ -216,7 +250,7 @@ lon += d*sin(course)/(111320*cos(lat));`, M.JOSIAH);
   s.addNotes("Sector flow left to right, then the two fragments that do all the work. Testability is the design win: nav.c and dead_reckon.c run on the laptop with zero hardware, which is how the whole UI was built before the radio link existed.");
 }
 
-// ============================================================ SHEET 06 · JOSIAH, photos
+// ============================================================ SHEET 07 · JOSIAH, photos
 {
   const s = pres.addSlide();
   frame(s, "JOSIAH", "the ui on real packets");
@@ -237,7 +271,7 @@ lon += d*sin(course)/(111320*cos(lat));`, M.JOSIAH);
   s.addNotes("All four photos show the real display on decoded radio packets. Point at the state machine working: banner and chevron in the driving view, rose fallback when stopped, and the diagnostic page with raw coordinates that we use for debugging.");
 }
 
-// ============================================================ SHEET 07 · VICTOR, radio
+// ============================================================ SHEET 08 · VICTOR, radio
 {
   const s = pres.addSlide();
   frame(s, "VICTOR", "radio and phy");
@@ -261,7 +295,7 @@ lon += d*sin(course)/(111320*cos(lat));`, M.JOSIAH);
   s.addNotes("Hardware diagram first, then the configuration that three road tests produced: 10 second smart broadcast matched by 10 second GPS refresh on a full-precision private channel. The amber card is the recipe that makes radio two a fifteen-minute job instead of a rediscovery project.");
 }
 
-// ============================================================ SHEET 08 · VICTOR, physics
+// ============================================================ SHEET 09 · VICTOR, physics
 {
   const s = pres.addSlide();
   frame(s, "VICTOR", "link physics");
@@ -284,40 +318,6 @@ lon += d*sin(course)/(111320*cos(lat));`, M.JOSIAH);
     { text: "Information reaches the driver about one second after it exists, which is real time by any useful definition. A new measurement can only be taken every ten seconds because each broadcast costs half a second of shared airtime: at one hertz, two vehicles would demand the entire channel. The same spreading factor that makes packets slow lets the receiver decode 15 dB below the noise floor, and that is where the kilometers come from. Dead reckoning fills the gaps at one hertz. Rate and range are the same currency, and we spent it on range.", options: { color: PAPER, fontFace: BFONT } },
   ], { x: 0.8, y: 5.32, w: 11.75, h: 1.3, fontSize: 11.5, isTextBox: true, margin: 0 });
   s.addNotes("This sheet answers the question everyone asks: why not every second. Equation 1: at spreading factor 11 each symbol is 2048 chips, so one position costs about half a second of air. Equation 2: two vehicles at one hertz would occupy 100 percent of the channel; at ten seconds they occupy ten percent. Equation 3: the same slowness buys sensitivity of minus 131 dBm, fifteen decibels below thermal noise, which is the entire range budget. Equation 4: actual information latency is about one second. Equation 5: the display projects both vehicles forward every second between fixes. Marine AIS beacons every 2 to 30 seconds and every chartplotter animates between reports; we are in good company.");
-}
-
-// ============================================================ SHEET 09 · VICTOR, inside the transceiver
-{
-  const s = pres.addSlide();
-  frame(s, "VICTOR", "inside the sx1262");
-  title(s, "Inside the Transceiver (Datasheet Rev 2.2)");
-  s.addImage({ path: D3 + "fig_block.png", x: 0.5, y: 1.15, w: 7.35, h: 3.5 });
-  s.addShape("rect", { x: 0.5, y: 1.15, w: 7.35, h: 3.5, fill: { type: "none" }, line: { color: RULE, width: 1 } });
-  s.addText("SX1262 BLOCK DIAGRAM, DS FIG 4-1 p.23. TWO MODEMS SHARE ONE FRONT END; WE USE ONLY THE LoRa ONE.",
-    { x: 0.5, y: 4.7, w: 7.35, h: 0.24, fontSize: 8, fontFace: MONO, color: MUT, isTextBox: true, margin: 0 });
-  s.addImage({ path: D3 + "fig_modes.png", x: 8.3, y: 1.15, w: 3.5, h: 3.5 });
-  s.addShape("rect", { x: 8.3, y: 1.15, w: 3.5, h: 3.5, fill: { type: "none" }, line: { color: RULE, width: 1 } });
-  s.addText("OPERATING MODES, DS FIG 9-1 p.64", { x: 8.3, y: 4.7, w: 3.5, h: 0.24, fontSize: 8,
-    fontFace: MONO, color: MUT, isTextBox: true, margin: 0 });
-  // one broadcast traced over the state machine
-  const steps = [["RX", "always listening"], ["CAD", "channel clear? 6.1.5 p.41"], ["FS", "PLL locks channel"],
-    ["TX", "chirps, ~0.5 s"], ["TxDone", "IRQ on DIO1"], ["RX", "back to listening"]];
-  steps.forEach((st, i) => {
-    const x = 0.5 + i * 2.1;
-    s.addShape("rect", { x, y: 5.1, w: 1.85, h: 0.68, fill: { color: CARD }, line: { color: ACC, width: 1.25 } });
-    s.addText([{ text: st[0], options: { bold: true, fontFace: MONO, breakLine: true } },
-      { text: st[1], options: { fontSize: 8, color: MUT } }],
-      { x: x + 0.06, y: 5.13, w: 1.73, h: 0.62, fontSize: 10.5, fontFace: BFONT, color: INK,
-        isTextBox: true, margin: 0, align: "center" });
-    if (i < 5) harrow(s, x + 1.85, 5.44, 0.25, ACC);
-  });
-  s.addText("ONE POSITION BROADCAST TRACED ON THE STATE MACHINE. CAD IS THE PHYSICAL LISTEN-BEFORE-TALK: BELOW THE NOISE FLOOR RSSI IS USELESS, SO THE CHIP CORRELATES FOR LoRa SYMBOLS INSTEAD.",
-    { x: 0.5, y: 5.85, w: 12.35, h: 0.24, fontSize: 8, fontFace: MONO, color: MUT, isTextBox: true, margin: 0 });
-  codebox(s, 0.5, 6.15, 8.1, 0.62, "meshtastic RadioInterface.cpp  how region US becomes a frequency",
-`RDEF(US, 902.0f, 928.0f, ...);  freq = start + bw/2000 + hash(name)*(bw/1000);`, ACC);
-  s.addText("Both radios hash the same channel name, so they meet on the same frequency with no coordination message. Full walkthrough: docs/RADIO_PHY_DEEP_DIVE.pdf",
-    { x: 8.75, y: 6.15, w: 4.1, h: 0.62, fontSize: 8.5, fontFace: BFONT, color: MUT, isTextBox: true, margin: 0, valign: "middle" });
-  s.addNotes("This sheet is the silicon-level story, all from the Semtech datasheet in our repo of references. Left: the block diagram - antenna, matching, LNA, mixer, ADC, then everything is digital: the LoRa modem correlates chirps (that is the processing gain), the protocol engine handles preamble, header, FEC and CRC, and a 256-byte buffer meets the ESP32 over SPI. Note the FSK modem sitting beside the LoRa modem: present, powered, and unused - FSK needs positive SNR, LoRa decodes at minus 17.5 dB. Right: the operating-mode state machine, and below it one of our broadcasts traced across it: park in RX, CAD to check the channel (the physical CSMA - below the noise floor RSSI is meaningless so the chip listens for LoRa symbols), FS while the PLL locks, half a second of TX, TxDone interrupt, back to RX. Bottom code: the region line that sets 902 to 928 MHz and the hash that picks the channel - both radios compute the same hash from the channel name, so the shared URL is simultaneously the encryption domain and the frequency agreement.");
 }
 
 // ============================================================ SHEET 10 · VICTOR, graphs + references
