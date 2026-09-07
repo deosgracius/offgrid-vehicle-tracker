@@ -11,7 +11,7 @@ const D3 = "C:/Users/deogr/AppData/Local/Temp/claude/C--Users-deogr-Documents-Fa
 const MPNG = "C:/Users/deogr/AppData/Local/Temp/claude/C--Users-deogr-Documents-Fall-Project-Off-Grid-Vehicle-dection-project/e8b2e8fa-1513-4aa8-a8f6-ce4fcd20e664/scratchpad/mermaid_png/";
 const SYS = "C:/Users/deogr/Documents/Fall Project/Off-Grid Vehicle dection project/docs/system-diagram.png";
 
-const TOTAL = 10;
+const TOTAL = 11;
 let sheetNo = 0;
 
 // Drawing frame + title-block footer on every sheet.
@@ -284,7 +284,26 @@ lon += d*sin(course)/(111320*cos(lat));`, M.JOSIAH);
   s.addNotes("This sheet answers the question everyone asks: why not every second. Equation 1: at spreading factor 11 each symbol is 2048 chips, so one position costs about half a second of air. Equation 2: two vehicles at one hertz would occupy 100 percent of the channel; at ten seconds they occupy ten percent. Equation 3: the same slowness buys sensitivity of minus 131 dBm, fifteen decibels below thermal noise, which is the entire range budget. Equation 4: actual information latency is about one second. Equation 5: the display projects both vehicles forward every second between fixes. Marine AIS beacons every 2 to 30 seconds and every chartplotter animates between reports; we are in good company.");
 }
 
-// ============================================================ SHEET 09 · CANNON, constraints
+// ============================================================ SHEET 09 · VICTOR, graphs + references
+{
+  const s = pres.addSlide();
+  frame(s, "VICTOR", "link behavior, graphed");
+  title(s, "The Same Physics, Graphed");
+  s.addImage({ path: D3 + "g_utilization.png", x: 0.5, y: 1.12, w: 5.9, h: 4.09 });
+  s.addShape("rect", { x: 0.5, y: 1.12, w: 5.9, h: 4.09, fill: { type: "none" }, line: { color: RULE, width: 1 } });
+  s.addImage({ path: D3 + "g_deadreckon.png", x: 6.9, y: 1.12, w: 5.9, h: 4.09 });
+  s.addShape("rect", { x: 6.9, y: 1.12, w: 5.9, h: 4.09, fill: { type: "none" }, line: { color: RULE, width: 1 } });
+  s.addText("The update-rate wall. Channel airtime versus broadcast interval for two vehicles at 0.5 s per packet. One second sits at 100 percent, physical collapse; our 10 second point uses 10 percent, comfortably under the 25 percent ceiling the firmware enforces.",
+    { x: 0.5, y: 5.32, w: 5.9, h: 1.05, fontSize: 10.5, fontFace: BFONT, color: "222A3F", isTextBox: true, margin: 0 });
+  s.addText("What the driver would see. Holding the raw fix leaves the display up to 200 m behind a vehicle at 45 mph. Dead reckoning bounds the worst case near 25 m during a maneuver, and each real fix snaps the error back to zero.",
+    { x: 6.9, y: 5.32, w: 5.9, h: 1.05, fontSize: 10.5, fontFace: BFONT, color: "222A3F", isTextBox: true, margin: 0 });
+  s.addShape("line", { x: 0.5, y: 6.42, w: 12.35, h: 0, line: { color: RULE, width: 0.75 } });
+  s.addText("SOURCES  [1] Semtech SX1276 datasheet, SNR limit per spreading factor   [2] Semtech AN1200.22, LoRa modulation and airtime   [3] Meshtastic docs, LoRa config and duty limit   [4] ITU-R M.1371, AIS reporting intervals   (full citations in the notes)",
+    { x: 0.5, y: 6.5, w: 12.35, h: 0.3, fontSize: 8.5, fontFace: MONO, color: MUT, isTextBox: true, margin: 0 });
+  s.addNotes("Two pictures replace ten minutes of argument. Left graph: utilization is inversely proportional to the interval; the 1 s point is literally impossible and the dashed line is Meshtastic's own 25 percent duty limit; we sit at 10 percent. Right graph: the sawtooth is the display error over time at 45 mph; orange is what holding the raw fix would show, up to 200 meters stale; navy is dead reckoning with a worst-case maneuver assumption of 0.5 m/s^2, bounded near 25 meters and typically a few meters in steady driving. Sources are on this sheet's reference list in the notes: the SNR-per-spreading-factor table and airtime equations are from Semtech's datasheet and AN1200.22, the duty limit and configuration from the Meshtastic documentation, and the AIS precedent from ITU-R M.1371.");
+}
+
+// ============================================================ SHEET 10 · CANNON, constraints
 {
   const s = pres.addSlide();
   frame(s, "CANNON", "integration constraints");
@@ -312,7 +331,7 @@ lon += d*sin(course)/(111320*cos(lat));`, M.JOSIAH);
   s.addNotes("Each card becomes a line item in the test protocol. The strength of this slide is provenance: phantom speed, the advertise-once trap, the charger cutoff, and the configuration revert were all found by us, on our hardware, and every one is documented in the repository with its fix.");
 }
 
-// ============================================================ SHEET 10 · scoreboard
+// ============================================================ SHEET 11 · scoreboard
 {
   const s = pres.addSlide();
   frame(s, null, "status and next steps");
