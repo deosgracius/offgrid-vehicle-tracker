@@ -328,16 +328,18 @@ lon += d*sin(course)/(111320*cos(lat));`, M.JOSIAH);
       fontFace: MONO, color: MUT, isTextBox: true, margin: 0 });
     if (i < 4) varrow(s, 1.15, y + 0.88, 0.18, M.CANNON);
   });
-  pic(s, D3 + "p_search.jpg", 7.15, 1.2, 2.7, 2.12, "Boot state: link and GPS proven before any partner exists");
-  pic(s, D3 + "p_overall.jpg", 10.05, 1.2, 2.8, 2.02, "Live self fix decoded end to end; the gap is labeled honestly");
-  s.addShape("rect", { x: 7.15, y: 3.9, w: 5.7, h: 2.75, fill: { color: CARD }, line: { color: RULE, width: 0.75 } });
-  s.addText("THE ONE-DEVICE TEST STRATEGY", { x: 7.35, y: 4.05, w: 5.3, h: 0.3, fontSize: 11.5, bold: true,
-    charSpacing: 1, fontFace: HFONT, color: INK, isTextBox: true, margin: 0 });
-  s.addText([
-    B("These photos are the integration milestone: backend and frontend running as one firmware on real hardware, with every layer except the last one exercised."),
-    B("One device tracking itself proves four of the five layers with zero coordination cost. Every bug found here is a bug the two-vehicle test will not have to find."),
-    B("When radio two joins the channel, the dashed layer closes and the same screens fill in with a real partner. Nothing else changes.", true),
-  ], { x: 7.35, y: 4.4, w: 5.35, h: 2.2, fontSize: 10.5, fontFace: BFONT, color: "222A3F", isTextBox: true, margin: 0 });
+  pic(s, D3 + "p_overall.jpg", 7.15, 1.2, 2.7, 1.94, "Our display: ME 33.60719 -101.89643");
+  s.addShape("rect", { x: 10.0, y: 1.2, w: 2.85, h: 2.26, fill: { color: CARD }, line: { color: "1F9D68", width: 1.25 } });
+  s.addText("POSITION CROSS-CHECK", { x: 10.15, y: 1.32, w: 2.6, h: 0.3, fontSize: 10.5, bold: true,
+    charSpacing: 1, fontFace: HFONT, color: "1F9D68", isTextBox: true, margin: 0 });
+  s.addText("The fix on our display and the marker on the standard Meshtastic web client are the same position, read from the same radio by two independent programs. Agreement between clients that share no code is the accuracy check. Radio two will fill the PTR row through this same pipeline.",
+    { x: 10.15, y: 1.64, w: 2.6, h: 1.76, fontSize: 9.5, fontFace: BFONT, color: "222A3F", isTextBox: true, margin: 0 });
+  s.addText("INDEPENDENT CLIENT: MESHTASTIC WEB APP, SAME RADIO, NODE ead4 CONNECTED",
+    { x: 7.15, y: 3.58, w: 5.7, h: 0.26, fontSize: 8.5, bold: true, fontFace: MONO, color: MUT, isTextBox: true, margin: 0 });
+  s.addImage({ path: D3 + "p_map.png", x: 7.15, y: 3.86, w: 4.05, h: 2.92 });
+  s.addShape("rect", { x: 7.15, y: 3.86, w: 4.05, h: 2.92, fill: { type: "none" }, line: { color: RULE, width: 1 } });
+  s.addText("One device proves four of five layers at zero coordination cost. The dashed layer waits only for radio two; no display code changes.",
+    { x: 11.35, y: 3.86, w: 1.5, h: 2.92, fontSize: 9, fontFace: BFONT, color: MUT, isTextBox: true, margin: 0, valign: "middle" });
   s.addNotes("This sheet is the integration story: the two halves of the firmware are joined and running on real hardware. Walk the stack top to bottom, and point at the photo text that proves each layer: own GPS locked proves layer one, radio link connected proves layer two, the live coordinates prove decoding, and the clock reading Central time proves the navigation layer is deriving timezone from position. The dashed layer is the honest gap, and the display itself says it: no partner heard yet. The strategy: one device tracking itself exercises everything except the LoRa hop, so integration bugs get found cheaply before the two-vehicle test. Radio two closes the loop without changing a line of display code.");
 }
 
@@ -411,21 +413,22 @@ lon += d*sin(course)/(111320*cos(lat));`, M.JOSIAH);
   frame(s, null, "references");
   title(s, "References");
   const refs = [
-    ["[1]", "Semtech Corp., SX1276/77/78/79 LoRa Transceiver Datasheet. Demodulator SNR limit per spreading factor (SF11 = -17.5 dB), used in the sensitivity calculation on sheet 08."],
-    ["[2]", "Semtech Corp., AN1200.22, LoRa Modulation Basics. Symbol duration T_sym = 2^SF / BW, packet airtime, and processing gain."],
-    ["[3]", "Semtech Corp., SX1261/2 Transceiver Datasheet. The radio IC on the Heltec V4; sensitivity and transmit specifications."],
-    ["[4]", "Meshtastic Project Documentation, LoRa and Position Configuration (meshtastic.org/docs). Modem presets, smart broadcast, position precision, and the ~25% channel-utilization transmit limit."],
-    ["[5]", "Meshtastic Protobufs Repository (github.com/meshtastic/protobufs). The published message schema our decoder is generated from, including Position field units."],
-    ["[6]", "FCC Rules, 47 CFR 15.247. Operation in the 902 to 928 MHz ISM band."],
-    ["[7]", "ITU-R Recommendation M.1371, Automatic Identification System (AIS). Vessel reporting intervals of 2 s to 3 min; the precedent for beacon-then-animate navigation displays."],
-    ["[8]", "R. W. Sinnott, Virtues of the Haversine, Sky & Telescope, vol. 68, no. 2, p. 159, 1984. The great-circle distance formula used in nav.c."],
-    ["[9]", "Bluetooth SIG, Bluetooth Core Specification (GATT). The service and characteristic model behind the Meshtastic Client API."],
-    ["[10]", "Group 9 repository: docs/TELECOM_ANALYSIS.md, docs/ARCHITECTURE.md, docs/BLE_LINK_WALKTHROUGH.md, hardware/README.md. The project's own link budget, architecture, protocol walkthrough, and provisioning recipe."]];
+    ["[1]", "Semtech Corp., SX1276/77/78/79 LoRa Transceiver Datasheet. Demodulator SNR limit per spreading factor (SF11 = -17.5 dB), used on sheet 08.", "semtech.com/products/wireless-rf/lora-connect/sx1276"],
+    ["[2]", "Semtech Corp., AN1200.22, LoRa Modulation Basics. Symbol duration T_sym = 2^SF / BW, packet airtime, and processing gain.", "info.semtech.com/find-documentation  (search AN1200.22)"],
+    ["[3]", "Semtech Corp., SX1261/2 Transceiver Datasheet. The radio IC on the Heltec V4; sensitivity and transmit specifications.", "semtech.com/products/wireless-rf/lora-connect/sx1262"],
+    ["[4]", "Meshtastic Project Documentation, LoRa and Position Configuration. Presets, smart broadcast, position precision, the ~25% utilization limit.", "meshtastic.org/docs/configuration/radio/lora  ·  /position"],
+    ["[5]", "Meshtastic Protobufs Repository. The published message schema our decoder is generated from, including Position field units.", "github.com/meshtastic/protobufs"],
+    ["[6]", "FCC Rules, 47 CFR 15.247. Operation in the 902 to 928 MHz ISM band.", "ecfr.gov/current/title-47/part-15/section-15.247"],
+    ["[7]", "ITU-R Recommendation M.1371, Automatic Identification System (AIS). Reporting intervals of 2 s to 3 min; the beacon-then-animate precedent.", "itu.int/rec/R-REC-M.1371"],
+    ["[8]", "R. W. Sinnott, Virtues of the Haversine, Sky & Telescope, vol. 68, no. 2, p. 159, 1984. The distance formula used in nav.c.", "movable-type.co.uk/scripts/latlong.html  (implementation ref)"],
+    ["[9]", "Bluetooth SIG, Bluetooth Core Specification (GATT). The service and characteristic model behind the Meshtastic Client API.", "bluetooth.com/specifications/specs/core-specification"],
+    ["[10]", "Group 9 repository: TELECOM_ANALYSIS, ARCHITECTURE, BLE_LINK_WALKTHROUGH, hardware/README. Our link budget, architecture, and recipes.", "github.com/deosgracius/offgrid-vehicle-tracker"]];
   refs.forEach((r, i) => {
     const col = i < 5 ? 0 : 1, row = i % 5;
-    const x = 0.5 + col * 6.35, y = 1.25 + row * 1.08;
-    s.addText(r[0], { x, y, w: 0.5, h: 0.3, fontSize: 10.5, bold: true, fontFace: MONO, color: ACC, isTextBox: true, margin: 0 });
-    s.addText(r[1], { x: x + 0.55, y, w: 5.55, h: 1.02, fontSize: 10, fontFace: BFONT, color: "222A3F", isTextBox: true, margin: 0 });
+    const x = 0.5 + col * 6.35, y = 1.22 + row * 1.06;
+    s.addText(r[0], { x, y, w: 0.5, h: 0.3, fontSize: 10, bold: true, fontFace: MONO, color: ACC, isTextBox: true, margin: 0 });
+    s.addText(r[1], { x: x + 0.55, y, w: 5.55, h: 0.72, fontSize: 9.5, fontFace: BFONT, color: "222A3F", isTextBox: true, margin: 0 });
+    s.addText(r[2], { x: x + 0.55, y: y + 0.72, w: 5.55, h: 0.24, fontSize: 8, fontFace: MONO, color: "1199BD", isTextBox: true, margin: 0 });
   });
   s.addShape("line", { x: 0.5, y: 6.55, w: 12.35, h: 0, line: { color: RULE, width: 0.75 } });
   s.addText("All firmware, documentation, logs, and this deck's generator are version controlled at github.com/deosgracius/offgrid-vehicle-tracker",
