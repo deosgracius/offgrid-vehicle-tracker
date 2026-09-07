@@ -450,22 +450,23 @@ lon += d*sin(course)/(111320*cos(lat));`, M.JOSIAH);
   frame(s, null, "references");
   title(s, "References");
   const refs = [
-    ["[1]", "Semtech Corp., SX1276/77/78/79 LoRa Transceiver Datasheet. Demodulator SNR limit per spreading factor (SF11 = -17.5 dB), used on sheet 08.", "semtech.com/products/wireless-rf/lora-connect/sx1276"],
-    ["[2]", "Semtech Corp., AN1200.22, LoRa Modulation Basics. Symbol duration T_sym = 2^SF / BW, packet airtime, and processing gain.", "info.semtech.com/find-documentation  (search AN1200.22)"],
-    ["[3]", "Semtech Corp., SX1261/2 Transceiver Datasheet. The radio IC on the Heltec V4; sensitivity and transmit specifications.", "semtech.com/products/wireless-rf/lora-connect/sx1262"],
-    ["[4]", "Meshtastic Project Documentation, LoRa and Position Configuration. Presets, smart broadcast, position precision, the ~25% utilization limit.", "meshtastic.org/docs/configuration/radio/lora  ·  /position"],
-    ["[5]", "Meshtastic Protobufs Repository. The published message schema our decoder is generated from, including Position field units.", "github.com/meshtastic/protobufs"],
-    ["[6]", "FCC Rules, 47 CFR 15.247. Operation in the 902 to 928 MHz ISM band.", "ecfr.gov/current/title-47/part-15/section-15.247"],
-    ["[7]", "ITU-R Recommendation M.1371, Automatic Identification System (AIS). Reporting intervals of 2 s to 3 min; the beacon-then-animate precedent.", "itu.int/rec/R-REC-M.1371"],
-    ["[8]", "R. W. Sinnott, Virtues of the Haversine, Sky & Telescope, vol. 68, no. 2, p. 159, 1984. The distance formula used in nav.c.", "movable-type.co.uk/scripts/latlong.html  (implementation ref)"],
-    ["[9]", "Bluetooth SIG, Bluetooth Core Specification (GATT). The service and characteristic model behind the Meshtastic Client API.", "bluetooth.com/specifications/specs/core-specification"],
-    ["[10]", "Group 9 repository: TELECOM_ANALYSIS, ARCHITECTURE, BLE_LINK_WALKTHROUGH, RADIO_PHY_DEEP_DIVE, hardware/README. Our link budget, architecture, silicon walkthrough, and recipes.", "github.com/deosgracius/offgrid-vehicle-tracker"]];
+    ["[1]", "Semtech Corp., SX1276/77/78/79 LoRa Transceiver Datasheet. Demodulator SNR limit per spreading factor (SF11 = -17.5 dB), used on sheet 09.", "semtech.com/products/wireless-rf/lora-connect/sx1276", "https://www.semtech.com/products/wireless-rf/lora-connect/sx1276"],
+    ["[2]", "Semtech Corp., AN1200.22, LoRa Modulation Basics. Symbol duration T_sym = 2^SF / BW, packet airtime, and processing gain.", "info.semtech.com/find-documentation (search AN1200.22)", "https://info.semtech.com/find-documentation"],
+    ["[3]", "Semtech Corp., SX1261/2 Transceiver Datasheet. The radio IC on the Heltec V4; sensitivity and transmit specifications.", "semtech.com/products/wireless-rf/lora-connect/sx1262", "https://www.semtech.com/products/wireless-rf/lora-connect/sx1262"],
+    ["[4]", "Meshtastic Project Documentation, LoRa and Position Configuration. Presets, smart broadcast, position precision, the ~25% utilization limit.", "meshtastic.org/docs/configuration/radio/lora", "https://meshtastic.org/docs/configuration/radio/lora/"],
+    ["[5]", "Meshtastic Protobufs Repository. The published message schema our decoder is generated from, including Position field units.", "github.com/meshtastic/protobufs", "https://github.com/meshtastic/protobufs"],
+    ["[6]", "FCC Rules, 47 CFR 15.247. Operation in the 902 to 928 MHz ISM band.", "law.cornell.edu/cfr/text/47/15.247", "https://www.law.cornell.edu/cfr/text/47/15.247"],
+    ["[7]", "ITU-R Recommendation M.1371, Automatic Identification System (AIS). Reporting intervals of 2 s to 3 min; the beacon-then-animate precedent.", "itu.int/rec/R-REC-M.1371/en", "https://www.itu.int/rec/R-REC-M.1371/en"],
+    ["[8]", "R. W. Sinnott, Virtues of the Haversine, Sky & Telescope, vol. 68, no. 2, p. 159, 1984. The distance formula used in nav.c.", "movable-type.co.uk/scripts/latlong.html (implementation ref)", "https://www.movable-type.co.uk/scripts/latlong.html"],
+    ["[9]", "Bluetooth SIG, Bluetooth Core Specification (GATT). The service and characteristic model behind the Meshtastic Client API.", "bluetooth.com/specifications/specs/core-specification", "https://www.bluetooth.com/specifications/specs/core-specification/"],
+    ["[10]", "Group 9 repository: TELECOM_ANALYSIS, ARCHITECTURE, BLE_LINK_WALKTHROUGH, RADIO_PHY_DEEP_DIVE, hardware/README. Our link budget, architecture, silicon walkthrough, and recipes.", "github.com/deosgracius/offgrid-vehicle-tracker", "https://github.com/deosgracius/offgrid-vehicle-tracker"]];
   refs.forEach((r, i) => {
     const col = i < 5 ? 0 : 1, row = i % 5;
     const x = 0.5 + col * 6.35, y = 1.22 + row * 1.06;
     s.addText(r[0], { x, y, w: 0.5, h: 0.3, fontSize: 10, bold: true, fontFace: MONO, color: ACC, isTextBox: true, margin: 0 });
     s.addText(r[1], { x: x + 0.55, y, w: 5.55, h: 0.72, fontSize: 9.5, fontFace: BFONT, color: "222A3F", isTextBox: true, margin: 0 });
-    s.addText(r[2], { x: x + 0.55, y: y + 0.72, w: 5.55, h: 0.24, fontSize: 8, fontFace: MONO, color: "1199BD", isTextBox: true, margin: 0 });
+    s.addText([{ text: r[2], options: { hyperlink: { url: r[3], tooltip: r[3] } } }],
+      { x: x + 0.55, y: y + 0.72, w: 5.55, h: 0.24, fontSize: 8, fontFace: MONO, color: "1199BD", isTextBox: true, margin: 0 });
   });
   s.addShape("line", { x: 0.5, y: 6.55, w: 12.35, h: 0, line: { color: RULE, width: 0.75 } });
   s.addText("All firmware, documentation, logs, and this deck's generator are version controlled at github.com/deosgracius/offgrid-vehicle-tracker",
