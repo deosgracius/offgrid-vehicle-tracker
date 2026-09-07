@@ -1,297 +1,351 @@
+// Week 3 deck, rev C — engineering drawing-set style.
 const pptxgen = require("pptxgenjs");
 const pres = new pptxgen();
 pres.layout = "LAYOUT_WIDE"; // 13.33 x 7.5
 
-const NAVY = "1E2761", ICE = "CADCFC", WHITE = "FFFFFF", AMBER = "E58E1A";
-const MUT = "5B6B8A", CARD = "F2F6FC", GREEN = "1F9D68", CODEBG = "222A3F";
-const M = { Deo: "1199BD", Josiah: "6D4BDB", Victor: "E58E1A", Cannon: "D9488C" };
-const HDR = { fontFace: "Cambria", bold: true, color: NAVY };
-const BODY = { fontFace: "Calibri", color: "222A3F" };
+const INK = "16213D", PAPER = "FFFFFF", ACC = "E58E1A", MUT = "5E6B85";
+const RULE = "9AA7BE", CARD = "F2F5FA", CODEBG = "1B2440", ICE = "C9D8F0";
+const M = { DEO: "1199BD", JOSIAH: "6D4BDB", VICTOR: "E58E1A", CANNON: "D9488C" };
+const HFONT = "Arial", BFONT = "Arial", MONO = "Courier New";
 const D3 = "C:/Users/deogr/AppData/Local/Temp/claude/C--Users-deogr-Documents-Fall-Project-Off-Grid-Vehicle-dection-project/e8b2e8fa-1513-4aa8-a8f6-ce4fcd20e664/scratchpad/deck3/";
 const MPNG = "C:/Users/deogr/AppData/Local/Temp/claude/C--Users-deogr-Documents-Fall-Project-Off-Grid-Vehicle-dection-project/e8b2e8fa-1513-4aa8-a8f6-ce4fcd20e664/scratchpad/mermaid_png/";
+const SYS = "C:/Users/deogr/Documents/Fall Project/Off-Grid Vehicle dection project/docs/system-diagram.png";
 
-function title(s, txt) {
-  s.addText(txt, { x: 0.55, y: 0.26, w: 11.0, h: 0.7, fontSize: 28, ...HDR, isTextBox: true, margin: 0 });
+const TOTAL = 10;
+let sheetNo = 0;
+
+// Drawing frame + title-block footer on every sheet.
+function frame(s, owner, sheetTitle) {
+  sheetNo++;
+  s.background = { color: PAPER };
+  s.addShape("rect", { x: 0.18, y: 0.16, w: 12.97, h: 7.18, fill: { type: "none" }, line: { color: INK, width: 1.75 } });
+  s.addShape("line", { x: 0.18, y: 6.86, w: 12.97, h: 0, line: { color: INK, width: 1 } });
+  // footer title block
+  s.addText("GROUP 9  |  OFF-GRID VEHICLE TRACKER", { x: 0.35, y: 6.94, w: 4.6, h: 0.32, fontSize: 9,
+    fontFace: MONO, color: MUT, isTextBox: true, margin: 0 });
+  s.addText(sheetTitle.toUpperCase(), { x: 5.0, y: 6.94, w: 4.6, h: 0.32, align: "center", fontSize: 9,
+    fontFace: MONO, color: MUT, isTextBox: true, margin: 0 });
+  s.addText("SHEET " + String(sheetNo).padStart(2, "0") + "/" + TOTAL + "  REV C  2026-09-07",
+    { x: 9.7, y: 6.94, w: 3.3, h: 0.32, align: "right", fontSize: 9, fontFace: MONO, color: MUT, isTextBox: true, margin: 0 });
+  if (owner) {
+    s.addShape("rect", { x: 10.55, y: 0.38, w: 2.35, h: 0.46, fill: { color: PAPER }, line: { color: M[owner], width: 1.5 } });
+    s.addText("OWNER: " + owner, { x: 10.55, y: 0.44, w: 2.35, h: 0.34, align: "center", fontSize: 11, bold: true,
+      color: M[owner], fontFace: MONO, isTextBox: true, margin: 0 });
+  }
 }
-function presenter(s, name) {
-  s.addShape("roundRect", { x: 11.55, y: 0.34, w: 1.25, h: 0.42, rectRadius: 0.08, fill: { color: M[name] } });
-  s.addText(name, { x: 11.55, y: 0.4, w: 1.25, h: 0.3, align: "center", fontSize: 13, bold: true,
-    color: WHITE, fontFace: "Calibri", isTextBox: true, margin: 0 });
+function title(s, txt) {
+  s.addText(txt.toUpperCase(), { x: 0.5, y: 0.36, w: 9.9, h: 0.62, fontSize: 23, bold: true, charSpacing: 2,
+    fontFace: HFONT, color: INK, isTextBox: true, margin: 0 });
 }
 function codebox(s, x, y, w, h, label, code, labelColor) {
-  s.addShape("roundRect", { x, y, w, h, rectRadius: 0.07, fill: { color: CODEBG } });
-  s.addText(label, { x: x + 0.15, y: y + 0.06, w: w - 0.3, h: 0.26, fontSize: 10, bold: true,
-    color: labelColor || AMBER, fontFace: "Calibri", isTextBox: true, margin: 0 });
-  s.addText(code, { x: x + 0.15, y: y + 0.32, w: w - 0.3, h: h - 0.42, fontSize: 10,
-    fontFace: "Courier New", color: ICE, isTextBox: true, margin: 0, valign: "top" });
-}
-function varrow(s, x, y, h, color) {
-  s.addShape("line", { x, y, w: 0, h, line: { color: color || NAVY, width: 2.25, endArrowType: "triangle" } });
+  s.addShape("rect", { x, y, w, h, fill: { color: CODEBG } });
+  s.addText(label, { x: x + 0.15, y: y + 0.07, w: w - 0.3, h: 0.26, fontSize: 10, bold: true,
+    color: labelColor || ACC, fontFace: MONO, isTextBox: true, margin: 0 });
+  s.addText(code, { x: x + 0.15, y: y + 0.35, w: w - 0.3, h: h - 0.45, fontSize: 10,
+    fontFace: MONO, color: ICE, isTextBox: true, margin: 0, valign: "top" });
 }
 function harrow(s, x, y, w, color) {
-  s.addShape("line", { x, y, w, h: 0, line: { color: color || NAVY, width: 2.25, endArrowType: "triangle" } });
+  s.addShape("line", { x, y, w, h: 0, line: { color: color || INK, width: 2.25, endArrowType: "triangle" } });
+}
+function varrow(s, x, y, h, color) {
+  s.addShape("line", { x, y, w: 0, h, line: { color: color || INK, width: 2.25, endArrowType: "triangle" } });
 }
 function pic(s, path, x, y, w, h, cap) {
   s.addImage({ path, x, y, w, h });
-  if (cap) s.addText(cap, { x, y: y + h + 0.02, w, h: 0.3, fontSize: 10, italic: true, color: MUT,
-    align: "center", fontFace: "Calibri", isTextBox: true, margin: 0 });
+  s.addShape("rect", { x, y, w, h, fill: { type: "none" }, line: { color: RULE, width: 1 } });
+  if (cap) s.addText(cap, { x, y: y + h + 0.03, w, h: 0.3, fontSize: 9.5, color: MUT,
+    align: "center", fontFace: MONO, isTextBox: true, margin: 0 });
 }
+const B = (text, last) => ({ text, options: { bullet: { code: "25AA" }, breakLine: !last, paraSpaceAfter: last ? 0 : 6, indentLevel: 0 } });
 
-// ================================================== S1 · Title
+// ============================================================ SHEET 01 · COVER
 {
   const s = pres.addSlide();
-  s.background = { color: NAVY };
-  s.addText("WEEK 3 — FROM ARCHITECTURE TO A WORKING TRACKER", { x: 0.7, y: 0.8, w: 12.0, h: 0.8,
-    fontSize: 33, ...HDR, color: WHITE, isTextBox: true, margin: 0 });
-  s.addText("Off-Grid Vehicle Tracker  ·  Group 9  ·  Sponsor: Dr. Richard Gale",
-    { x: 0.7, y: 1.62, w: 11.0, h: 0.4, fontSize: 16, fontFace: "Calibri", color: ICE, isTextBox: true, margin: 0 });
-  s.addShape("roundRect", { x: 0.7, y: 2.3, w: 11.9, h: 1.15, rectRadius: 0.1, fill: { color: "2A3575" } });
-  s.addText("This week: the display shows a live partner — arrow, distance, freshness — decoded end-to-end from real radio packets. Each section: the sector's architecture, then the working hardware and the code behind it.",
-    { x: 1.0, y: 2.45, w: 11.3, h: 0.85, fontSize: 15, color: WHITE, fontFace: "Calibri", isTextBox: true, margin: 0 });
-  const roles = [
-    ["Deo", "Backend — protocol/", "BLE link · nanopb decode · TrackerState"],
-    ["Josiah", "Frontend — ui/ + nav/", "arrow math · two-page UI · dead reckoning"],
-    ["Victor", "Radio & PHY", "LoRa physics · real-time vs 10 s · antennas"],
-    ["Cannon", "Integration & Test", "constraints ledger · test protocol"]];
-  roles.forEach((r, i) => {
-    const x = 0.7 + i * 3.02;
-    s.addShape("roundRect", { x, y: 3.85, w: 2.8, h: 1.6, rectRadius: 0.09, fill: { color: "2A3575" } });
-    s.addShape("roundRect", { x, y: 3.85, w: 2.8, h: 0.1, fill: { color: M[r[0]] } });
-    s.addText(r[0], { x, y: 4.02, w: 2.8, h: 0.35, align: "center", fontSize: 16, bold: true,
-      color: WHITE, fontFace: "Calibri", isTextBox: true, margin: 0 });
-    s.addText(r[1], { x, y: 4.38, w: 2.8, h: 0.3, align: "center", fontSize: 12, bold: true,
-      color: r[0] === "Victor" ? AMBER : ICE, fontFace: "Calibri", isTextBox: true, margin: 0 });
-    s.addText(r[2], { x: x + 0.15, y: 4.7, w: 2.5, h: 0.65, align: "center", fontSize: 10,
-      color: ICE, fontFace: "Calibri", isTextBox: true, margin: 0 });
+  frame(s, null, "design review, week 3");
+  // graph-paper grid
+  for (let gx = 0.68; gx < 13.0; gx += 0.5)
+    s.addShape("line", { x: gx, y: 0.16, w: 0, h: 6.7, line: { color: "E8EDF5", width: 0.5 } });
+  for (let gy = 0.66; gy < 6.86; gy += 0.5)
+    s.addShape("line", { x: 0.18, y: gy, w: 12.97, h: 0, line: { color: "E8EDF5", width: 0.5 } });
+  s.addText("OFF-GRID VEHICLE TRACKER", { x: 0.7, y: 1.15, w: 11.9, h: 0.9, fontSize: 44, bold: true,
+    charSpacing: 3, fontFace: HFONT, color: INK, isTextBox: true, margin: 0 });
+  s.addText("WEEK 3 DESIGN REVIEW: A WORKING TRACKER, END TO END", { x: 0.72, y: 2.05, w: 11.9, h: 0.45,
+    fontSize: 17, bold: true, charSpacing: 1, fontFace: HFONT, color: ACC, isTextBox: true, margin: 0 });
+  s.addText("This week the display began showing a live vehicle: position decoded from real radio packets, an arrow computed from real navigation math, and a screen that moves every second. Each section of this review opens with its architecture, then shows the working hardware and the code behind it.",
+    { x: 0.72, y: 2.65, w: 8.3, h: 1.15, fontSize: 13, fontFace: BFONT, color: "222A3F", isTextBox: true, margin: 0 });
+  // responsibility table (revision-table style)
+  const rows = [
+    ["OWNER", "SUBSYSTEM", "SCOPE THIS WEEK"],
+    ["DEO", "Backend, protocol/", "system diagram, BLE link, decode, TrackerState"],
+    ["JOSIAH", "Frontend, ui/ and nav/", "arrow math, two-page UI, dead reckoning"],
+    ["VICTOR", "Radio and PHY", "link physics: real time versus 10 seconds"],
+    ["CANNON", "Integration and test", "the constraints ledger, test sequence"]];
+  const tbl = rows.map((r, i) => r.map((c, j) => ({
+    text: c, options: { fontSize: i === 0 ? 10 : 11.5, bold: i === 0 || j === 0,
+      fontFace: i === 0 || j === 0 ? MONO : BFONT,
+      color: i === 0 ? PAPER : (j === 0 ? (M[r[0]] || INK) : "222A3F"),
+      fill: { color: i === 0 ? INK : (i % 2 ? CARD : PAPER) }, valign: "middle" } })));
+  s.addTable(tbl, { x: 0.72, y: 4.0, w: 8.3, colW: [1.35, 2.75, 4.2], rowH: 0.42,
+    border: { type: "solid", color: RULE, pt: 0.75 } });
+  // title block, drawing style, bottom right
+  const blk = [["PROJECT", "Off-Grid Vehicle Tracker"], ["SPONSOR", "Dr. Richard Gale"],
+    ["COURSE", "Capstone Project Lab"], ["STATUS", "29% vs 19% target, ahead"],
+    ["HOURS", "60 of 768 logged"], ["DATE", "2026-09-07"]];
+  s.addShape("rect", { x: 9.55, y: 2.65, w: 3.3, h: 3.55, fill: { color: PAPER }, line: { color: INK, width: 1.25 } });
+  blk.forEach((r, i) => {
+    const y = 2.72 + i * 0.575;
+    if (i) s.addShape("line", { x: 9.55, y: y - 0.035, w: 3.3, h: 0, line: { color: RULE, width: 0.75 } });
+    s.addText(r[0], { x: 9.7, y, w: 1.25, h: 0.28, fontSize: 9, bold: true, fontFace: MONO, color: MUT, isTextBox: true, margin: 0 });
+    s.addText(r[1], { x: 9.7, y: y + 0.24, w: 3.05, h: 0.3, fontSize: 10.5, fontFace: BFONT, color: INK, isTextBox: true, margin: 0 });
   });
-  s.addText("Schedule check: 29% complete vs ~19% target at week 3 — ahead of plan · 60 h logged",
-    { x: 0.7, y: 5.95, w: 11.9, h: 0.4, fontSize: 14, italic: true, color: ICE, fontFace: "Calibri", isTextBox: true, margin: 0 });
 }
 
-// ================================================== S2 · Deo — sector diagram
+// ============================================================ SHEET 02 · DEO, complete system
 {
   const s = pres.addSlide();
-  s.background = { color: WHITE };
-  title(s, "Backend — protocol/ : The Data Spine");
-  presenter(s, "Deo");
-  s.addImage({ path: MPNG + "diag5.png", x: 0.7, y: 1.15, w: 11.9, h: 3.36 }); // firmware architecture
+  frame(s, "DEO", "complete system diagram");
+  title(s, "The Complete System on One Sheet");
+  s.addImage({ path: SYS, x: 0.5, y: 1.1, w: 5.62, h: 5.65 });
+  s.addShape("rect", { x: 0.5, y: 1.1, w: 5.62, h: 5.65, fill: { type: "none" }, line: { color: RULE, width: 1 } });
+  s.addText("READING ORDER", { x: 6.5, y: 1.2, w: 5.0, h: 0.32, fontSize: 13, bold: true, charSpacing: 2,
+    fontFace: HFONT, color: INK, isTextBox: true, margin: 0 });
   s.addText([
-    { text: "Left chain is the backend: ble_link (NimBLE central, direct-connect by NVS address) → proto_decode (nanopb) → node_table (own + partner fixes, GPS clock, re-broadcast dedupe) → writes TrackerState v2.", options: { bullet: true, breakLine: true, paraSpaceAfter: 6 } },
-    { text: "One writer, one reader, one mutex — the halves never call each other; the sim feed can replace the whole backend and the frontend cannot tell.", options: { bullet: true, breakLine: true, paraSpaceAfter: 6 } },
-    { text: "Status: live-proven. Bonded link, full config-dump handshake, positions decoding at the 10 s broadcast cadence, automatic reconnect after drops.", options: { bullet: true } },
-  ], { x: 0.7, y: 4.75, w: 12.0, h: 1.6, fontSize: 12.5, ...BODY, isTextBox: true, margin: 0 });
-  s.addNotes("Sector map first: the yellow protocol box is mine. Emphasize the single interface (TrackerState v2, mutex-protected) and that everything on the left half is now road-tested: direct connect by remembered address, Just Works encryption, drain-until-empty, duplicate re-broadcast detection for honest ages.");
+    B("Left region: one vehicle's hardware. The GNSS module feeds the Heltec radio, which drives the roof antenna. The Waveshare display sits beside it, and both share vehicle power."),
+    B("Right region: inside the display firmware. My protocol chain writes the TrackerState contract; Josiah's navigation chain reads it. One writer, one reader."),
+    B("Bottom strip: the same system seen as telecom layers. A 40 byte application payload rides a managed-flooding network onto a physical layer that decodes 15 dB below the noise floor."),
+    B("Vehicle B is an identical copy. The symmetry is the design: no server, no master, no single point of failure.", true),
+  ], { x: 6.5, y: 1.6, w: 6.1, h: 3.1, fontSize: 12.5, fontFace: BFONT, color: "222A3F", isTextBox: true, margin: 0 });
+  s.addShape("rect", { x: 6.5, y: 5.0, w: 6.1, h: 1.6, fill: { color: INK } });
+  s.addText([
+    { text: "WHY THIS SHAPE", options: { bold: true, fontSize: 12, color: ACC, fontFace: MONO, breakLine: true, paraSpaceAfter: 5 } },
+    { text: "Everything difficult about long-range radio ships pre-tested inside stock Meshtastic. The green and blue chains on the right are the only custom code in the project, and they meet at exactly one struct.", options: { color: PAPER, fontFace: BFONT } },
+  ], { x: 6.75, y: 5.15, w: 5.6, h: 1.35, fontSize: 12, isTextBox: true, margin: 0 });
+  s.addNotes("Open with the whole system so every later sheet has a home. Walk left region (hardware per vehicle), right region (firmware split with TrackerState as the single interface), bottom strip (telecom layers). Close on symmetry: vehicle B is identical, nothing is a server.");
 }
 
-// ================================================== S3 · Deo — the connection in code
+// ============================================================ SHEET 03 · DEO, backend architecture
 {
   const s = pres.addSlide();
-  s.background = { color: WHITE };
-  title(s, "How the Pieces Connect — the Actual Code Path");
-  presenter(s, "Deo");
-  codebox(s, 0.55, 1.2, 6.0, 1.5, "ble_link.cpp — drain the radio's GATT queue",
+  frame(s, "DEO", "backend architecture");
+  title(s, "Backend: the Data Spine");
+  s.addImage({ path: MPNG + "diag5.png", x: 0.65, y: 1.15, w: 11.9, h: 3.36 });
+  s.addShape("rect", { x: 0.65, y: 1.15, w: 11.9, h: 3.36, fill: { type: "none" }, line: { color: RULE, width: 1 } });
+  s.addText([
+    B("The left chain is the backend. ble_link connects directly to the radio's remembered address, encrypts, subscribes, and drains the message queue. proto_decode turns each binary frame into named fields. node_table keeps both vehicles' fixes with honest timestamps, then publishes TrackerState."),
+    B("The contract is version 2: both fixes now carry speed and age, and the struct carries the GPS wall clock that drives the on-screen time."),
+    B("Status: live and road-tested. The link survives drops and reconnects on its own, positions decode at the 10 second broadcast cadence, and stale re-broadcasts can no longer masquerade as fresh data.", true),
+  ], { x: 0.65, y: 4.75, w: 12.0, h: 1.85, fontSize: 12.5, fontFace: BFONT, color: "222A3F", isTextBox: true, margin: 0 });
+  s.addNotes("Zoom from sheet 02 into the firmware. Emphasize the single mutex-protected interface and that the whole left chain is proven on the road, not the bench: automatic reconnection, duplicate re-broadcast detection for honest ages, and the GPS clock guard.");
+}
+
+// ============================================================ SHEET 04 · DEO, code path
+{
+  const s = pres.addSlide();
+  frame(s, "DEO", "backend code path");
+  title(s, "How the Pieces Connect in Code");
+  codebox(s, 0.5, 1.15, 6.05, 1.5, "ble_link.cpp  drain the radio's GATT queue",
 `for (;;) {
   NimBLEAttValue v = s_fromRadio->readValue();
   if (v.size() == 0) break;      // queue empty
   proto_decode_from_radio(v.data(), v.size());
-}`, M.Deo);
-  codebox(s, 6.9, 1.2, 5.9, 1.5, "proto_decode.cpp — bytes -> named fields (nanopb)",
+}`, M.DEO);
+  codebox(s, 6.95, 1.15, 5.9, 1.5, "proto_decode.cpp  bytes to named fields",
 `if (pb_decode(&is, meshtastic_Position_fields, &pos))
   node_table_position(pkt->from,
-      pos->latitude_i, pos->longitude_i, ...,
-      pos->ground_speed, pos->time);`, M.Deo);
-  varrow(s, 3.55, 2.7, 0.4, M.Deo);
-  varrow(s, 9.85, 2.7, 0.4, M.Deo);
-  codebox(s, 0.55, 3.1, 6.0, 1.55, "node_table.cpp — publish the contract (1 Hz)",
+      pos->latitude_i, pos->longitude_i,
+      pos->ground_speed, pos->time);`, M.DEO);
+  varrow(s, 3.5, 2.65, 0.38, M.DEO);
+  varrow(s, 9.9, 2.65, 0.38, M.DEO);
+  codebox(s, 0.5, 3.03, 6.05, 1.55, "node_table.cpp  publish the contract, 1 Hz",
 `TrackerState st;
 st.self = s_self.fix;   st.partner = s_partner.fix;
 st.ble_connected = connected;
 st.utc_epoch = s_utc_epoch;      // GPS wall clock
-tracker_store_set(&st);          // the ONE writer`, M.Deo);
-  codebox(s, 6.9, 3.1, 5.9, 1.55, "ui_render.cpp — frontend picks it up (2 Hz)",
+tracker_store_set(&st);          // the ONE writer`, M.DEO);
+  codebox(s, 6.95, 3.03, 5.9, 1.55, "ui_render.cpp  frontend picks it up, 2 Hz",
 `tracker_store_get(&st);          // the ONE reader
 dr_apply(&st);   // dead-reckon fixes forward
 NavOutput nav = nav_compute(&st);
-// -> arrow angle, distance, ages, clock`, M.Josiah);
-  harrow(s, 6.55, 3.87, 0.35, NAVY);
-  s.addText("mutex boundary", { x: 5.65, y: 4.1, w: 2.2, h: 0.26, fontSize: 9.5, bold: true, color: MUT,
-    align: "center", fontFace: "Calibri", isTextBox: true, margin: 0 });
-  s.addShape("roundRect", { x: 0.55, y: 5.05, w: 12.25, h: 1.75, rectRadius: 0.1, fill: { color: CARD }, line: { color: "C9D9EE", width: 1 } });
+// arrow angle, distance, ages, clock`, M.JOSIAH);
+  harrow(s, 6.58, 3.8, 0.34, INK);
+  s.addText("MUTEX BOUNDARY", { x: 5.55, y: 4.02, w: 2.4, h: 0.24, fontSize: 8.5, bold: true, color: MUT,
+    align: "center", fontFace: MONO, isTextBox: true, margin: 0 });
+  s.addShape("rect", { x: 0.5, y: 4.95, w: 12.35, h: 1.7, fill: { color: CARD }, line: { color: RULE, width: 0.75 } });
   s.addText([
-    { text: "Four files, one direction of flow, one shared struct. The blue boxes are backend (Deo), the purple box is frontend (Josiah) — they meet only at tracker_store_set / tracker_store_get, which take the mutex internally so locked access is the only possible access.", options: { breakLine: true, paraSpaceAfter: 8 } },
-    { text: "Field-hardened this week: km/h→m/s wire units, GPS-jitter speed deadband (<4.5 km/h reads 0), bit-identical re-broadcast detection so a radio with no GPS lock cannot reset the data age, and a monotonic guard so the clock never runs backwards.", options: {} },
-  ], { x: 0.85, y: 5.25, w: 11.7, h: 1.45, fontSize: 12.5, ...BODY, isTextBox: true, margin: 0 });
-  s.addNotes("Walk the arrows: GATT read loop until empty (one notify can mean many frames); nanopb decode generated from Meshtastic's own schema; node_table publishes once a second; UI reads its own snapshot at 2 Hz, dead-reckons it forward, computes the arrow. The bottom card is the week's debugging harvest - every item came from a real drive test.");
+    { text: "Four files, one direction of flow, one shared struct. The teal boxes are backend and the purple box is frontend. They meet only at the store functions, which take the mutex internally, so locked access is the only possible access.", options: { fontFace: BFONT, breakLine: true, paraSpaceAfter: 7 } },
+    { text: "Hardened by this week's road tests: wire speed converted from km/h at ingestion, a deadband that reads GPS jitter as zero, duplicate re-broadcast detection that keeps data ages honest, and a clock that can never run backwards.", options: { fontFace: BFONT } },
+  ], { x: 0.8, y: 5.12, w: 11.75, h: 1.4, fontSize: 12.5, color: "222A3F", isTextBox: true, margin: 0 });
+  s.addNotes("Read the arrows aloud: the GATT loop reads until the radio reports empty; nanopb decodes with code generated from Meshtastic's own schema; node_table publishes once per second; the UI copies its own snapshot at 2 Hz, projects it forward, and computes the arrow. Every hardening item in the bottom card came out of an actual drive test.");
 }
 
-// ================================================== S4 · Josiah — sector diagram + math
+// ============================================================ SHEET 05 · JOSIAH, frontend architecture
 {
   const s = pres.addSlide();
-  s.background = { color: WHITE };
-  title(s, "Frontend — ui/ + nav/ : From Struct to Arrow");
-  presenter(s, "Josiah");
-  // drawn sector flow
+  frame(s, "JOSIAH", "frontend architecture");
+  title(s, "Frontend: From Struct to Arrow");
   function fbox(x, y, w, h, main, sub, line) {
-    s.addShape("roundRect", { x, y, w, h, rectRadius: 0.07, fill: { color: WHITE }, line: { color: line || M.Josiah, width: 1.5 } });
+    s.addShape("rect", { x, y, w, h, fill: { color: PAPER }, line: { color: line || M.JOSIAH, width: 1.5 } });
     s.addText([{ text: main, options: { bold: true, breakLine: true } },
       { text: sub, options: { fontSize: 9.5, color: MUT } }],
-      { x: x + 0.08, y, w: w - 0.16, h, fontSize: 11.5, fontFace: "Calibri", color: NAVY,
+      { x: x + 0.08, y, w: w - 0.16, h, fontSize: 11.5, fontFace: BFONT, color: INK,
         isTextBox: true, margin: 0, align: "center", valign: "middle" });
   }
-  fbox(0.55, 1.3, 2.3, 0.95, "TrackerState v2", "snapshot copy (mutex)", NAVY);
-  harrow(s, 2.85, 1.77, 0.5, M.Josiah);
-  fbox(3.35, 1.3, 2.4, 0.95, "dr_apply()", "dead reckoning: project fixes fwd");
-  harrow(s, 5.75, 1.77, 0.5, M.Josiah);
-  fbox(6.25, 1.3, 2.4, 0.95, "nav_compute()", "distance · bearing · arrow");
-  harrow(s, 8.65, 1.77, 0.5, M.Josiah);
-  fbox(9.15, 1.3, 3.5, 0.95, "render @ 2 Hz", "compass page ⇄ status page (KEY tap) · hold = reset");
-  s.addText("The nav math (nav.c — unit-tested, 12/12 native tests pass):", { x: 0.55, y: 2.55, w: 8.0, h: 0.35, fontSize: 14, ...HDR, isTextBox: true, margin: 0 });
-  codebox(s, 0.55, 2.95, 6.0, 1.35, "nav.c — the arrow in three lines",
-`d       = haversine(self, partner);      // meters
-bearing = initial_bearing(self, partner); // deg true
-arrow   = wrap180(bearing - self.course); // 0 = ahead`, M.Josiah);
-  codebox(s, 6.9, 2.95, 5.9, 1.35, "dead_reckon.c — 1 Hz feel between 10 s fixes",
-`d = speed * min(age, 120);   // meters traveled
+  fbox(0.5, 1.25, 2.3, 0.95, "TrackerState v2", "snapshot copy under mutex", INK);
+  harrow(s, 2.8, 1.72, 0.5, M.JOSIAH);
+  fbox(3.3, 1.25, 2.4, 0.95, "dr_apply()", "project both fixes forward");
+  harrow(s, 5.7, 1.72, 0.5, M.JOSIAH);
+  fbox(6.2, 1.25, 2.4, 0.95, "nav_compute()", "distance, bearing, arrow");
+  harrow(s, 8.6, 1.72, 0.5, M.JOSIAH);
+  fbox(9.1, 1.25, 3.6, 0.95, "render at 2 Hz", "compass page and status page, KEY toggles, hold resets");
+  codebox(s, 0.5, 2.55, 6.05, 1.35, "nav.c  the arrow in three lines",
+`d       = haversine(self, partner);       // meters
+bearing = initial_bearing(self, partner);  // deg
+arrow   = wrap180(bearing - self.course);  // 0 = ahead`, M.JOSIAH);
+  codebox(s, 6.95, 2.55, 5.9, 1.35, "dead_reckon.c  1 Hz motion between fixes",
+`d = speed * min(age, 120);    // meters traveled
 lat += d*cos(course)/111320;
-lon += d*sin(course)/(111320*cos(lat));`, M.Josiah);
+lon += d*sin(course)/(111320*cos(lat));`, M.JOSIAH);
   s.addText([
-    { text: "Heading comes from GPS course-over-ground — no magnetometer (unreliable inside a steel cab). Below 5 mph the arrow falls back to a north-up compass rose: course is noise when parked.", options: { bullet: true, breakLine: true, paraSpaceAfter: 6 } },
-    { text: "Every element is state-driven from the struct: CHANGE COURSE engages after 5 s off-course and clears on recovery; blinker chevrons show turn direction; STALE banner past 120 s; the clock derives its timezone from position.", options: { bullet: true } },
-  ], { x: 0.55, y: 4.55, w: 12.2, h: 1.3, fontSize: 12.5, ...BODY, isTextBox: true, margin: 0 });
-  s.addShape("roundRect", { x: 0.55, y: 6.0, w: 12.25, h: 0.85, rectRadius: 0.1, fill: { color: NAVY } });
-  s.addText("Dead reckoning is why the screen feels live: measurements arrive every 10 s, but the display re-projects both vehicles every second along their last course and speed — and every real fix snaps it back to truth.",
-    { x: 0.85, y: 6.12, w: 11.7, h: 0.65, fontSize: 12.5, color: WHITE, fontFace: "Calibri", isTextBox: true, margin: 0, valign: "middle" });
-  s.addNotes("Sector flow left to right, then the two code fragments that do all the work. Emphasize testability: nav.c and dead_reckon.c are pure C, unit-tested on the laptop with no hardware (12/12 passing).");
+    B("Heading comes from GPS course over ground. A magnetometer would be unreliable inside a steel cab, and below 5 mph the arrow falls back to a north-up compass rose because course is noise when parked."),
+    B("Every screen element is state-driven from the struct. The CHANGE COURSE banner engages after five seconds off course and clears on recovery, chevrons show the turn direction, the STALE banner appears past 120 seconds, and the clock derives its timezone from position."),
+    B("Both files are pure C with no hardware dependencies, unit-tested on a laptop: 12 of 12 native tests pass.", true),
+  ], { x: 0.5, y: 4.15, w: 12.35, h: 1.55, fontSize: 12.5, fontFace: BFONT, color: "222A3F", isTextBox: true, margin: 0 });
+  s.addShape("rect", { x: 0.5, y: 5.85, w: 12.35, h: 0.85, fill: { color: INK } });
+  s.addText("Dead reckoning is why the screen feels live. Measurements arrive every ten seconds, the display re-projects both vehicles every second along their last course and speed, and each real fix snaps the estimate back to truth.",
+    { x: 0.8, y: 5.97, w: 11.75, h: 0.65, fontSize: 12.5, color: PAPER, fontFace: BFONT, isTextBox: true, margin: 0, valign: "middle" });
+  s.addNotes("Sector flow left to right, then the two fragments that do all the work. Testability is the design win: nav.c and dead_reckon.c run on the laptop with zero hardware, which is how the whole UI was built before the radio link existed.");
 }
 
-// ================================================== S5 · Josiah — the UI live (photos)
+// ============================================================ SHEET 06 · JOSIAH, photos
 {
   const s = pres.addSlide();
-  s.background = { color: WHITE };
+  frame(s, "JOSIAH", "the ui on real packets");
   title(s, "The UI, Running on Real Packets");
-  presenter(s, "Josiah");
-  pic(s, D3 + "p_compass.jpg", 0.55, 1.2, 4.4, 3.63, "Driving view: partner 2.41 mi · CHANGE COURSE + turn chevron · age 15 s");
-  pic(s, D3 + "p_stopped.jpg", 5.25, 1.2, 4.35, 2.85, "Stopped → north-up rose fallback (course is noise at 0 mph)");
-  pic(s, D3 + "p_close.jpg", 5.25, 4.5, 3.4, 2.48, "Close range: 0.2 mi, oversized arrow");
-  pic(s, D3 + "p_status.jpg", 9.85, 1.2, 2.95, 1.99, "Status page (KEY tap): live ME/PTR coordinates");
-  s.addShape("roundRect", { x: 9.85, y: 3.6, w: 2.95, h: 3.3, rectRadius: 0.1, fill: { color: CARD }, line: { color: "C9D9EE", width: 1 } });
+  pic(s, D3 + "p_compass.jpg", 0.5, 1.2, 4.35, 3.59, "Driving view. Partner 2.41 mi, CHANGE COURSE with turn chevron, age 15 s");
+  pic(s, D3 + "p_close.jpg", 0.85, 5.35, 1.72, 1.25, "Close range, 0.2 mi");
+  pic(s, D3 + "p_stopped.jpg", 5.15, 1.2, 4.3, 2.81, "Stopped: automatic north-up rose fallback");
+  pic(s, D3 + "p_status.jpg", 5.15, 4.42, 3.15, 2.12, "Status page: live ME and PTR coordinates");
+  s.addShape("rect", { x: 9.75, y: 1.2, w: 3.1, h: 5.5, fill: { color: CARD }, line: { color: RULE, width: 0.75 } });
+  s.addText("WHY THESE SHOTS MATTER", { x: 9.95, y: 1.35, w: 2.7, h: 0.55, fontSize: 12, bold: true, charSpacing: 1,
+    fontFace: HFONT, color: INK, isTextBox: true, margin: 0 });
   s.addText([
-    { text: "Why these shots matter", options: { bold: true, fontSize: 13, color: NAVY.toString(), breakLine: true, paraSpaceAfter: 6 } },
-    { text: "Every value on these screens arrived by radio and was decoded by our stack — no simulator.", options: { bullet: true, breakLine: true, paraSpaceAfter: 5 } },
-    { text: "Reflective LCD: readable in direct sun, sharper in more light — the opposite of a phone.", options: { bullet: true, breakLine: true, paraSpaceAfter: 5 } },
-    { text: "age / updated-ago is the honesty metric: the driver always knows how fresh the data is.", options: { bullet: true } },
-  ], { x: 10.05, y: 3.75, w: 2.6, h: 3.0, fontSize: 11, ...BODY, isTextBox: true, margin: 0 });
-  s.addNotes("All four photos are the real display running on decoded radio packets. Point out the state machine at work: banner + chevron in the driving view, automatic rose fallback when stopped, the diagnostic page with raw coordinates for debugging.");
+    B("Every value on these screens arrived by radio and was decoded by our own stack. There is no simulator in these photos."),
+    B("The reflective panel gets sharper in more light, which is the opposite of a phone. It is built for a dashboard in the sun."),
+    B("The age readout is the honesty metric. The driver always knows how fresh the information is, and a stale ghost says so."),
+    B("The banner, the chevron, and the rose fallback are all state machines reacting to live data.", true),
+  ], { x: 9.95, y: 1.95, w: 2.7, h: 4.6, fontSize: 11, fontFace: BFONT, color: "222A3F", isTextBox: true, margin: 0 });
+  s.addNotes("All four photos show the real display on decoded radio packets. Point at the state machine working: banner and chevron in the driving view, rose fallback when stopped, and the diagnostic page with raw coordinates that we use for debugging.");
 }
 
-// ================================================== S6 · Victor — sector + hardware
+// ============================================================ SHEET 07 · VICTOR, radio
 {
   const s = pres.addSlide();
-  s.background = { color: WHITE };
-  title(s, "Radio & PHY — the Long-Range Link");
-  presenter(s, "Victor");
-  s.addText("Radio node — Heltec V4 (stock Meshtastic)", { x: 0.55, y: 1.1, w: 8.0, h: 0.32, fontSize: 13, ...HDR, isTextBox: true, margin: 0 });
-  s.addImage({ path: MPNG + "diag2.png", x: 0.55, y: 1.45, w: 7.6, h: 1.55 });
-  pic(s, D3 + "p_rig.jpg", 8.45, 1.1, 2.0, 2.67, "The rig: radio + 915 MHz antenna");
-  pic(s, D3 + "p_oled.jpg", 10.65, 1.1, 2.15, 1.13, "OLED: 9 sats · ChUtil 0%");
+  frame(s, "VICTOR", "radio and phy");
+  title(s, "Radio and PHY: the Long-Range Link");
+  s.addText("RADIO NODE, HELTEC V4 RUNNING STOCK MESHTASTIC", { x: 0.5, y: 1.08, w: 8.0, h: 0.3, fontSize: 11, bold: true,
+    charSpacing: 1, fontFace: HFONT, color: INK, isTextBox: true, margin: 0 });
+  s.addImage({ path: MPNG + "diag2.png", x: 0.5, y: 1.42, w: 7.6, h: 1.55 });
+  s.addShape("rect", { x: 0.5, y: 1.42, w: 7.6, h: 1.55, fill: { type: "none" }, line: { color: RULE, width: 1 } });
+  pic(s, D3 + "p_rig.jpg", 8.4, 1.08, 1.95, 2.6, "The rig with 915 MHz antenna");
+  pic(s, D3 + "p_oled.jpg", 10.55, 1.08, 2.25, 1.18, "OLED: 9 satellites, ChUtil 0%");
   s.addText([
-    { text: "LONG_FAST preset: SF11 · BW 250 kHz · FEC 4/5 · 915 MHz ISM · AES-256 private channel (position_precision 32 — full resolution).", options: { bullet: true, breakLine: true, paraSpaceAfter: 5 } },
-    { text: "Smart broadcast: every 10 s / 20 m while moving, 60 s parked; GPS refresh 10 s so every broadcast carries a NEW fix.", options: { bullet: true, breakLine: true, paraSpaceAfter: 5 } },
-    { text: "The OLED is the free field debugger: satellites, nodes heard, channel utilization, RSSI of last packet.", options: { bullet: true } },
-  ], { x: 0.55, y: 3.25, w: 7.7, h: 1.7, fontSize: 12.5, ...BODY, isTextBox: true, margin: 0 });
-  s.addShape("roundRect", { x: 0.55, y: 5.1, w: 12.25, h: 1.7, rectRadius: 0.1, fill: { color: "FDF1E2" }, line: { color: AMBER, width: 1.25 } });
+    B("Modulation is the LONG_FAST preset: spreading factor 11 over 250 kHz with rate 4/5 forward error correction, in the 915 MHz ISM band, on a private AES-256 channel at full position precision."),
+    B("Smart broadcast sends every 10 seconds or 20 meters while moving and every 60 seconds parked. GPS refresh also runs at 10 seconds, so every broadcast carries a genuinely new fix."),
+    B("The radio's own OLED is a free field debugger. It shows satellites, nodes heard, channel utilization, and the signal strength of the last packet.", true),
+  ], { x: 0.5, y: 3.25, w: 7.7, h: 1.9, fontSize: 12.5, fontFace: BFONT, color: "222A3F", isTextBox: true, margin: 0 });
+  s.addShape("rect", { x: 0.5, y: 5.3, w: 12.35, h: 1.4, fill: { color: "FDF3E3" }, line: { color: ACC, width: 1.25 } });
   s.addText([
-    { text: "Provisioning discipline (hardware/README.md)", options: { bold: true, fontSize: 13, color: "B06207", breakLine: true, paraSpaceAfter: 5 } },
-    { text: "Radio #2 must join with the exact channel URL (embeds the AES key + precision) or the radios cannot decrypt each other. Two documented traps: reboot-triggering CLI writes silently revert (port-close resets the chip mid-save — verify every setting), and identical ESP32-S3 boards demand explicit upload ports when flashing.", options: {} },
-  ], { x: 0.85, y: 5.25, w: 11.7, h: 1.45, fontSize: 12, ...BODY, isTextBox: true, margin: 0 });
-  s.addNotes("Radio sector: hardware diagram, then the configuration that came out of three road tests: 10 s / 20 m smart broadcast with 10 s GPS refresh, full-precision positions on the private AES channel. The amber card is the provisioning recipe for radio #2 - the channel URL is the crown jewels.");
+    { text: "PROVISIONING DISCIPLINE (hardware/README.md)", options: { bold: true, fontSize: 11, color: "B06207", fontFace: MONO, breakLine: true, paraSpaceAfter: 5 } },
+    { text: "Radio number two must join with the exact channel URL, which embeds the encryption key. Two traps are documented from experience: settings that trigger a reboot can silently revert when written over the CLI, so every write is read back and verified, and identical boards demand explicit upload ports when flashing.", options: { fontFace: BFONT } },
+  ], { x: 0.8, y: 5.44, w: 11.75, h: 1.15, fontSize: 12, color: "222A3F", isTextBox: true, margin: 0 });
+  s.addNotes("Hardware diagram first, then the configuration that three road tests produced: 10 second smart broadcast matched by 10 second GPS refresh on a full-precision private channel. The amber card is the recipe that makes radio two a fifteen-minute job instead of a rediscovery project.");
 }
 
-// ================================================== S7 · Victor — the math
+// ============================================================ SHEET 08 · VICTOR, physics
 {
   const s = pres.addSlide();
-  s.background = { color: WHITE };
-  title(s, "Real Time vs 10 Seconds — the Physics");
-  presenter(s, "Victor");
+  frame(s, "VICTOR", "link physics");
+  title(s, "Real Time versus 10 Seconds: the Physics");
   function eq(y, label, img, iw, ih) {
-    s.addText(label, { x: 0.55, y, w: 2.6, h: 0.55, fontSize: 11.5, bold: true, color: NAVY,
-      fontFace: "Calibri", isTextBox: true, margin: 0, valign: "middle" });
-    s.addImage({ path: D3 + img, x: 3.3, y: y + 0.02, w: iw, h: ih });
+    s.addText(label, { x: 0.5, y, w: 2.7, h: 0.55, fontSize: 11, bold: true, color: INK,
+      fontFace: MONO, isTextBox: true, margin: 0, valign: "middle" });
+    s.addImage({ path: D3 + img, x: 3.35, y: y + 0.02, w: iw, h: ih });
   }
-  // aspect ratios: airtime 2192x115, util 2555x118, sens 2653x90, dr 1757x101, latency 2481x90
-  eq(1.25, "1 · Airtime per position", "eq_airtime.png", 8.9, 0.47);
-  eq(2.05, "2 · Channel utilization", "eq_util.png", 9.3, 0.43);
-  eq(2.85, "3 · Sensitivity (15 dB below noise)", "eq_sens.png", 9.3, 0.32);
-  eq(3.6, "4 · Info latency vs sample period", "eq_latency.png", 9.3, 0.34);
-  eq(4.35, "5 · Dead reckoning fills the gap", "eq_dr.png", 6.9, 0.4);
-  s.addShape("roundRect", { x: 0.55, y: 5.25, w: 12.25, h: 1.6, rectRadius: 0.1, fill: { color: NAVY } });
+  eq(1.2, "EQ 1  AIRTIME", "eq_airtime.png", 8.9, 0.47);
+  eq(2.0, "EQ 2  UTILIZATION", "eq_util.png", 9.3, 0.43);
+  eq(2.8, "EQ 3  SENSITIVITY", "eq_sens.png", 9.3, 0.32);
+  eq(3.55, "EQ 4  LATENCY", "eq_latency.png", 9.3, 0.34);
+  eq(4.3, "EQ 5  DEAD RECKONING", "eq_dr.png", 6.9, 0.4);
+  s.addShape("rect", { x: 0.5, y: 5.2, w: 12.35, h: 1.5, fill: { color: INK } });
   s.addText([
-    { text: "The verdict", options: { bold: true, fontSize: 13.5, color: AMBER, breakLine: true, paraSpaceAfter: 5 } },
-    { text: "Information reaches the driver ~1 s after it exists (eq. 4) — that IS real time. But a new measurement can only be taken every 10 s, because each broadcast costs 0.5 s of shared airtime (eq. 1–2): at 1 Hz two vehicles would demand 100% of the channel. The range comes from decoding 15 dB below the noise floor (eq. 3) — and the 10 s gaps are filled at 1 Hz by projection (eq. 5). Rate and range are the same currency; we spent it on kilometers.", options: { color: WHITE } },
-  ], { x: 0.85, y: 5.38, w: 11.7, h: 1.4, fontSize: 12, fontFace: "Calibri", isTextBox: true, margin: 0 });
-  s.addNotes("This is the slide that answers 'why not every second'. Walk eq 1: symbol time 2^SF/BW, SF11 means 2048-chip symbols, ~0.5 s per position packet. Eq 2: two vehicles at 1 Hz = 100% channel = collapse; at 10 s it is 10%, healthy. Eq 3: the same spreading factor buys -131 dBm sensitivity, 15 dB below thermal noise - that is where the kilometers come from. Eq 4: latency ~1 s (airtime + BLE + render) - the system IS real-time in information delay; 10 s is the sampling period. Eq 5: dead reckoning projects both vehicles at 1 Hz between fixes. AIS ships beacon at 2-30 s and every chartplotter animates between reports - same trick.");
+    { text: "THE VERDICT", options: { bold: true, fontSize: 12, color: ACC, fontFace: MONO, breakLine: true, paraSpaceAfter: 5 } },
+    { text: "Information reaches the driver about one second after it exists, which is real time by any useful definition. A new measurement can only be taken every ten seconds because each broadcast costs half a second of shared airtime: at one hertz, two vehicles would demand the entire channel. The same spreading factor that makes packets slow lets the receiver decode 15 dB below the noise floor, and that is where the kilometers come from. Dead reckoning fills the gaps at one hertz. Rate and range are the same currency, and we spent it on range.", options: { color: PAPER, fontFace: BFONT } },
+  ], { x: 0.8, y: 5.32, w: 11.75, h: 1.3, fontSize: 11.5, isTextBox: true, margin: 0 });
+  s.addNotes("This sheet answers the question everyone asks: why not every second. Equation 1: at spreading factor 11 each symbol is 2048 chips, so one position costs about half a second of air. Equation 2: two vehicles at one hertz would occupy 100 percent of the channel; at ten seconds they occupy ten percent. Equation 3: the same slowness buys sensitivity of minus 131 dBm, fifteen decibels below thermal noise, which is the entire range budget. Equation 4: actual information latency is about one second. Equation 5: the display projects both vehicles forward every second between fixes. Marine AIS beacons every 2 to 30 seconds and every chartplotter animates between reports; we are in good company.");
 }
 
-// ================================================== S8 · Cannon — constraints
+// ============================================================ SHEET 09 · CANNON, constraints
 {
   const s = pres.addSlide();
-  s.background = { color: WHITE };
-  title(s, "Integration Constraints — the Ledger");
-  presenter(s, "Cannon");
-  s.addImage({ path: MPNG + "diag1.png", x: 0.55, y: 1.1, w: 6.3, h: 2.16 }); // system context
-  s.addText("Every constraint below is bench- or road-verified, not theoretical — each one shaped the design.",
-    { x: 7.1, y: 1.25, w: 5.6, h: 0.9, fontSize: 13, italic: true, color: MUT, fontFace: "Calibri", isTextBox: true, margin: 0 });
-  s.addText("Integration test sequence: radio #2 provisioning → bench two-radio decode → two-vehicle drive test → range characterization.",
-    { x: 7.1, y: 2.2, w: 5.6, h: 1.0, fontSize: 13, bold: true, color: NAVY, fontFace: "Calibri", isTextBox: true, margin: 0 });
+  frame(s, "CANNON", "integration constraints");
+  title(s, "Integration Constraints: the Ledger");
+  s.addImage({ path: MPNG + "diag1.png", x: 0.5, y: 1.1, w: 6.2, h: 2.12 });
+  s.addShape("rect", { x: 0.5, y: 1.1, w: 6.2, h: 2.12, fill: { type: "none" }, line: { color: RULE, width: 1 } });
+  s.addText("Every constraint below was discovered on the bench or on the road, and each one shaped the design. None are theoretical.",
+    { x: 7.0, y: 1.2, w: 5.75, h: 0.85, fontSize: 12.5, fontFace: BFONT, color: "222A3F", isTextBox: true, margin: 0 });
+  s.addText("TEST SEQUENCE: provision radio 2, bench two-radio decode, two-vehicle drive test, range characterization.",
+    { x: 7.0, y: 2.15, w: 5.75, h: 0.95, fontSize: 12, bold: true, fontFace: MONO, color: INK, isTextBox: true, margin: 0 });
   const cons = [
-    ["RADIO / PHY", "0.5 s airtime per packet → ≥10 s cadence · ~25% utilization cap · region US must be set or TX is disabled · roof antenna is the #1 range factor"],
-    ["GPS", "needs sky view (windshield works, desks don't) · cold start = minutes · indoor multipath fakes 1–3 km/h phantom speed → deadband · fix rate must match broadcast rate"],
-    ["BLE LINK", "radio advertises ONLY from boot until first disconnect → power both together (ignition-on) · exactly ONE client at a time — a phone app or USB CLI steals/mutes the link"],
-    ["DISPLAY", "1-bit reflective panel: no grayscale, needs ambient light at night (edge-light planned) · 2 Hz full-frame redraw budget"],
-    ["POWER", "cheap 12 V→USB adapters cut off on the radio's low draw — validate every adapter · both units must share vehicle power timing"],
-    ["PROVISIONING", "channel URL (AES key + precision) must match on every radio · node IDs derive from MAC — survive reflashes · every config write must be read back and verified"]];
+    ["RADIO / PHY", "Half a second of airtime per packet caps cadence at ten seconds. Utilization must stay under about 25%. The region must be set or transmit is disabled. The roof antenna is the single biggest range factor."],
+    ["GPS", "Needs sky view: a windshield works, a desk does not. Cold start takes minutes. Indoor multipath fakes small phantom speeds, which the deadband removes. Fix rate must match broadcast rate."],
+    ["BLE LINK", "The radio advertises only from boot until its first disconnect, so both units power up together. Exactly one client at a time: a phone app or USB session will take or mute the link."],
+    ["DISPLAY", "A one-bit reflective panel has no grayscale and needs ambient light at night; edge lighting is planned. The redraw budget is two full frames per second."],
+    ["POWER", "Cheap 12 volt USB adapters cut off on the radio's low current draw, so every adapter gets validated. Both units must share the vehicle's power timing."],
+    ["PROVISIONING", "The channel URL carrying the encryption key must match on every radio. Node identities derive from the MAC address and survive reflashes. Every configuration write is read back and verified."]];
   cons.forEach((c, i) => {
-    const x = 0.55 + (i % 3) * 4.18, y = 3.5 + Math.floor(i / 3) * 1.75;
-    s.addShape("roundRect", { x, y, w: 3.98, h: 1.6, rectRadius: 0.08, fill: { color: CARD }, line: { color: M.Cannon, width: 1.25 } });
-    s.addText(c[0], { x: x + 0.15, y: y + 0.08, w: 3.7, h: 0.28, fontSize: 11.5, bold: true, color: M.Cannon,
-      fontFace: "Calibri", isTextBox: true, margin: 0 });
-    s.addText(c[1], { x: x + 0.15, y: y + 0.38, w: 3.7, h: 1.16, fontSize: 9.5, ...BODY, isTextBox: true, margin: 0 });
+    const x = 0.5 + (i % 3) * 4.2, y = 3.45 + Math.floor(i / 3) * 1.68;
+    s.addShape("rect", { x, y, w: 4.0, h: 1.56, fill: { color: CARD }, line: { color: M.CANNON, width: 1.25 } });
+    s.addText(c[0], { x: x + 0.14, y: y + 0.07, w: 3.7, h: 0.26, fontSize: 10.5, bold: true, color: M.CANNON,
+      fontFace: MONO, isTextBox: true, margin: 0 });
+    s.addText(c[1], { x: x + 0.14, y: y + 0.36, w: 3.74, h: 1.16, fontSize: 9.5, fontFace: BFONT, color: "222A3F", isTextBox: true, margin: 0 });
   });
-  s.addNotes("Cannon's role: every one of these constraints becomes a test-protocol line item. The strongest point: none are guesses - phantom speed, the advertise-once trap, the charger cutoff, the config-revert trap were all discovered on the bench or on the road and are documented in the repo with their fixes.");
+  s.addNotes("Each card becomes a line item in the test protocol. The strength of this slide is provenance: phantom speed, the advertise-once trap, the charger cutoff, and the configuration revert were all found by us, on our hardware, and every one is documented in the repository with its fix.");
 }
 
-// ================================================== S9 · Week 3 scoreboard
+// ============================================================ SHEET 10 · scoreboard
 {
   const s = pres.addSlide();
-  s.background = { color: WHITE };
-  title(s, "Week 3 Status & Next");
-  const stats = [["29%", "complete vs ~19% week-3 target — ahead"], ["60 h", "logged (8 h × 4 this week)"],
-    ["12/12", "native unit tests passing"], ["10 s / 1 s", "measured cadence / on-screen motion"]];
+  frame(s, null, "status and next steps");
+  title(s, "Week 3 Status and What Comes Next");
+  const stats = [["29%", "complete against a 19% week-three target"], ["60 h", "logged, eight hours per member this week"],
+    ["12/12", "native unit tests passing"], ["10 s / 1 s", "measurement cadence / on-screen motion"]];
   stats.forEach((st, i) => {
-    const x = 0.55 + i * 3.12;
-    s.addShape("roundRect", { x, y: 1.25, w: 2.92, h: 1.5, rectRadius: 0.1, fill: { color: CARD } });
-    s.addText(st[0], { x: x + 0.2, y: 1.38, w: 2.6, h: 0.6, fontSize: 28, bold: true, color: NAVY,
-      fontFace: "Cambria", isTextBox: true, margin: 0 });
-    s.addText(st[1], { x: x + 0.2, y: 2.0, w: 2.6, h: 0.62, fontSize: 10.5, color: MUT,
-      fontFace: "Calibri", isTextBox: true, margin: 0 });
+    const x = 0.5 + i * 3.14;
+    s.addShape("rect", { x, y: 1.2, w: 2.94, h: 1.5, fill: { color: CARD }, line: { color: RULE, width: 0.75 } });
+    s.addText(st[0], { x: x + 0.2, y: 1.32, w: 2.6, h: 0.6, fontSize: 27, bold: true, color: INK,
+      fontFace: HFONT, isTextBox: true, margin: 0 });
+    s.addText(st[1], { x: x + 0.2, y: 1.95, w: 2.6, h: 0.65, fontSize: 10.5, color: MUT,
+      fontFace: BFONT, isTextBox: true, margin: 0 });
   });
-  s.addText("Proven end-to-end this week", { x: 0.55, y: 3.1, w: 6.0, h: 0.4, fontSize: 16, ...HDR, isTextBox: true, margin: 0 });
+  s.addText("PROVEN END TO END THIS WEEK", { x: 0.5, y: 3.05, w: 6.0, h: 0.35, fontSize: 13, bold: true, charSpacing: 1,
+    fontFace: HFONT, color: INK, isTextBox: true, margin: 0 });
   s.addText([
-    { text: "GPS fix → LoRa broadcast → BLE → decode → arrow, at 10 s cadence with 1 Hz dead-reckoned motion", options: { bullet: true, breakLine: true, paraSpaceAfter: 5 } },
-    { text: "Location-aware clock (timezone from position) · honest data ages · ghost re-broadcast detection", options: { bullet: true, breakLine: true, paraSpaceAfter: 5 } },
-    { text: "Automatic reconnect (NVS direct-connect) survived every drop, drive test after drive test", options: { bullet: true, breakLine: true, paraSpaceAfter: 5 } },
-    { text: "Full radio recovery drill executed and documented — flash → provision → verify, in minutes", options: { bullet: true } },
-  ], { x: 0.55, y: 3.55, w: 6.3, h: 2.3, fontSize: 12.5, ...BODY, isTextBox: true, margin: 0 });
-  s.addText("Next (W4–5)", { x: 7.2, y: 3.1, w: 5.0, h: 0.4, fontSize: 16, ...HDR, isTextBox: true, margin: 0 });
+    B("A GPS fix travels radio to radio to display to arrow at the 10 second cadence, with one-second motion from dead reckoning in between."),
+    B("The clock derives its timezone from position, data ages stay honest, and ghost re-broadcasts are detected and labeled."),
+    B("The link reconnected itself after every drop, across four drive tests."),
+    B("A complete radio recovery drill was executed and documented: flash, provision, verify, in minutes.", true),
+  ], { x: 0.5, y: 3.45, w: 6.3, h: 2.3, fontSize: 12, fontFace: BFONT, color: "222A3F", isTextBox: true, margin: 0 });
+  s.addText("NEXT, WEEKS 4 AND 5", { x: 7.15, y: 3.05, w: 5.0, h: 0.35, fontSize: 13, bold: true, charSpacing: 1,
+    fontFace: HFONT, color: INK, isTextBox: true, margin: 0 });
   s.addText([
-    { text: "Victor: provision radio #2 from the README recipe → first two-radio bench decode", options: { bullet: true, breakLine: true, paraSpaceAfter: 5 } },
-    { text: "Cannon: turn the constraints ledger into the drive-test protocol + logging harness", options: { bullet: true, breakLine: true, paraSpaceAfter: 5 } },
-    { text: "Deo/Josiah: partner-selection UI (NVS-persisted node ID) · night readability", options: { bullet: true, breakLine: true, paraSpaceAfter: 5 } },
-    { text: "Team: first two-vehicle drive test — the arrow points at a real partner", options: { bullet: true } },
-  ], { x: 7.2, y: 3.55, w: 5.5, h: 2.3, fontSize: 12.5, ...BODY, isTextBox: true, margin: 0 });
-  s.addShape("roundRect", { x: 0.55, y: 6.1, w: 12.25, h: 0.85, rectRadius: 0.1, fill: { color: NAVY } });
-  s.addText("One radio still talks to itself — but every layer between a GPS fix and the driver's arrow is now real, tested code. Radio #2 turns this into a tracker.",
-    { x: 0.85, y: 6.22, w: 11.7, h: 0.65, fontSize: 12.5, color: WHITE, fontFace: "Calibri", isTextBox: true, margin: 0, valign: "middle" });
+    B("Victor provisions radio number two from the documented recipe, then the first two-radio bench decode."),
+    B("Cannon turns the constraints ledger into the drive-test protocol and the logging harness."),
+    B("Deo and Josiah add partner selection stored in NVS and improve night readability."),
+    B("Then the milestone: the first two-vehicle drive test, where the arrow points at a real partner.", true),
+  ], { x: 7.15, y: 3.45, w: 5.6, h: 2.3, fontSize: 12, fontFace: BFONT, color: "222A3F", isTextBox: true, margin: 0 });
+  s.addShape("rect", { x: 0.5, y: 5.95, w: 12.35, h: 0.75, fill: { color: INK } });
+  s.addText("One radio still talks to itself. But every layer between a GPS fix and the driver's arrow is now real, tested code. Radio number two turns this into a tracker.",
+    { x: 0.8, y: 6.05, w: 11.75, h: 0.55, fontSize: 12.5, color: PAPER, fontFace: BFONT, isTextBox: true, margin: 0, valign: "middle" });
 }
 
 pres.writeFile({ fileName: D3 + "Group9_Presentation3_Week3.pptx" }).then(() => console.log("written"));
