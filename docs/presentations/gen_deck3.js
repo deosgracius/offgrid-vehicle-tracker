@@ -11,7 +11,7 @@ const D3 = "C:/Users/deogr/AppData/Local/Temp/claude/C--Users-deogr-Documents-Fa
 const MPNG = "C:/Users/deogr/AppData/Local/Temp/claude/C--Users-deogr-Documents-Fall-Project-Off-Grid-Vehicle-dection-project/e8b2e8fa-1513-4aa8-a8f6-ce4fcd20e664/scratchpad/mermaid_png/";
 const SYS = "C:/Users/deogr/Documents/Fall Project/Off-Grid Vehicle dection project/docs/system-diagram.png";
 
-const TOTAL = 13;
+const TOTAL = 14;
 let sheetNo = 0;
 
 // Drawing frame + title-block footer on every sheet.
@@ -266,16 +266,18 @@ lon += d*sin(course)/(111320*cos(lat));`, M.JOSIAH);
   const s = pres.addSlide();
   frame(s, "VICTOR", "link physics");
   title(s, "Real Time versus 10 Seconds: the Physics");
-  function eq(y, label, img, iw, ih) {
-    s.addText(label, { x: 0.5, y, w: 2.7, h: 0.55, fontSize: 11, bold: true, color: INK,
-      fontFace: MONO, isTextBox: true, margin: 0, valign: "middle" });
+  function eq(y, label, cite, img, iw, ih) {
+    s.addText(label, { x: 0.5, y, w: 2.7, h: 0.32, fontSize: 11, bold: true, color: INK,
+      fontFace: MONO, isTextBox: true, margin: 0 });
+    s.addText(cite, { x: 0.5, y: y + 0.3, w: 2.7, h: 0.24, fontSize: 8, color: MUT,
+      fontFace: MONO, isTextBox: true, margin: 0 });
     s.addImage({ path: D3 + img, x: 3.35, y: y + 0.02, w: iw, h: ih });
   }
-  eq(1.2, "EQ 1  AIRTIME", "eq_airtime.png", 8.9, 0.47);
-  eq(2.0, "EQ 2  UTILIZATION", "eq_util.png", 9.3, 0.43);
-  eq(2.8, "EQ 3  SENSITIVITY", "eq_sens.png", 9.3, 0.32);
-  eq(3.55, "EQ 4  LATENCY", "eq_latency.png", 9.3, 0.34);
-  eq(4.3, "EQ 5  DEAD RECKONING", "eq_dr.png", 6.9, 0.4);
+  eq(1.2, "EQ 1  AIRTIME", "DS 6.1.1 p.39 + AN1200.22", "eq_airtime.png", 8.9, 0.47);
+  eq(2.0, "EQ 2  UTILIZATION", "Meshtastic docs, ~25% cap", "eq_util.png", 9.3, 0.43);
+  eq(2.8, "EQ 3  SENSITIVITY", "DS Table 6-1 p.39, 3.5.3 p.20", "eq_sens.png", 9.3, 0.32);
+  eq(3.55, "EQ 4  LATENCY", "DS 6.1.4 p.41 (airtime term)", "eq_latency.png", 9.3, 0.34);
+  eq(4.3, "EQ 5  DEAD RECKONING", "dead_reckon.c, 12/12 tests", "eq_dr.png", 6.9, 0.4);
   s.addShape("rect", { x: 0.5, y: 5.2, w: 12.35, h: 1.5, fill: { color: INK } });
   s.addText([
     { text: "THE VERDICT", options: { bold: true, fontSize: 12, color: ACC, fontFace: MONO, breakLine: true, paraSpaceAfter: 5 } },
@@ -284,7 +286,41 @@ lon += d*sin(course)/(111320*cos(lat));`, M.JOSIAH);
   s.addNotes("This sheet answers the question everyone asks: why not every second. Equation 1: at spreading factor 11 each symbol is 2048 chips, so one position costs about half a second of air. Equation 2: two vehicles at one hertz would occupy 100 percent of the channel; at ten seconds they occupy ten percent. Equation 3: the same slowness buys sensitivity of minus 131 dBm, fifteen decibels below thermal noise, which is the entire range budget. Equation 4: actual information latency is about one second. Equation 5: the display projects both vehicles forward every second between fixes. Marine AIS beacons every 2 to 30 seconds and every chartplotter animates between reports; we are in good company.");
 }
 
-// ============================================================ SHEET 09 · VICTOR, graphs + references
+// ============================================================ SHEET 09 · VICTOR, inside the transceiver
+{
+  const s = pres.addSlide();
+  frame(s, "VICTOR", "inside the sx1262");
+  title(s, "Inside the Transceiver (Datasheet Rev 2.2)");
+  s.addImage({ path: D3 + "fig_block.png", x: 0.5, y: 1.15, w: 7.35, h: 3.5 });
+  s.addShape("rect", { x: 0.5, y: 1.15, w: 7.35, h: 3.5, fill: { type: "none" }, line: { color: RULE, width: 1 } });
+  s.addText("SX1262 BLOCK DIAGRAM, DS FIG 4-1 p.23. TWO MODEMS SHARE ONE FRONT END; WE USE ONLY THE LoRa ONE.",
+    { x: 0.5, y: 4.7, w: 7.35, h: 0.24, fontSize: 8, fontFace: MONO, color: MUT, isTextBox: true, margin: 0 });
+  s.addImage({ path: D3 + "fig_modes.png", x: 8.3, y: 1.15, w: 3.5, h: 3.5 });
+  s.addShape("rect", { x: 8.3, y: 1.15, w: 3.5, h: 3.5, fill: { type: "none" }, line: { color: RULE, width: 1 } });
+  s.addText("OPERATING MODES, DS FIG 9-1 p.64", { x: 8.3, y: 4.7, w: 3.5, h: 0.24, fontSize: 8,
+    fontFace: MONO, color: MUT, isTextBox: true, margin: 0 });
+  // one broadcast traced over the state machine
+  const steps = [["RX", "always listening"], ["CAD", "channel clear? 6.1.5 p.41"], ["FS", "PLL locks channel"],
+    ["TX", "chirps, ~0.5 s"], ["TxDone", "IRQ on DIO1"], ["RX", "back to listening"]];
+  steps.forEach((st, i) => {
+    const x = 0.5 + i * 2.1;
+    s.addShape("rect", { x, y: 5.1, w: 1.85, h: 0.68, fill: { color: CARD }, line: { color: ACC, width: 1.25 } });
+    s.addText([{ text: st[0], options: { bold: true, fontFace: MONO, breakLine: true } },
+      { text: st[1], options: { fontSize: 8, color: MUT } }],
+      { x: x + 0.06, y: 5.13, w: 1.73, h: 0.62, fontSize: 10.5, fontFace: BFONT, color: INK,
+        isTextBox: true, margin: 0, align: "center" });
+    if (i < 5) harrow(s, x + 1.85, 5.44, 0.25, ACC);
+  });
+  s.addText("ONE POSITION BROADCAST TRACED ON THE STATE MACHINE. CAD IS THE PHYSICAL LISTEN-BEFORE-TALK: BELOW THE NOISE FLOOR RSSI IS USELESS, SO THE CHIP CORRELATES FOR LoRa SYMBOLS INSTEAD.",
+    { x: 0.5, y: 5.85, w: 12.35, h: 0.24, fontSize: 8, fontFace: MONO, color: MUT, isTextBox: true, margin: 0 });
+  codebox(s, 0.5, 6.15, 8.1, 0.62, "meshtastic RadioInterface.cpp  how region US becomes a frequency",
+`RDEF(US, 902.0f, 928.0f, ...);  freq = start + bw/2000 + hash(name)*(bw/1000);`, ACC);
+  s.addText("Both radios hash the same channel name, so they meet on the same frequency with no coordination message. Full walkthrough: docs/RADIO_PHY_DEEP_DIVE.pdf",
+    { x: 8.75, y: 6.15, w: 4.1, h: 0.62, fontSize: 8.5, fontFace: BFONT, color: MUT, isTextBox: true, margin: 0, valign: "middle" });
+  s.addNotes("This sheet is the silicon-level story, all from the Semtech datasheet in our repo of references. Left: the block diagram - antenna, matching, LNA, mixer, ADC, then everything is digital: the LoRa modem correlates chirps (that is the processing gain), the protocol engine handles preamble, header, FEC and CRC, and a 256-byte buffer meets the ESP32 over SPI. Note the FSK modem sitting beside the LoRa modem: present, powered, and unused - FSK needs positive SNR, LoRa decodes at minus 17.5 dB. Right: the operating-mode state machine, and below it one of our broadcasts traced across it: park in RX, CAD to check the channel (the physical CSMA - below the noise floor RSSI is meaningless so the chip listens for LoRa symbols), FS while the PLL locks, half a second of TX, TxDone interrupt, back to RX. Bottom code: the region line that sets 902 to 928 MHz and the hash that picks the channel - both radios compute the same hash from the channel name, so the shared URL is simultaneously the encryption domain and the frequency agreement.");
+}
+
+// ============================================================ SHEET 10 · VICTOR, graphs + references
 {
   const s = pres.addSlide();
   frame(s, "VICTOR", "link behavior, graphed");
@@ -423,7 +459,7 @@ lon += d*sin(course)/(111320*cos(lat));`, M.JOSIAH);
     ["[7]", "ITU-R Recommendation M.1371, Automatic Identification System (AIS). Reporting intervals of 2 s to 3 min; the beacon-then-animate precedent.", "itu.int/rec/R-REC-M.1371"],
     ["[8]", "R. W. Sinnott, Virtues of the Haversine, Sky & Telescope, vol. 68, no. 2, p. 159, 1984. The distance formula used in nav.c.", "movable-type.co.uk/scripts/latlong.html  (implementation ref)"],
     ["[9]", "Bluetooth SIG, Bluetooth Core Specification (GATT). The service and characteristic model behind the Meshtastic Client API.", "bluetooth.com/specifications/specs/core-specification"],
-    ["[10]", "Group 9 repository: TELECOM_ANALYSIS, ARCHITECTURE, BLE_LINK_WALKTHROUGH, hardware/README. Our link budget, architecture, and recipes.", "github.com/deosgracius/offgrid-vehicle-tracker"]];
+    ["[10]", "Group 9 repository: TELECOM_ANALYSIS, ARCHITECTURE, BLE_LINK_WALKTHROUGH, RADIO_PHY_DEEP_DIVE, hardware/README. Our link budget, architecture, silicon walkthrough, and recipes.", "github.com/deosgracius/offgrid-vehicle-tracker"]];
   refs.forEach((r, i) => {
     const col = i < 5 ? 0 : 1, row = i % 5;
     const x = 0.5 + col * 6.35, y = 1.22 + row * 1.06;
