@@ -90,7 +90,7 @@ const B = (text, last) => ({ text, options: { bullet: { code: "25AA" }, breakLin
   // title block, drawing style, bottom right
   const blk = [["PROJECT", "Off-Grid Vehicle Tracker"], ["SPONSOR", "Dr. Richard Gale"],
     ["COURSE", "Capstone Project Lab"], ["STATUS", "42% vs 19% target, ahead"],
-    ["HOURS", "96 of 768 logged"], ["DATE", "2026-09-07"]];
+    ["HOURS", "78 of 768 logged"], ["DATE", "2026-09-07"]];
   s.addShape("rect", { x: 9.55, y: 2.65, w: 3.3, h: 3.55, fill: { color: PAPER }, line: { color: INK, width: 1.25 } });
   blk.forEach((r, i) => {
     const y = 2.72 + i * 0.575;
@@ -412,7 +412,7 @@ lon += d*sin(course)/(111320*cos(lat));`, M.JOSIAH);
   const s = pres.addSlide();
   frame(s, null, "status and next steps");
   title(s, "Week 3 Status and What Comes Next");
-  const stats = [["42%", "of tasks complete against a 19% week-three target"], ["96 h", "logged through week three"],
+  const stats = [["42%", "of tasks complete against a 19% week-three target"], ["78 h", "logged through week three"],
     ["12/12", "native unit tests passing"], ["10 s / 1 s", "measurement cadence / on-screen motion"]];
   stats.forEach((st, i) => {
     const x = 0.5 + i * 3.14;
