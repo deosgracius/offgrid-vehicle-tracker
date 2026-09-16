@@ -83,7 +83,7 @@ const B = (text, last) => ({ text, options: { bullet: { code: "25AA" }, breakLin
     border: { type: "solid", color: RULE, pt: 0.75 } });
   const blk = [["PROJECT", "Off-Grid Vehicle Tracker"], ["SPONSOR", "Dr. Richard Gale"],
     ["COURSE", "Capstone Project Lab"], ["STATUS", "42% vs 25% target, ahead"],
-    ["HOURS", "98 of 768 logged"], ["DATE", "2026-09-16"]];
+    ["HOURS", "122 of 768 logged"], ["DATE", "2026-09-16"]];
   s.addShape("rect", { x: 9.55, y: 2.65, w: 3.3, h: 3.55, fill: { color: PAPER }, line: { color: INK, width: 1.25 } });
   blk.forEach((r, i) => {
     const y = 2.72 + i * 0.575;
