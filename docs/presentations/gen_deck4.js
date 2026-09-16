@@ -82,7 +82,7 @@ const B = (text, last) => ({ text, options: { bullet: { code: "25AA" }, breakLin
   s.addTable(tbl, { x: 0.72, y: 4.2, w: 8.3, colW: [1.35, 2.75, 4.2], rowH: 0.42,
     border: { type: "solid", color: RULE, pt: 0.75 } });
   const blk = [["PROJECT", "Off-Grid Vehicle Tracker"], ["SPONSOR", "Dr. Richard Gale"],
-    ["COURSE", "Capstone Project Lab"], ["STATUS", "42% vs 25% target, ahead"],
+    ["COURSE", "Capstone Project Lab"], ["STATUS", "48% vs 25% target, ahead"],
     ["HOURS", "122 of 768 logged"], ["DATE", "2026-09-16"]];
   s.addShape("rect", { x: 9.55, y: 2.65, w: 3.3, h: 3.55, fill: { color: PAPER }, line: { color: INK, width: 1.25 } });
   blk.forEach((r, i) => {
@@ -339,7 +339,7 @@ meshtastic --port COMx --get lora.region     # VERIFY every write`, ACC);
   const s = pres.addSlide();
   frame(s, null, "status and next steps");
   title(s, "Status and What Comes Next");
-  const stats = [["42%", "of tasks complete against a 25% week-four target"], ["10 s", "cadence verified on the road this week"],
+  const stats = [["48%", "of tasks complete against a 25% week-four target"], ["10 s", "cadence verified on the road this week"],
     ["4 + 1", "layers proven + the layer this sheet set closes"], ["5", "metrics pre-declared, thresholds locked"]];
   stats.forEach((st, i) => {
     const x = 0.5 + i * 3.14;
