@@ -9,7 +9,7 @@ const M = { DEO: "1199BD", JOSIAH: "6D4BDB", VICTOR: "E58E1A", CANNON: "D9488C" 
 const HFONT = "Arial", BFONT = "Arial", MONO = "Courier New";
 const D3 = "C:/Users/deogr/AppData/Local/Temp/claude/C--Users-deogr-Documents-Fall-Project-Off-Grid-Vehicle-dection-project/e8b2e8fa-1513-4aa8-a8f6-ce4fcd20e664/scratchpad/deck3/";
 
-const TOTAL = 10;
+const TOTAL = 11;
 let sheetNo = 0;
 
 function frame(s, owner, sheetTitle) {
@@ -66,11 +66,11 @@ const B = (text, last) => ({ text, options: { bullet: { code: "25AA" }, breakLin
     charSpacing: 3, fontFace: HFONT, color: INK, isTextBox: true, margin: 0 });
   s.addText("WEEK 4 DESIGN REVIEW: METHOD BEFORE MEASUREMENT", { x: 0.72, y: 2.05, w: 11.9, h: 0.45,
     fontSize: 17, bold: true, charSpacing: 1, fontFace: HFONT, color: ACC, isTextBox: true, margin: 0 });
-  s.addText("Four of five system layers are proven. This week we publish, in advance, everything the fifth layer will be judged by: the provisioning procedure for radio two, the partner-selection design, the predicted link curve, the drive-test protocol, and the metrics. Next review reports results against this sheet set.",
+  s.addText("This week's drive test closed the cadence question: position and speed measured fresh every ten seconds on the road, with one-second motion in between. The rest of this review publishes, in advance, everything the fifth layer will be judged by: procedure, design, predicted curve, protocol, and metrics.",
     { x: 0.72, y: 2.65, w: 8.3, h: 1.35, fontSize: 13, fontFace: BFONT, color: "222A3F", isTextBox: true, margin: 0 });
   const rows = [
     ["OWNER", "SUBSYSTEM", "THIS WEEK"],
-    ["DEO", "Backend, protocol/", "partner selection: from rule to configuration"],
+    ["DEO", "Backend, protocol/", "drive test: the ten-second cadence, proven"],
     ["JOSIAH", "Frontend, ui/ and nav/", "what changes on screen when the partner appears"],
     ["VICTOR", "Radio and PHY", "radio two procedure, predicted link curve"],
     ["CANNON", "Integration and test", "drive-test protocol, metrics declared in advance"]];
@@ -129,7 +129,43 @@ const B = (text, last) => ({ text, options: { bullet: { code: "25AA" }, breakLin
   s.addNotes("Thirty seconds of recap, no re-teaching: four layers proven with one device, the dashed fifth is this week. Key claim to land: the partner path is the identical decode path with a different node number - the code that will handle the partner has been running for weeks on our own packets.");
 }
 
-// ============================================================ SHEET 03 · DEO, partner selection
+// ============================================================ SHEET 03 · DEO, drive-test result
+{
+  const s = pres.addSlide();
+  frame(s, "DEO", "drive test result");
+  title(s, "Result: Every Ten Seconds, on the Road");
+  // the cadence pipeline, each stage with its verified rate
+  const chain = [
+    ["GPS fix", "every 10 s", "gps_update_interval 10"],
+    ["Smart broadcast", "10 s / 20 m moving", "min interval + distance"],
+    ["BLE delivery", "milliseconds", "notify, then drain"],
+    ["Screen motion", "every second", "dead reckoning"]];
+  chain.forEach((c, i) => {
+    const x = 0.5 + i * 3.18;
+    s.addShape("rect", { x, y: 1.3, w: 2.85, h: 1.15, fill: { color: CARD }, line: { color: M.DEO, width: 1.5 } });
+    s.addText([{ text: c[0], options: { bold: true, breakLine: true } },
+      { text: c[1], options: { fontSize: 12, bold: true, color: "1F9D68", breakLine: true } },
+      { text: c[2], options: { fontSize: 8.5, color: MUT, fontFace: MONO } }],
+      { x: x + 0.1, y: 1.38, w: 2.65, h: 1.0, fontSize: 12, fontFace: BFONT, color: INK,
+        isTextBox: true, margin: 0, align: "center" });
+    if (i < 3) harrow(s, x + 2.85, 1.87, 0.33, M.DEO);
+  });
+  s.addText("VERIFIED IN MOTION, 2026-09-16 DRIVE TEST", { x: 0.5, y: 2.65, w: 12.35, h: 0.28, fontSize: 10, bold: true,
+    charSpacing: 1, fontFace: MONO, color: "1F9D68", isTextBox: true, margin: 0 });
+  s.addText([
+    B("Observed while driving: coordinates and speed refreshed roughly every ten seconds, matching the configured cadence for the first time on the road."),
+    B("This closes the chain of cadence fixes from weeks three and four: the coarse-grid freeze, the stale GPS refresh, and the re-broadcast ghost each hid this behavior until removed."),
+    B("The cadence question is now settled for one vehicle. Radio two inherits this configuration through the channel recipe, so the partner arrives at the same ten seconds.", true),
+  ], { x: 0.5, y: 3.1, w: 12.35, h: 1.9, fontSize: 13, fontFace: BFONT, color: "222A3F", isTextBox: true, margin: 0 });
+  s.addShape("rect", { x: 0.5, y: 5.15, w: 12.35, h: 1.5, fill: { color: INK } });
+  s.addText([
+    { text: "WHY THIS MATTERS FOR THE EXAM", options: { bold: true, fontSize: 11, color: ACC, fontFace: MONO, breakLine: true, paraSpaceAfter: 5 } },
+    { text: "Two of the five declared metrics depend on this cadence: packet delivery ratio counts against the ten-second schedule, and the age target of 25 seconds assumes fixes arrive on it. This drive test pinned down the denominator before the two-radio test supplies the numerator.", options: { color: PAPER, fontFace: BFONT } },
+  ], { x: 0.8, y: 5.3, w: 11.75, h: 1.25, fontSize: 12.5, isTextBox: true, margin: 0 });
+  s.addNotes("The week's one hard result: on the road, position and speed updated every ten seconds as configured - the first drive where observed cadence matched designed cadence. Tell the archaeology briefly: three earlier defects (position precision grid, 30-second GPS refresh, ghost re-broadcasts) each masked this until fixed, so this drive is the validation that the whole chain is clean. The navy card ties it forward: PDR and the age metric on sheet 09 are only measurable because the schedule is now known-good.");
+}
+
+// ============================================================ SHEET 04 · DEO, partner selection
 {
   const s = pres.addSlide();
   frame(s, "DEO", "partner selection");
@@ -303,7 +339,7 @@ meshtastic --port COMx --get lora.region     # VERIFY every write`, ACC);
   const s = pres.addSlide();
   frame(s, null, "status and next steps");
   title(s, "Status and What Comes Next");
-  const stats = [["42%", "of tasks complete against a 25% week-four target"], ["78 h", "logged through week three"],
+  const stats = [["42%", "of tasks complete against a 25% week-four target"], ["10 s", "cadence verified on the road this week"],
     ["4 + 1", "layers proven + the layer this sheet set closes"], ["5", "metrics pre-declared, thresholds locked"]];
   stats.forEach((st, i) => {
     const x = 0.5 + i * 3.14;
@@ -313,14 +349,14 @@ meshtastic --port COMx --get lora.region     # VERIFY every write`, ACC);
     s.addText(st[1], { x: x + 0.2, y: 1.95, w: 2.6, h: 0.65, fontSize: 10.5, color: MUT,
       fontFace: BFONT, isTextBox: true, margin: 0 });
   });
-  s.addText("THIS WEEK, IN ORDER", { x: 0.5, y: 3.05, w: 6.0, h: 0.35, fontSize: 13, bold: true, charSpacing: 1,
+  s.addText("DONE THIS WEEK, AND NEXT IN ORDER", { x: 0.5, y: 3.05, w: 6.3, h: 0.35, fontSize: 13, bold: true, charSpacing: 1,
     fontFace: HFONT, color: INK, isTextBox: true, margin: 0 });
   s.addText([
-    B("Partner selection lands in firmware (Deo), before the ambiguity it resolves arrives."),
-    B("Radio two provisioned by the recipe; acceptance criteria 1 to 4 checked off (Victor)."),
-    B("Bench soak, then the static range walk with the logging harness live (Cannon)."),
-    B("Partner-selection screen and night readability on the display (Josiah).", true),
-  ], { x: 0.5, y: 3.45, w: 6.3, h: 2.3, fontSize: 12.5, fontFace: BFONT, color: "222A3F", isTextBox: true, margin: 0 });
+    B("Done: drive test verified the ten-second cadence end to end, in motion."),
+    B("Next: partner selection lands in firmware (Deo), before the ambiguity arrives."),
+    B("Next: radio two provisioned by the recipe; acceptance criteria checked (Victor)."),
+    B("Next: bench soak, static range walk with the logging harness (Cannon); partner-selection screen and night readability (Josiah).", true),
+  ], { x: 0.5, y: 3.45, w: 6.3, h: 2.3, fontSize: 12, fontFace: BFONT, color: "222A3F", isTextBox: true, margin: 0 });
   s.addText("NEXT REVIEW REPORTS", { x: 7.15, y: 3.05, w: 5.0, h: 0.35, fontSize: 13, bold: true, charSpacing: 1,
     fontFace: HFONT, color: INK, isTextBox: true, margin: 0 });
   s.addText([
