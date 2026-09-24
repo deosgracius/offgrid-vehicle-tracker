@@ -55,3 +55,13 @@ Put here:
 First tasks (W2–W3): flash stock Meshtastic via https://flasher.meshtastic.org, attach the
 GNSS modules, confirm both nodes see each other's position in the Meshtastic phone app.
 **Week 1 blocker check: do the kits include the GNSS modules?** (V4 has a connector, not onboard GPS.)
+
+## Radio #2 — as-received record (2026-09-24)
+
+Arrived as "Meshtastic bb5c (RG)", node 0x49B5DBDC-family, fw 2.7.26, region
+US, default public primary channel plus a secondary "Alaska" channel. To
+restore Dr. Gale's original configuration if the radio is ever returned:
+
+```
+python -m meshtastic --port COMx --seturl "https://meshtastic.org/e/#CgcSAQE6AgggCi4SIGeI9YYn01Lhr8NNDAcoqCpLhQJ2JHpMnBz0Hw0h4qk9GgZBbGFza2E6AgggEhQIARj6ASALOAFAA0gBUB5oAdAGAQ"
+```
