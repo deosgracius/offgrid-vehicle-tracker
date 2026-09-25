@@ -23,6 +23,17 @@ hard-resets the ESP32 *before* it finishes saving. Always `--get` to verify;
 if a value keeps reverting, set it via the Python API and hold the port open
 ~20 s (see `git log` for the recovery session), or use the phone app.
 
+**Channel-change truth-teller (solved the 2026-09-25 "0 online" mystery):** after
+ANY `--seturl`, check the OLED **LoRa screen frequency**. The frequency slot is
+`djb2(channelName) % 104` — **Group9 = slot 43 = 912.875 MHz**. The default
+public channel is slot 19 = 906.875 MHz. If a radio "on Group9" shows 906.875,
+the channel write silently reverted (see config-write trap) and the radios are
+on different frequencies — same key, mutual deafness, both show "0 online".
+`--info` can read back the intended config while the radio still radiates on the
+old slot until a clean reboot, so trust the screen, not just the CLI. Link was
+verified 2026-09-25: round-trip traceroute ead4↔bb5c on Group9, ~6 dB SNR both
+directions at 30 dBm desk range ("1 online" on both OLEDs).
+
 **Flashing trap:** `pio run -t upload` auto-picks the only COM port — with two
 identical ESP32-S3 boards, ALWAYS pass `--upload-port` and verify which board
 is on which port first (unplug one and watch which port disappears). We once
@@ -55,6 +66,15 @@ Put here:
 First tasks (W2–W3): flash stock Meshtastic via https://flasher.meshtastic.org, attach the
 GNSS modules, confirm both nodes see each other's position in the Meshtastic phone app.
 **Week 1 blocker check: do the kits include the GNSS modules?** (V4 has a connector, not onboard GPS.)
+
+## Radio #2 — provisioned state (2026-09-25)
+
+Fully on team spec and link-verified against radio #1: Group9 primary
+(912.875 MHz, precision 32) · position broadcast 60 s / smart 10 s + 20 m ·
+gps_update_interval 10 · tx_power 30. The first provisioning attempt had left
+the position settings at factory defaults (3600 s broadcast / 300 s smart) —
+the channel URL only carries channel + LoRa config, so the `position.*` lines
+of the recipe must be applied and `--get`-verified separately.
 
 ## Radio #2 — as-received record (2026-09-24)
 
