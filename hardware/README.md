@@ -69,6 +69,13 @@ recovery = flash `firmware-heltec-v4-*.factory.bin` at 0x0 with esptool, then
 re-apply this section top to bottom (node number survives — it derives from
 the MAC).
 
+**After ANY factory re-flash, re-run this whole section and `--get`-verify every
+line.** Radio #1 was found on 2026-09-25 with factory position settings (3600 s
+broadcast / 120 s GPS) and RANDOM_PIN bluetooth — silently reset by the Sep 3
+recovery re-flash. A drive test in that state shows hour-stale positions and
+the display cannot pair. Re-applied and verified 2026-09-25; both radios now
+match this recipe.
+
 (The URL embeds the channel key — fine in this team repo, don't post publicly.
 It also carries `position_precision 32` — full-resolution positions. The
 channel default of 13 truncates every broadcast to a ~6 km grid, which froze
