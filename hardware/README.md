@@ -34,6 +34,17 @@ old slot until a clean reboot, so trust the screen, not just the CLI. Link was
 verified 2026-09-25: round-trip traceroute ead4↔bb5c on Group9, ~6 dB SNR both
 directions at 30 dBm desk range ("1 online" on both OLEDs).
 
+**"0 online" with a perfect link (bench-only illusion):** a node with **no live
+GPS fix rebroadcasts its stored position with the OLD fix timestamp** — peers
+book it as "last heard" months ago, so the OLED online counter stays 0 (or
+counts stale ghosts as online after a clock-less reboot: we saw "17 online"
+from a July node list) even while texts and traceroutes work perfectly. Fix:
+give the node a real fix (window/outside); the first live position broadcast
+heals the counter on both ends (verified 2026-09-25: fresh fix → "16 secs ago"
+→ 1 online). Impossible in a vehicle with sky view — bench artifact only.
+Related: `--reset-nodedb` can silently no-op (same DTR port-close race as
+config writes) — re-run and verify the node count actually dropped.
+
 **Flashing trap:** `pio run -t upload` auto-picks the only COM port — with two
 identical ESP32-S3 boards, ALWAYS pass `--upload-port` and verify which board
 is on which port first (unplug one and watch which port disappears). We once
