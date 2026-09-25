@@ -14,6 +14,7 @@ python -m meshtastic --port COMx --set position.broadcast_smart_minimum_interval
 python -m meshtastic --port COMx --set position.broadcast_smart_minimum_distance 20
 python -m meshtastic --port COMx --set position.gps_update_interval 10
 python -m meshtastic --port COMx --set bluetooth.mode NO_PIN   # only if a display pairs to it
+python -m meshtastic --port COMx --set telemetry.device_update_interval 300   # 5-min heartbeat keeps online counters honest on the bench
 python -m meshtastic --port COMx --set canned_message.enabled true
 python -m meshtastic --port COMx --set-canned-message "OK|Yes|No|Hi|How are you?|All good|Need help|Are you injured?|Send position|Position updated|On my way|Wait there|Arrived|Low battery|Heading home"
 ```
