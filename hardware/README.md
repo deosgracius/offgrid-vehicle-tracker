@@ -41,7 +41,11 @@ counts stale ghosts as online after a clock-less reboot: we saw "17 online"
 from a July node list) even while texts and traceroutes work perfectly. Fix:
 give the node a real fix (window/outside); the first live position broadcast
 heals the counter on both ends (verified 2026-09-25: fresh fix → "16 secs ago"
-→ 1 online). Impossible in a vehicle with sky view — bench artifact only.
+→ 1 online) — but only until the fix is lost again: the stored stale fix
+resumes broadcasting and drags last-heard back (ours read "72d ago" mid-chat).
+Permanent cure: `meshtastic --port COMx --remove-position` (clears the stored
+position; no-fix periods then go quiet instead of lying) + `--set-time` to
+sync the clock. Impossible in a vehicle with sky view — bench artifact only.
 Related: `--reset-nodedb` can silently no-op (same DTR port-close race as
 config writes) — re-run and verify the node count actually dropped.
 
