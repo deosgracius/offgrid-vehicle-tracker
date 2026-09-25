@@ -55,6 +55,11 @@ position; no-fix periods then go quiet instead of lying) + `--set-time` to
 sync the clock. Impossible in a vehicle with sky view — bench artifact only.
 Related: `--reset-nodedb` can silently no-op (same DTR port-close race as
 config writes) — re-run and verify the node count actually dropped.
+Also: every serial connection hard-resets the radio (DTR), and fw 2.7.26
+saves its node DB to flash only on its own schedule — so a stale flash
+record can outlive wipes and commanded reboots on the bench. It heals by
+itself once real traffic flows; don't chase it. Leave bench radios OFF
+USB when observing the online counters.
 
 **Flashing trap:** `pio run -t upload` auto-picks the only COM port — with two
 identical ESP32-S3 boards, ALWAYS pass `--upload-port` and verify which board
