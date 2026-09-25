@@ -14,7 +14,14 @@ python -m meshtastic --port COMx --set position.broadcast_smart_minimum_interval
 python -m meshtastic --port COMx --set position.broadcast_smart_minimum_distance 20
 python -m meshtastic --port COMx --set position.gps_update_interval 10
 python -m meshtastic --port COMx --set bluetooth.mode NO_PIN   # only if a display pairs to it
+python -m meshtastic --port COMx --set canned_message.enabled true
+python -m meshtastic --port COMx --set-canned-message "OK|Yes|No|Hi|How are you?|All good|Need help|Are you injured?|Send position|Position updated|On my way|Wait there|Arrived|Low battery|Heading home"
 ```
+
+(Canned messages: on-screen preset texts selectable with the user button —
+quick replies first, then status/safety/position/movement. Both radios carry
+the identical set (applied + `--get-canned-message`-verified 2026-09-25) so
+every prompt has its short answer available on the other end.)
 
 **Config-write trap (cost us an afternoon):** settings that trigger a reboot
 (`lora.region`, `bluetooth.mode`) may silently revert when set via
