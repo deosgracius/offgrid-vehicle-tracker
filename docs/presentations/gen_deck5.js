@@ -11,7 +11,7 @@ const HFONT = "Arial", BFONT = "Arial", MONO = "Courier New";
 const D5 = "C:/Users/deogr/AppData/Local/Temp/claude/C--Users-deogr-Documents-Fall-Project-Off-Grid-Vehicle-dection-project/e8b2e8fa-1513-4aa8-a8f6-ce4fcd20e664/scratchpad/deck5/";
 const IMG = "C:/Users/deogr/AppData/Local/Temp/claude/C--Users-deogr-Documents-Fall-Project-Off-Grid-Vehicle-dection-project/e8b2e8fa-1513-4aa8-a8f6-ce4fcd20e664/images/";
 
-const TOTAL = 12;
+const TOTAL = 18;
 let sheetNo = 0;
 
 function frame(s, owner, sheetTitle) {
@@ -79,13 +79,15 @@ const B = (text, last) => ({ text, options: { bullet: { code: "25AA" }, breakLin
     ["05-06", "acquisition: NodeInfo, public keys, and two-way proof by traceroute"],
     ["07-08", "liveness: what \u201c1 online\u201d actually computes, and its heartbeat"],
     ["09-10", "airtime and link budget: SF11 time-on-air, CLIENT_MUTE, range margin"],
-    ["11-12", "bench evidence, final configuration, references"]];
+    ["11-13", "JOSIAH \u00b7 3D-printed armor for the RLCD display: model, print, assembly"],
+    ["14-16", "CANNON \u00b7 drive-test protocol, bench evidence, as-built configuration"],
+    ["17-18", "nomenclature: every acronym, formula, and symbol, explained"]];
   const tbl = rows.map((r, i) => r.map((c, j) => ({
-    text: c, options: { fontSize: i === 0 ? 10 : 11.5, bold: i === 0 || j === 0,
+    text: c, options: { fontSize: i === 0 ? 9.5 : 10.5, bold: i === 0 || j === 0,
       fontFace: i === 0 || j === 0 ? MONO : BFONT,
       color: i === 0 ? PAPER : (j === 0 ? ACC : "222A3F"),
       fill: { color: i === 0 ? INK : (i % 2 ? CARD : PAPER) }, valign: "middle" } })));
-  s.addTable(tbl, { x: 0.72, y: 4.35, w: 8.3, colW: [1.35, 6.95], rowH: 0.4,
+  s.addTable(tbl, { x: 0.72, y: 4.28, w: 8.3, colW: [1.35, 6.95], rowH: 0.31,
     border: { type: "solid", color: RULE, pt: 0.75 } });
   const blk = [["PROJECT", "Off-Grid Vehicle Tracker"], ["SPONSOR", "Dr. Richard Gale"],
     ["COURSE", "Capstone Project Lab"], ["MILESTONE", "Radio link ESTABLISHED"],
@@ -379,7 +381,146 @@ const B = (text, last) => ({ text, options: { bullet: { code: "25AA" }, breakLin
   s.addNotes("Read the graph left to right: received power falls 6 dB per doubling of distance; the red dashed line is the SX1262's decode floor at our modulation. The gap between the blue curve and the red line IS the link margin - at bench range it is enormous (about 100 dB), which is why nothing about a desk test predicts range. The dotted green line moves the requirement 20 dB up to absorb real-world fading and obstruction; where the blue curve meets THAT line is the honest few-kilometer design expectation, matching our 3-5 km target for the v2v use case. The free-space crossing near 100 km is a math fact, not a claim - treat it as an upper bound that terrain will spend. Range test protocol: fixed SF11, log traceroute SNR vs GPS distance, plot against this exact chart.");
 }
 
-// ============================================================ SHEET 11 · bench evidence
+// ============================================================ SHEET 11 · JOSIAH, case requirement
+{
+  const s = pres.addSlide();
+  frame(s, "JOSIAH", "display enclosure: requirement");
+  title(s, "The Display Needs Armor: Case Selection");
+  s.addShape("rect", { x: 0.6, y: 1.2, w: 6.6, h: 1.15, fill: { color: "FBEEEF" }, line: { color: RED, width: 1.5 } });
+  s.addText([{ text: "WHY NOW  ", options: { bold: true, fontFace: MONO, fontSize: 10.5, color: RED } },
+    { text: "our first Waveshare RLCD arrived with a cracked, non-functional panel. The replacement will NOT ride bare: a naked glass panel in a vehicle is a repeat incident waiting to happen.", options: { fontSize: 11.5, color: "222A3F" } }],
+    { x: 0.8, y: 1.3, w: 6.25, h: 0.95, fontFace: BFONT, isTextBox: true, margin: 0, valign: "middle" });
+  s.addText([
+    B("REQUIREMENTS — protect the glass and edges; keep USB-C + SD card reachable (setup and logs);"),
+    B("keep all 3 board buttons usable; keep 18650 battery bay, speaker and rear connector open;"),
+    B("plastic body only — zero RF shielding of the BLE antenna; printable overnight on a hobby printer.", true)],
+    { x: 0.6, y: 2.55, w: 6.6, h: 1.6, fontSize: 12, fontFace: BFONT, color: "222A3F", isTextBox: true, margin: 0 });
+  const rows = [
+    ["FIELD", "SELECTED MODEL"],
+    ["Name", "Symmetrical case for WaveShare ESP32-S3 4.2″ RLCD"],
+    ["Author / source", "AWSW · Printables model 1610004"],
+    ["License", "CC BY-NC 4.0 (attribution, non-commercial) — fits a class project"],
+    ["Parts", "7 printed pieces: front frame, 2-piece back, 3 button caps (+ feet)"],
+    ["Fasteners", "4× M2.5×6 machine screws into the panel’s existing rear holes"]];
+  const tbl = rows.map((r, i) => r.map((c, j) => ({
+    text: c, options: { fontSize: i === 0 ? 9.5 : 10.5, bold: i === 0 || j === 0,
+      fontFace: i === 0 || j === 0 ? MONO : BFONT,
+      color: i === 0 ? PAPER : "222A3F",
+      fill: { color: i === 0 ? INK : (i % 2 ? CARD : PAPER) }, valign: "middle" } })));
+  s.addTable(tbl, { x: 0.6, y: 4.35, w: 6.6, colW: [1.75, 4.85], rowH: 0.385,
+    border: { type: "solid", color: RULE, pt: 0.75 } });
+  pic(s, D5 + "case_front.jpg", 7.65, 1.35, 5.1, 3.82, "the model, assembled: symmetrical bezel, glass fully framed (author’s photo, Printables 1610004)");
+  s.addShape("rect", { x: 7.65, y: 5.6, w: 5.1, h: 1.0, fill: { color: INK } });
+  s.addText([{ text: "BUY vs PRINT  ", options: { bold: true, fontFace: MONO, fontSize: 10, color: ACC } },
+    { text: "no commercial case exists for this panel. Printing one costs ~40 g of filament (~$1) and one printer-night.", options: { color: PAPER, fontSize: 11 } }],
+    { x: 7.85, y: 5.7, w: 4.7, h: 0.82, fontFace: BFONT, isTextBox: true, margin: 0, valign: "middle" });
+  s.addNotes("PRESENTER PREP - Sheet 11 (Josiah, ~90 s). Open with the incident: our first display arrived cracked and dead - that is not an abstract risk, it already cost us a replacement request to the sponsor. State the requirement set as engineering constraints, not wishes: every port and button the firmware needs must stay reachable, and the case must add zero RF attenuation around the BLE antenna - plastic, not metal, which is why 3D printing fits. Explain the selection: an existing open model by the maker AWSW on Printables (model number 1610004) matches the exact panel; the license is Creative Commons Attribution-NonCommercial 4.0, which permits our academic use with credit - hence the attribution printed on this sheet. Vocabulary to be ready for: RLCD = reflective LCD, the sunlight-readable panel type; 18650 = the cylindrical lithium cell size the board's holder takes; M2.5x6 = metric screw, 2.5 mm thread diameter, 6 mm length; BLE = Bluetooth Low Energy, the radio link between display and Heltec. Question you may get: 'why not design our own?' - answer: zero schedule cost beats originality; we validate fit first, and we can remix later because the license allows derivatives.");
+}
+
+// ============================================================ SHEET 12 · JOSIAH, print engineering
+{
+  const s = pres.addSlide();
+  frame(s, "JOSIAH", "print engineering");
+  title(s, "Print Engineering: Parts, Settings, Slicing");
+  const rows = [
+    ["PART FILE", "ROLE", "PRINT NOTE"],
+    ["front.3mf", "display frame — the armor", "largest part; fuzzy-skin outer walls"],
+    ["leftback / rightback.3mf", "two-piece rear cover", "splits to keep battery bay open"],
+    ["button1/2/3.3mf", "cap extensions for the 3 board buttons", "tiny — printed sequentially"],
+    ["*-with-settings.3mf", "author’s pre-sliced plates", "settings embedded, our starting point"]];
+  const tbl = rows.map((r, i) => r.map((c, j) => ({
+    text: c, options: { fontSize: i === 0 ? 9.5 : 10.5, bold: i === 0 || j === 0,
+      fontFace: i === 0 || j === 0 ? MONO : BFONT,
+      color: i === 0 ? PAPER : "222A3F",
+      fill: { color: i === 0 ? INK : (i % 2 ? CARD : PAPER) }, valign: "middle" } })));
+  s.addTable(tbl, { x: 0.6, y: 1.2, w: 7.0, colW: [2.15, 2.65, 2.2], rowH: 0.46,
+    border: { type: "solid", color: RULE, pt: 0.75 } });
+  s.addText([
+    B("0.2 mm layers, speed profile — layer height: the vertical slice thickness; 0.2 is the strength/time workhorse."),
+    B("Organic supports, bed-only — supports: sacrificial scaffolding under overhangs; ‘organic’ = tree-shaped, less scar."),
+    B("Fuzzy skin on outer walls — the nozzle jitters to texture the surface: hides layer lines, adds grip."),
+    B("No brim; satin sheet — brim: a helper skirt for bed adhesion (not needed); sheet = the print-bed surface finish."),
+    B("Sequential (‘separate part’) printing — each small part completes alone: one failure cannot ruin the plate.", true)],
+    { x: 0.6, y: 3.75, w: 7.0, h: 2.85, fontSize: 11.5, fontFace: BFONT, color: "222A3F", isTextBox: true, margin: 0 });
+  pic(s, D5 + "case_printbed.jpg", 7.95, 1.2, 4.8, 3.6, "author’s plate on a Prusa MK3: frame with organic supports, buttons + feet printed sequentially");
+  pic(s, D5 + "case_buttons.jpg", 7.95, 5.05, 2.1, 1.4, "fuzzy skin + button caps");
+  s.addShape("rect", { x: 10.45, y: 5.05, w: 2.3, h: 1.4, fill: { color: CARD }, line: { color: M.JOSIAH, width: 1.25 } });
+  s.addText([{ text: "OUR PLAN", options: { bold: true, fontFace: MONO, fontSize: 9.5, color: M.JOSIAH, breakLine: true, paraSpaceAfter: 3 } },
+    { text: "PETG, black, 0.2 mm · ~40 g · one overnight run · print when replacement panel ships", options: { fontSize: 10, color: "222A3F" } }],
+    { x: 10.6, y: 5.15, w: 2.05, h: 1.25, fontFace: BFONT, isTextBox: true, margin: 0 });
+  s.addNotes("PRESENTER PREP - Sheet 12 (Josiah, ~2 min). Walk the parts table first - seven pieces, and the reason the back is TWO pieces is functional: the split leaves the 18650 battery bay and speaker reachable without disassembly. Then translate every slicer term on the sheet, because the room will not all be printer people: 3MF is the modern print file format (geometry PLUS settings, unlike bare STL); layer height 0.2 mm means each deposited slice is a fifth of a millimeter; supports are sacrificial scaffolding for overhangs and 'organic' means tree-like trunks that touch less surface, so less scarring; fuzzy skin is deliberate nozzle jitter for texture; a brim is a one-layer skirt that fights warping - this model doesn't need one; sequential printing finishes each small part before starting the next so a mid-plate failure cannot wreck everything. Material call: PETG over PLA for a vehicle - a dashboard in Texas sun exceeds PLA's ~60 C glass transition; PETG holds to ~80 C. Point at the bed photo: that is the author's actual plate on a Prusa MK3 - organic supports visible inside the frame. Our plan box: one overnight run, about a dollar of filament, timed to the replacement panel's arrival.");
+}
+
+// ============================================================ SHEET 13 · JOSIAH, assembly & integration
+{
+  const s = pres.addSlide();
+  frame(s, "JOSIAH", "assembly + integration");
+  title(s, "Assembly, Access, and Vehicle Fit");
+  const steps = [
+    ["1", "Seat panel in front frame", "glass fully captured by the symmetrical bezel"],
+    ["2", "Clip on left + right back halves", "battery bay, speaker, rear connector stay open"],
+    ["3", "Drive 4× M2.5×6 into existing holes", "⚠ longer screws can crack the panel — 6 mm max"],
+    ["4", "Press 3 button caps into top row", "BOOT / RESET / USER stay clickable through the case"]];
+  steps.forEach((st, i) => {
+    const y = 1.25 + i * 0.88;
+    s.addShape("rect", { x: 0.6, y, w: 0.55, h: 0.7, fill: { color: M.JOSIAH } });
+    s.addText(st[0], { x: 0.6, y: y + 0.07, w: 0.55, h: 0.56, align: "center", fontSize: 18, bold: true, color: PAPER, fontFace: MONO, isTextBox: true, margin: 0 });
+    s.addShape("rect", { x: 1.15, y, w: 6.05, h: 0.7, fill: { color: i % 2 ? CARD : PAPER }, line: { color: RULE, width: 0.75 } });
+    s.addText([{ text: st[1] + "   ", options: { bold: true, fontSize: 11 } },
+      { text: st[2], options: { fontSize: 10, color: i === 2 ? RED : MUT } }],
+      { x: 1.32, y: y + 0.04, w: 5.75, h: 0.62, fontFace: BFONT, color: INK, isTextBox: true, margin: 0, valign: "middle" });
+  });
+  s.addText([
+    B("RF check: PETG/PLA are radio-transparent — BLE link budget unchanged (verified vs bare panel after build)."),
+    B("Vehicle fit: flat base for dash mounting; optional angled feet for bench; USB-C exits sideways for strain relief."),
+    B("Thermals: RLCD is reflective — no backlight heat; ESP32-S3 dissipates <1 W; vented enough by port openings.", true)],
+    { x: 0.6, y: 5.05, w: 6.6, h: 1.6, fontSize: 11.5, fontFace: BFONT, color: "222A3F", isTextBox: true, margin: 0 });
+  pic(s, D5 + "case_ports.jpg", 7.65, 1.25, 5.1, 3.82, "access preserved under armor: USB-C and SD card reachable without opening the case");
+  s.addShape("rect", { x: 7.65, y: 5.5, w: 5.1, h: 1.1, fill: { color: INK } });
+  s.addText([{ text: "ACCEPTANCE  ", options: { bold: true, fontFace: MONO, fontSize: 10, color: GRN } },
+    { text: "case closes with zero pressure on glass · all ports/buttons usable · BLE RSSI within 2 dB of bare panel · survives a 1 m drop onto carpet", options: { color: PAPER, fontSize: 10.5 } }],
+    { x: 7.85, y: 5.6, w: 4.7, h: 0.92, fontFace: BFONT, isTextBox: true, margin: 0, valign: "middle" });
+  s.addNotes("PRESENTER PREP - Sheet 13 (Josiah, ~90 s). Assembly is four steps and one warning: the M2.5 holes are IN the display's own back, so screw length is a hard limit - the author flags that overlong screws press the glass; 6 mm, no substitutes. Explain what stays reachable and why it matters operationally: USB-C is how we flash and read logs, the SD slot is future data logging, the three buttons are BOOT (bootloader entry for flashing), RESET, and the user button. RF point for the sponsor: the enclosure is thermoplastic, effectively transparent at 2.4 GHz, so the BLE link to the Heltec is untouched - but we still verify by comparing RSSI (received signal strength indicator) cased vs bare, budgeting 2 dB as the pass line. Thermal point: this is a REFLECTIVE LCD - it uses ambient light, no backlight, so the panel adds almost no heat; the ESP32-S3 under load is below a watt, and the port cutouts provide the airflow. Close on the acceptance box - four measurable checks, same discipline as the radio sheets: nothing counts as done until each line is ticked on the bench.");
+}
+
+// ============================================================ SHEET 14 · CANNON, drive test protocol
+{
+  const s = pres.addSlide();
+  frame(s, "CANNON", "two-vehicle drive test plan");
+  title(s, "Next Milestone: Two-Vehicle Drive Test");
+  const rows = [
+    ["PHASE", "PROCEDURE", "WHAT IS LOGGED"],
+    ["Static A", "both vehicles parked 100 m apart, engines on", "SNR baseline, 10 consecutive traceroutes"],
+    ["Convoy", "follow at 2–5 car lengths, 20 min city loop", "update age on display, every position packet"],
+    ["Split", "diverge to 0.5 / 1 / 2 km separations", "SNR + delivery vs GPS-measured distance"],
+    ["Rejoin", "converge from max range back to convoy", "reacquisition time after silence"],
+    ["Stop test", "both parked, exchange canned messages", "two-way texts, counter honesty check"]];
+  const tbl = rows.map((r, i) => r.map((c, j) => ({
+    text: c, options: { fontSize: i === 0 ? 9.5 : 10.5, bold: i === 0 || j === 0,
+      fontFace: i === 0 || j === 0 ? MONO : BFONT,
+      color: i === 0 ? PAPER : "222A3F",
+      fill: { color: i === 0 ? INK : (i % 2 ? CARD : PAPER) }, valign: "middle" } })));
+  s.addTable(tbl, { x: 0.6, y: 1.2, w: 7.4, colW: [1.3, 3.3, 2.8], rowH: 0.5,
+    border: { type: "solid", color: RULE, pt: 0.75 } });
+  s.addText([
+    B("Metrics declared in advance (same rule as Week 4): p95 partner-position age ≤ 15 s while moving;"),
+    B("zero silent link drops in convoy; reacquisition after split ≤ 60 s; counters honest at every stop."),
+    B("Instrumentation: one laptop per vehicle is NOT required — the radios log to their node DBs; we pull tables after each phase over USB.", true)],
+    { x: 0.6, y: 4.35, w: 7.4, h: 1.9, fontSize: 11.5, fontFace: BFONT, color: "222A3F", isTextBox: true, margin: 0 });
+  s.addShape("rect", { x: 8.35, y: 1.2, w: 4.45, h: 2.6, fill: { color: CARD }, line: { color: M.CANNON, width: 1.5 } });
+  s.addText([
+    { text: "PREREQUISITES — ALL MET 09-25", options: { bold: true, fontFace: MONO, fontSize: 10.5, color: M.CANNON, breakLine: true, paraSpaceAfter: 5 } },
+    { text: "✓ two-way link on Group9 (sheet 06)\n✓ both radios full drive spec, verified\n✓ honest liveness counters (sheet 08)\n✓ airtime headroom held (sheet 09)\n✓ canned message chain for stop tests", options: { fontSize: 11, color: "222A3F" } }],
+    { x: 8.55, y: 1.35, w: 4.1, h: 2.3, fontFace: BFONT, isTextBox: true, margin: 0 });
+  s.addShape("rect", { x: 8.35, y: 4.05, w: 4.45, h: 2.55, fill: { color: INK } });
+  s.addText([
+    { text: "GANTT STATE", options: { bold: true, fontSize: 10.5, color: ACC, fontFace: MONO, breakLine: true, paraSpaceAfter: 5 } },
+    { text: "“Two-vehicle drive tests” moved 0% → 20% (prep complete). The W8–W9 range characterization inherits the Split-phase SNR-vs-distance log and plots it against sheet 10’s predicted curve.", options: { color: PAPER, fontFace: BFONT, fontSize: 11.5 } }],
+    { x: 8.55, y: 4.2, w: 4.1, h: 2.3, fontSize: 11.5, isTextBox: true, margin: 0 });
+  s.addNotes("PRESENTER PREP - Sheet 14 (Cannon, ~2 min). This is the test we could not run until this week - every prerequisite in the pink box was closed on September 25. Walk the five phases in order and give each its purpose: Static A calibrates what 'good' looks like at trivial range; Convoy is the actual product experience - the display's partner age should tick 10-15 s continuously; Split turns distance into data - we drive apart in steps and log SNR (signal-to-noise ratio) against GPS distance, which becomes the measured curve to overlay on the link-budget prediction; Rejoin measures how fast the pair re-locks after real silence - our acceptance is under a minute; Stop test exercises the canned-message chain end to end. Emphasize the discipline line: metrics are declared BEFORE the drive, so success cannot be redefined afterward - p95 means the 95th percentile, i.e., all but the worst 5% of samples must beat 15 seconds. Instrumentation point: the radios themselves are the loggers; node databases are pulled over USB between phases, no laptop rigs in cars. Hand-off: the same logs seed the Week 8-9 formal range characterization.");
+}
+
+// ============================================================ SHEET 15 · bench evidence
 {
   const s = pres.addSlide();
   frame(s, "CANNON", "bench evidence");
@@ -424,13 +565,99 @@ const B = (text, last) => ({ text, options: { bullet: { code: "25AA" }, breakLin
     ["[5] Meshtastic docs \u2014 Telemetry module & intervals", "https://meshtastic.org/docs/configuration/module/telemetry/"],
     ["[6] Meshtastic docs \u2014 Encryption: AES-256 channels, PKC direct messages", "https://meshtastic.org/docs/overview/encryption/"],
     ["[7] Semtech AN1200.13 \u2014 LoRa modem time-on-air calculation", "https://www.semtech.com/design-support/lora-calculator"],
-    ["[8] 47 CFR \u00a7 15.247 \u2014 US 902\u2013928 MHz ISM rules (Cornell LII)", "https://www.law.cornell.edu/cfr/text/47/15.247"]];
+    ["[8] 47 CFR \u00a7 15.247 \u2014 US 902\u2013928 MHz ISM rules (Cornell LII)", "https://www.law.cornell.edu/cfr/text/47/15.247"],
+    ["[9] AWSW \u2014 Symmetrical case for WaveShare ESP32-S3 4.2\u2033 RLCD, Printables 1610004, CC BY-NC 4.0", "https://www.printables.com/model/1610004-symmetrical-case-for-waveshare-esp32-s3-42inch-rl"]];
   refs.forEach((r, i) => {
-    const y = 4.35 + i * 0.29;
+    const y = 4.32 + i * 0.27;
     s.addText(r[0], { x: 0.6, y, w: 12.2, h: 0.27, fontSize: 10, fontFace: BFONT, color: "1155CC",
       hyperlink: { url: r[1] }, isTextBox: true, margin: 0 });
   });
   s.addNotes("Close on the as-built table - this is the contract the drive test inherits, every row verified twice (read-back plus OLED). References: [1] backs every sensitivity and SNR number quoted; [2] and [6] together explain the root-cause sheets - name-derived frequency and layered encryption; [3] and [4] back the airtime sheet; [5] the heartbeat; [7] the time-on-air equation; [8] the regulatory envelope for +30 dBm in this band. Next milestones on the board: two-vehicle drive test (in progress, 20%), then range characterization W8-W9 plotted against sheet 10's predicted curve.");
+}
+
+// ============================================================ SHEET 17 · nomenclature I
+{
+  const s = pres.addSlide();
+  frame(s, null, "nomenclature I");
+  title(s, "Nomenclature I: Acronyms & Abbreviations");
+  const L = [
+    ["LoRa", "\u201cLong Range\u201d \u2014 chirp spread-spectrum radio modulation"],
+    ["SF", "Spreading Factor \u2014 chips per symbol = 2^SF; higher = slower, more sensitive"],
+    ["BW", "Bandwidth \u2014 RF channel width; ours 250 kHz"],
+    ["CR", "Coding Rate \u2014 forward-error-correction ratio; 4:5 = 1 parity per 4 data bits"],
+    ["PHY", "Physical layer \u2014 the radio chip + modulation level of the stack"],
+    ["MCU", "Microcontroller Unit \u2014 the ESP32-S3 processor"],
+    ["GNSS / GPS", "Global Navigation Satellite System / the US constellation"],
+    ["BLE", "Bluetooth Low Energy \u2014 display\u2194radio link at 2.4 GHz"],
+    ["RLCD", "Reflective LCD \u2014 sunlight-readable, backlight-free panel"],
+    ["OLED", "Organic LED \u2014 the small status screen on each Heltec radio"],
+    ["ISM", "Industrial-Scientific-Medical \u2014 license-free band (US: 902\u2013928 MHz)"],
+    ["FCC / CFR", "US radio regulator / Code of Federal Regulations (\u00a715.247 is our rule)"],
+    ["SMA", "SubMiniature-A \u2014 the screw-on antenna connector"]];
+  const R = [
+    ["AES-256", "Advanced Encryption Standard, 256-bit key \u2014 channel encryption"],
+    ["PSK", "Pre-Shared Key \u2014 the secret both radios hold in the channel URL"],
+    ["PKC", "Public-Key Cryptography \u2014 per-node keys used by direct messages"],
+    ["DM", "Direct Message \u2014 addressed to one node (vs broadcast to all)"],
+    ["ACK / NAK", "ACKnowledge / Negative-AcKnowledge \u2014 delivery yes / delivery failed"],
+    ["SNR", "Signal-to-Noise Ratio \u2014 signal strength above the noise, in dB"],
+    ["dB / dBm / dBi", "ratio in decibels / power vs 1 milliwatt / antenna gain vs isotropic"],
+    ["ChUtil", "Channel Utilization \u2014 % of the last minute the channel carried RF"],
+    ["ToA", "Time on Air \u2014 how long one packet occupies the channel"],
+    ["CSMA", "Carrier-Sense Multiple Access \u2014 listen before transmit"],
+    ["djb2", "Daniel J. Bernstein\u2019s string hash \u2014 picks our frequency slot"],
+    ["DTR", "Data Terminal Ready \u2014 serial pin whose toggle hard-resets the ESP32"],
+    ["3MF / PETG / PLA", "3D print file format / two thermoplastic filament materials"]];
+  [[L, 0.6], [R, 6.75]].forEach(([rows, x]) => {
+    const tbl = rows.map((r, i) => r.map((c, j) => ({
+      text: c, options: { fontSize: 9.5, bold: j === 0,
+        fontFace: j === 0 ? MONO : BFONT, color: j === 0 ? INK : "222A3F",
+        fill: { color: i % 2 ? CARD : PAPER }, valign: "middle" } })));
+    s.addTable(tbl, { x, y: 1.2, w: 6.0, colW: [1.5, 4.5], rowH: 0.415,
+      border: { type: "solid", color: RULE, pt: 0.75 } });
+  });
+  s.addNotes("PRESENTER PREP - Sheet 17 (whoever fields questions; do not read aloud). This sheet exists so no acronym in the deck is unexplained - point the audience to it once, early ('everything shorthand is decoded on sheet 17'), then leave it for Q&A. Highest-value entries to know cold if asked: SF (spreading factor) - 2 to the SF chips encode each symbol, which is why SF11 is slow but decodes below the noise; dB vs dBm vs dBi - a dB is always a RATIO, dBm anchors it to one milliwatt of power, dBi anchors antenna gain to a perfect point radiator; PSK vs PKC - the channel key everyone shares versus the per-node keypair used only for direct messages - our week's NAKs came from the second one; djb2 - a 1990s string hash, five lines of code, that quietly doubles as Meshtastic's frequency planner. RLCD deserves one sentence: reflective LCD uses ambient light instead of a backlight - that is why it is readable in direct sun on a dashboard and why the case has no thermal problem.");
+}
+
+// ============================================================ SHEET 18 · nomenclature II
+{
+  const s = pres.addSlide();
+  frame(s, null, "nomenclature II");
+  title(s, "Nomenclature II: Every Formula, Symbol by Symbol");
+  const blocks = [
+    ["FREQUENCY SLOT  (sheet 03)", "eq_slot.png", 5.9, [
+      ["f_slot", "the RF frequency the radio tunes to"],
+      ["f_start", "bottom of the US band = 902.0 MHz"],
+      ["BW/2", "half a channel \u2014 centers the slot"],
+      ["djb2(name) mod N", "hash of the channel name, wrapped to 0..103"],
+      ["N_slots = 104", "26 MHz of band \u00f7 250 kHz per channel"]]],
+    ["LIVENESS  (sheet 07)", "eq_online.png", 4.4, [
+      ["\u21d4", "\u201cif and only if\u201d \u2014 true exactly when the right side holds"],
+      ["t_now", "the radio\u2019s own clock, seconds since 1970 (epoch)"],
+      ["t_last_heard(n)", "stored timestamp of the last packet from node n"],
+      ["7200 s", "the 2-hour \u201conline\u201d window"]]],
+    ["TIME ON AIR  (sheet 09)", "eq_toa.png", 5.9, [
+      ["T_sym = 2^SF/BW", "seconds per symbol: 2048 chips \u00f7 250,000 chips/s = 8.19 ms"],
+      ["N_pre + 4.25", "preamble symbols the receiver locks onto"],
+      ["8 + N_payload", "fixed header + payload symbol count"],
+      ["T_pkt", "total channel time one packet costs (~0.5 s)"]]],
+    ["LINK BUDGET  (sheet 10)", "eq_budget.png", 5.9, [
+      ["P_rx / P_tx", "received / transmitted power, in dBm"],
+      ["G_tx, G_rx", "antenna gains in dBi (~0 for our whips)"],
+      ["20log\u2081\u2080d + 20log\u2081\u2080f \u2212 147.55", "free-space path loss: +6 dB per doubled distance"],
+      ["S = \u2212131 dBm", "SX1262 sensitivity: weakest decodable signal at SF11/250k"]]]];
+  const pos = [[0.6, 1.15], [6.9, 1.15], [0.6, 4.0], [6.9, 4.0]];
+  blocks.forEach((b, k) => {
+    const [x, y] = pos[k];
+    s.addText(b[0], { x, y, w: 5.9, h: 0.26, fontSize: 10.5, bold: true, fontFace: MONO, color: ACC, isTextBox: true, margin: 0 });
+    s.addImage({ path: D5 + b[1], x, y: y + 0.28, w: b[2], h: b[2] > 5 ? 0.52 : 0.5 });
+    const tbl = b[3].map((r, i) => r.map((c, j) => ({
+      text: c, options: { fontSize: 8.8, bold: j === 0, fontFace: j === 0 ? MONO : BFONT,
+        color: j === 0 ? INK : "222A3F", fill: { color: i % 2 ? CARD : PAPER }, valign: "middle" } })));
+    s.addTable(tbl, { x, y: y + 0.88, w: 5.9, colW: [2.05, 3.85], rowH: 0.335,
+      border: { type: "solid", color: RULE, pt: 0.5 } });
+  });
+  s.addNotes("PRESENTER PREP - Sheet 18 (reference; walk it only if asked). Each quadrant re-prints one of the deck's four equations and decodes it term by term. Frequency slot: read it as 'start of band, plus half a channel to sit centered, plus hash-of-the-name channels up' - the whole root cause of our silent week lives in that middle term. Liveness: the double arrow means equivalence - 'online' is nothing but this comparison; epoch means seconds counted from January 1st 1970, the universal computer clock. Time on air: the only non-obvious constant is 4.25 - a fixed fraction of the preamble the LoRa standard adds beyond the counted symbols; everything else is symbol counting times 8.19 ms. Link budget: minus 147.55 looks magic but is just the unit bookkeeping of meters and hertz in free-space path loss; the physical content is '+6 dB of loss per doubling of distance'. If someone asks why sensitivity is negative: dBm is logarithmic, so -131 dBm is a tenth of a millionth of a millionth of a milliwatt - the radio decodes signals that small because SF11 spreads each bit across 2048 chips.");
 }
 
 pres.writeFile({ fileName: "C:/Users/deogr/Documents/Fall Project/Off-Grid Vehicle dection project/docs/presentations/Group9_Presentation5_RadioLink.pptx" })
