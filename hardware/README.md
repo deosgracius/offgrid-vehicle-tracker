@@ -63,6 +63,16 @@ record can outlive wipes and commanded reboots on the bench. It heals by
 itself once real traffic flows; don't chase it. Leave bench radios OFF
 USB when observing the online counters.
 
+**Stale-pubkey trap (2026-09-27):** broadcasts work but DIRECT packets
+(position requests, DMs) silently time out in ONE direction = the requester
+holds an outdated public key for the peer (keys regenerate on factory
+re-flash). Direct traffic is encrypted to the STORED key; the peer drops what
+it cannot decrypt, with no NAK. Fix: `--reset-nodedb` on the requester, wait
+~1 min for NodeInfo relearn, retry — verified: request then returned the
+peer's live fix. Also: a stale node-DB position entry poisons the distance
+screen (ours showed ~11 km between radios on the same desk) until any fresh
+position packet overwrites it.
+
 **Flat-battery wedge (2026-09-27):** a radio whose battery ran flat can come
 back half-alive when charged: OLED renders and shows a GPS fix, but the LoRa
 TX and USB serial are both frozen (nothing heard from it for 18 h; CLI could
