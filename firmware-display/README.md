@@ -77,7 +77,9 @@ verified on the OLED LoRa screen) and radio 1 set to `bluetooth.mode NO_PIN`.
 4. [ ] Own position appears (radio 1 near a window / outside, needs a GPS fix).
 5. [ ] Partner appears: radio 2 on and with a fix — arrow, distance, bearing
        populate from its broadcasts. Ages tick honestly.
-6. [ ] **Position-request button (new, commit `01b9373`)**: let radio 2 sit
+6. [ ] **Position-request button (commit `01b9373`; radio-level exchange
+       pre-proven 2026-09-27: CLI `--request-position` returned the partner's
+       live fix at full precision — only the button→BLE write is untested)**: let radio 2 sit
        PARKED with a fix so its cadence drops to 60 s. Wait until the partner
        age on the display reads ≥ 30 s, then press BOOT on the display.
        Expect: serial logs `position request sent to 0x...`, and the partner

@@ -63,6 +63,13 @@ record can outlive wipes and commanded reboots on the bench. It heals by
 itself once real traffic flows; don't chase it. Leave bench radios OFF
 USB when observing the online counters.
 
+**Flat-battery wedge (2026-09-27):** a radio whose battery ran flat can come
+back half-alive when charged: OLED renders and shows a GPS fix, but the LoRa
+TX and USB serial are both frozen (nothing heard from it for 18 h; CLI could
+not connect on a working COM port). A screen that looks fine proves nothing —
+check its LAST-HEARD age on the OTHER radio. Cure: full power-cycle (off 5 s,
+on); it announces itself within a minute of a clean boot.
+
 **Flashing trap:** `pio run -t upload` auto-picks the only COM port — with two
 identical ESP32-S3 boards, ALWAYS pass `--upload-port` and verify which board
 is on which port first (unplug one and watch which port disappears). We once
