@@ -62,6 +62,31 @@ do this (stock Meshtastic supports only a static `tzdef` string — currently
 set to CST6CDT for the bench); that screen is not driver-facing, so cosmetic.
 Implementation slot: a `nav/local_time` helper feeding Josiah's UI.
 
+## Replacement-display bring-up checklist (run top to bottom when the new panel arrives)
+
+Precondition: both radios provisioned per `hardware/README.md` (Group9 @ 912.875,
+verified on the OLED LoRa screen) and radio 1 set to `bluetooth.mode NO_PIN`.
+
+1. [ ] Assemble the 3D-printed case FIRST (armor on before first power-up;
+       M2.5×6 screws max — see the case notes in `hardware/README.md`).
+2. [ ] `pio run -e display -t upload` (SIM_MODE) — RLCD shows the sim scenarios;
+       BOOT cycles them. Proves panel + flash + UI with zero radios.
+3. [ ] `pio run -e display-ble -t upload`, then power display and radio 1
+       TOGETHER ("ignition-on" flow) — serial shows connect → pair → subscribe →
+       config dump; screen shows RADIO LINK connected.
+4. [ ] Own position appears (radio 1 near a window / outside, needs a GPS fix).
+5. [ ] Partner appears: radio 2 on and with a fix — arrow, distance, bearing
+       populate from its broadcasts. Ages tick honestly.
+6. [ ] **Position-request button (new, commit `01b9373`)**: let radio 2 sit
+       PARKED with a fix so its cadence drops to 60 s. Wait until the partner
+       age on the display reads ≥ 30 s, then press BOOT on the display.
+       Expect: serial logs `position request sent to 0x...`, and the partner
+       age snaps to ~2 s within a couple of seconds — that reply came from the
+       want-response request, not the schedule. If it does not: check serial
+       for `no partner known yet` (node DB still empty) or `no radio link`.
+7. [ ] BLE RSSI sanity with the case on: within ~2 dB of the bare-panel value
+       (case acceptance criterion).
+
 ## Next steps
 
 - **Deo** — implement `ble_link.cpp` per the milestones in its header comment. Before
