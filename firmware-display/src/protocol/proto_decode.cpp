@@ -74,6 +74,27 @@ bool proto_decode_from_radio(const uint8_t *buf, size_t len) {
     return true;
 }
 
+size_t proto_encode_position_request(uint8_t *buf, size_t buflen,
+                                     uint32_t dest_num, uint32_t packet_id) {
+    meshtastic_ToRadio tr = meshtastic_ToRadio_init_default;
+    tr.which_payload_variant = meshtastic_ToRadio_packet_tag;
+    meshtastic_MeshPacket *p = &tr.packet;
+    p->to = dest_num;
+    p->id = packet_id;          // nonzero so the mesh can dedupe retransmits
+    p->channel = 0;             // primary channel (Group9) — channel-key encrypted
+    p->hop_limit = 3;
+    p->which_payload_variant = meshtastic_MeshPacket_decoded_tag;
+    p->decoded.portnum = meshtastic_PortNum_POSITION_APP;
+    p->decoded.want_response = true;  // peer's PositionModule replies with its fix
+    p->decoded.payload.size = 0;      // empty Position — a pure request
+    pb_ostream_t os = pb_ostream_from_buffer(buf, buflen);
+    if (!pb_encode(&os, meshtastic_ToRadio_fields, &tr)) {
+        Serial.printf("[proto] pos-request encode failed: %s\n", PB_GET_ERROR(&os));
+        return 0;
+    }
+    return os.bytes_written;
+}
+
 size_t proto_encode_want_config(uint8_t *buf, size_t buflen, uint32_t nonce) {
     s_want_config_nonce = nonce;
     s_config_complete = false;

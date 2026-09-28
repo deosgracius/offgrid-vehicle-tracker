@@ -22,3 +22,8 @@ typedef enum {
 void ble_link_init(void);          // start NimBLE, load bond keys from NVS
 void ble_link_task(void *arg);     // FreeRTOS task: runs the state machine forever
 BleLinkState ble_link_state(void);
+
+// Ask the partner radio for its position right now (instead of waiting for its
+// next scheduled broadcast). Safe from any task: sets a flag the BLE task acts
+// on. Returns false if not linked to the radio or no partner is known yet.
+bool ble_link_request_partner_position(void);

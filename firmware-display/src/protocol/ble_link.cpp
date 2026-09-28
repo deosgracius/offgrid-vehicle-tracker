@@ -20,6 +20,7 @@ static const uint32_t PAIRING_PIN = 123456;
 static volatile BleLinkState s_state = BLE_SCANNING;
 static volatile bool s_notify_pending = false;
 static volatile bool s_disconnected = false;
+static volatile bool s_pos_request_pending = false;
 
 static NimBLEClient *s_client;
 static NimBLERemoteCharacteristic *s_toRadio, *s_fromRadio, *s_fromNum;
@@ -43,6 +44,35 @@ static void remember_radio(const NimBLEAddress &addr) {
 }
 
 BleLinkState ble_link_state(void) { return s_state; }
+
+bool ble_link_request_partner_position(void) {
+    if (s_state != BLE_SUBSCRIBED && s_state != BLE_DRAINING) {
+        Serial.println("[ble] pos request: no radio link");
+        return false;
+    }
+    if (node_table_partner_num() == 0) {
+        Serial.println("[ble] pos request: no partner known yet");
+        return false;
+    }
+    s_pos_request_pending = true; // BLE task owns the GATT client; it sends
+    return true;
+}
+
+// Runs on the BLE task only (GATT writes are not thread-safe elsewhere).
+static void send_position_request(void) {
+    uint32_t partner = node_table_partner_num();
+    if (partner == 0 || !s_toRadio) return;
+    uint8_t buf[96];
+    uint32_t pkt_id = (uint32_t)esp_random();
+    if (pkt_id == 0) pkt_id = 1;
+    size_t n = proto_encode_position_request(buf, sizeof(buf), partner, pkt_id);
+    if (n == 0 || !s_toRadio->writeValue(buf, n, /*response*/ true)) {
+        Serial.println("[ble] pos request write failed");
+        return;
+    }
+    Serial.printf("[ble] position request sent to 0x%08lx (id %08lx)\n",
+                  (unsigned long)partner, (unsigned long)pkt_id);
+}
 
 class ClientCallbacks : public NimBLEClientCallbacks {
     void onConnect(NimBLEClient *c) override {
@@ -178,6 +208,7 @@ static void teardown(void) {
     s_toRadio = s_fromRadio = s_fromNum = nullptr;
     s_disconnected = false;
     s_notify_pending = false;
+    s_pos_request_pending = false;
     proto_reset_config_state();
     s_state = BLE_SCANNING;
 }
@@ -255,6 +286,10 @@ void ble_link_task(void *arg) {
         if (s_notify_pending) {
             s_notify_pending = false;
             drain_from_radio();
+        }
+        if (s_pos_request_pending) {
+            s_pos_request_pending = false;
+            send_position_request();
         }
         uint32_t now = millis();
         if (now - last_publish_ms >= 1000) {

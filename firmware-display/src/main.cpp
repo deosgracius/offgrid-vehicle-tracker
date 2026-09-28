@@ -30,6 +30,26 @@ static void sim_task(void *arg) {
         vTaskDelay(pdMS_TO_TICKS((int)(DT_S * 1000)));
     }
 }
+#else
+// BOOT button (GPIO0) in BLE mode = "request partner position": the radio
+// sends a POSITION_APP want-response packet, the partner answers immediately
+// instead of at its next scheduled broadcast. Useful when the partner is
+// parked (60 s cadence) and you want its fix NOW.
+#define POS_REQ_BTN_PIN 0
+static void button_task(void *arg) {
+    (void)arg;
+    pinMode(POS_REQ_BTN_PIN, INPUT_PULLUP);
+    bool was_down = false;
+    for (;;) {
+        bool down = digitalRead(POS_REQ_BTN_PIN) == LOW;
+        if (down && !was_down) {
+            Serial.println("[btn] request partner position");
+            ble_link_request_partner_position();
+        }
+        was_down = down;
+        vTaskDelay(pdMS_TO_TICKS(30)); // poll + debounce
+    }
+}
 #endif
 
 void setup() {
@@ -48,6 +68,7 @@ void setup() {
 #else
     ble_link_init();
     xTaskCreatePinnedToCore(ble_link_task, "ble", 8192, nullptr, 3, nullptr, 0);
+    xTaskCreatePinnedToCore(button_task, "btn", 2048, nullptr, 2, nullptr, 0);
 #endif
     xTaskCreatePinnedToCore(ui_render_task, "ui", 8192, nullptr, 1, nullptr, 1);
 }
