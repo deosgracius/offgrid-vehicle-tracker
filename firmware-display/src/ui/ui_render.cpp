@@ -183,20 +183,46 @@ static void render_nav(const TrackerState &st, const NavOutput &nav,
         draw_blinker(nav.arrow_deg > 0 ? 1 : -1, fabsf(nav.arrow_deg) > 90.0f, phase);
     }
 
-    // right column, clear of the ring
+    // right column, clear of the ring — glanceable hierarchy for driving:
+    //   huge distance, then WHERE in words, then data age, then own speed.
     fmt_miles(nav.distance_m, dist, sizeof(dist));
     int w = (int)strlen(dist) * 8 * 4;
-    rlcd_draw_text(RLCD_W - w - 10, 92, dist, 4, false);
+    rlcd_draw_text(RLCD_W - w - 10, 92, dist, 4, false);  // below blinker zone
+
+    // "where" in words: clock position while driving (relative to the nose),
+    // compass cardinal while stopped (no heading to be relative to).
+    if (nav.heading_valid) {
+        int hour = (int)roundf(nav_wrap360(nav.arrow_deg) / 30.0f) % 12;
+        if (hour == 0) hour = 12;
+        snprintf(buf, sizeof(buf), "at %d o'clock", hour);
+    } else {
+        snprintf(buf, sizeof(buf), "%s of you", cardinal8(nav.bearing_deg));
+    }
+    rlcd_draw_text(RLCD_W - (int)strlen(buf) * 16 - 10, 128, buf, 2, false);
+
+    // data age — inverted (white-on-black) past 30 s as an early staleness cue
     fmt_age(st.partner.age_s, age, sizeof(age));
     snprintf(buf, sizeof(buf), "age %s", age);
-    rlcd_draw_text(RLCD_W - (int)strlen(buf) * 16 - 10, 132, buf, 2, false);
+    {
+        int tw = (int)strlen(buf) * 16;
+        bool aging = st.partner.age_s > 30;
+        if (aging) rlcd_fill_rect(RLCD_W - tw - 14, 154, tw + 8, 22, false);
+        rlcd_draw_text(RLCD_W - tw - 10, 157, buf, 2, aging);
+    }
+
+    // own speed, so the driving page never needs a page flip
+    if (st.self.valid) {
+        snprintf(buf, sizeof(buf), "you %.0f mph", st.self.speed_mps * 2.23694f);
+        rlcd_draw_text(RLCD_W - (int)strlen(buf) * 16 - 10, 186, buf, 2, false);
+    }
+
     if (nav.heading_valid) {
         snprintf(buf, sizeof(buf), "needle = %s", sname(st));
-        rlcd_draw_text(216, 170, buf, 1, false);
+        rlcd_draw_text(216, 216, buf, 1, false);
         snprintf(buf, sizeof(buf), "dart   = %s", pname(st));
-        rlcd_draw_text(216, 186, buf, 1, false);
+        rlcd_draw_text(216, 232, buf, 1, false);
     } else {
-        rlcd_draw_text(RLCD_W - 7 * 16 - 10, 166, "stopped", 2, false);
+        rlcd_draw_text(RLCD_W - 7 * 16 - 10, 216, "stopped", 2, false);
     }
 
     // priority banners
