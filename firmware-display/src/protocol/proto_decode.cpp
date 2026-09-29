@@ -4,6 +4,7 @@
 #include <pb_decode.h>
 #include <pb_encode.h>
 #include "meshtastic/mesh.pb.h"
+#include "meshtastic/telemetry.pb.h"
 
 static uint32_t s_want_config_nonce;
 static bool s_config_complete;
@@ -36,6 +37,15 @@ static void handle_mesh_packet(const meshtastic_MeshPacket *pkt) {
     } else if (data->portnum == meshtastic_PortNum_TEXT_MESSAGE_APP) {
         // Payload is raw UTF-8 text (not a protobuf) — canned or typed.
         node_table_text(pkt->from, data->payload.bytes, data->payload.size);
+    } else if (data->portnum == meshtastic_PortNum_TELEMETRY_APP) {
+        // Device telemetry: radio battery level for the low-battery warning.
+        meshtastic_Telemetry t = meshtastic_Telemetry_init_default;
+        pb_istream_t is = pb_istream_from_buffer(data->payload.bytes, data->payload.size);
+        if (pb_decode(&is, meshtastic_Telemetry_fields, &t) &&
+            t.which_variant == meshtastic_Telemetry_device_metrics_tag &&
+            t.variant.device_metrics.has_battery_level) {
+            node_table_battery(pkt->from, t.variant.device_metrics.battery_level);
+        }
     } else if (data->portnum == meshtastic_PortNum_NODEINFO_APP) {
         // Live node announcement: carries the User record (names + pubkey).
         meshtastic_User user = meshtastic_User_init_default;

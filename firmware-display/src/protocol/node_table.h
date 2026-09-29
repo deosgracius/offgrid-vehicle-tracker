@@ -14,9 +14,18 @@ void node_table_set_self_num(uint32_t node_num);
 void node_table_set_name(uint32_t node_num, const char *short_name);
 
 // Called by proto_decode for every TEXT_MESSAGE_APP payload (raw UTF-8, not
-// NUL-terminated). Kept as "the latest message" and published with a seq
-// bump; the UI pops it up for a few seconds.
+// NUL-terminated). Messages from OUR OWN node are ignored (the radio echoes
+// sent messages back over BLE; only the receiving display should notify).
+// Kept as latest-message popup + a small history, published with a seq bump.
 void node_table_text(uint32_t from_num, const uint8_t *text, size_t len);
+
+// Driver "clear messages" (hold KEY on the messages page): empties the
+// history and dismisses any active popup.
+void node_table_clear_messages(void);
+
+// Called by proto_decode for device telemetry: radio battery level
+// (0..100, 101 = external power).
+void node_table_battery(uint32_t from_num, uint32_t battery_level);
 
 // Called by proto_decode for every position learned (live packet or config-dump
 // snapshot). lat/lon in 1e-7 deg (Meshtastic wire format), track in 1e-5 deg,

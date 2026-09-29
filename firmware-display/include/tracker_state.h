@@ -8,12 +8,22 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define TRACKER_STATE_VERSION 4
+#define TRACKER_STATE_VERSION 5
 
 // Meshtastic short names are up to 4 UTF-8 bytes; +1 for NUL, padded.
 #define TRACKER_NAME_LEN 8
 // Longest text shown on the display popup (canned messages are ~20 chars).
 #define TRACKER_MSG_LEN  40
+// Received-message history depth (newest first; page 2 of the UI).
+#define TRACKER_MSG_HIST 4
+// Battery: 0..100 = percent, 101 = on external power, 255 = unknown.
+#define TRACKER_BATT_UNKNOWN 255
+
+typedef struct {
+    char     from[TRACKER_NAME_LEN];
+    char     text[TRACKER_MSG_LEN];
+    uint32_t ms;            // local millis() at reception (for age display)
+} TrackerMsg;
 
 // One GPS fix. Angles in degrees, distances in meters, speeds in m/s.
 typedef struct {
@@ -40,6 +50,13 @@ typedef struct {
     uint32_t msg_ms;
     char     msg_from[TRACKER_NAME_LEN];
     char     msg_text[TRACKER_MSG_LEN];
+    // Received-message history, newest first (own sent messages excluded —
+    // only the RECEIVING display notifies/logs).
+    uint8_t    msg_hist_n;
+    TrackerMsg msg_hist[TRACKER_MSG_HIST];
+    // Radio battery levels from device telemetry (TRACKER_BATT_UNKNOWN until heard).
+    uint8_t  self_batt;
+    uint8_t  partner_batt;
     // GPS wall-clock: UTC epoch seconds captured from the latest Position
     // packet, plus the local millis() when it was captured. Current UTC =
     // utc_epoch + (millis() - utc_ref_ms)/1000. 0 = no time received yet.

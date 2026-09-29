@@ -67,7 +67,22 @@ static void fill_triangle(float x0, float y0, float x1, float y1,
         }
 }
 
-static void draw_arrow(int cx, int cy, float R, float deg) {
+static void draw_seg(float x0, float y0, float x1, float y1) {
+    // Bresenham-ish segment via set_pixel, 2px thick for visibility
+    float dx = x1 - x0, dy = y1 - y0;
+    int n = (int)fmaxf(fabsf(dx), fabsf(dy));
+    if (n < 1) n = 1;
+    for (int i = 0; i <= n; i++) {
+        int x = (int)(x0 + dx * i / n), y = (int)(y0 + dy * i / n);
+        rlcd_set_pixel(x, y, false);
+        rlcd_set_pixel(x + 1, y, false);
+        rlcd_set_pixel(x, y + 1, false);
+    }
+}
+
+// solid = live data; hollow outline = position is projected/aging (the dart
+// stays honest: confident fill only while the fix is fresh).
+static void draw_arrow(int cx, int cy, float R, float deg, bool solid) {
     // dart vertically centered: tip at +0.62R, tail barbs at -0.62R
     float a = deg * (float)M_PI / 180.0f, ca = cosf(a), sa = sinf(a);
     const float px[4] = {0.0f,  0.5f * R, 0.0f,      -0.5f * R};
@@ -77,8 +92,15 @@ static void draw_arrow(int cx, int cy, float R, float deg) {
         float rx = px[i] * ca + py[i] * sa, ry = -px[i] * sa + py[i] * ca;
         sx[i] = cx + rx; sy[i] = cy - ry;
     }
-    fill_triangle(sx[0], sy[0], sx[1], sy[1], sx[2], sy[2], false);
-    fill_triangle(sx[0], sy[0], sx[2], sy[2], sx[3], sy[3], false);
+    if (solid) {
+        fill_triangle(sx[0], sy[0], sx[1], sy[1], sx[2], sy[2], false);
+        fill_triangle(sx[0], sy[0], sx[2], sy[2], sx[3], sy[3], false);
+    } else {
+        draw_seg(sx[0], sy[0], sx[1], sy[1]);
+        draw_seg(sx[1], sy[1], sx[2], sy[2]);
+        draw_seg(sx[2], sy[2], sx[3], sy[3]);
+        draw_seg(sx[3], sy[3], sx[0], sy[0]);
+    }
 }
 
 // Thin needle showing OWN heading (tip at radius R, slim base).
@@ -156,7 +178,7 @@ static void draw_mesh_tag(const TrackerState &st) {
 }
 
 static void render_nav(const TrackerState &st, const NavOutput &nav,
-                       bool warn, bool phase) {
+                       bool warn, bool phase, bool trend_ok, float trend_mph) {
     char buf[48], dist[16], age[12];
     rlcd_clear(true);
     ctext(6, pname(st), 2, false);
@@ -173,7 +195,8 @@ static void render_nav(const TrackerState &st, const NavOutput &nav,
     rlcd_draw_text(cx - 7,        cy + RING + 6,  "S", 2, false);
     rlcd_draw_text(cx - RING - 24, cy - 8,        "W", 2, false);
 
-    draw_arrow(cx, cy, RING - 14, nav.bearing_deg);          // partner
+    draw_arrow(cx, cy, RING - 14, nav.bearing_deg,           // partner
+               st.partner.age_s <= 30);                      // hollow = projected
     if (nav.heading_valid) {
         draw_needle(cx, cy, RING - 4, st.self.course_deg);   // me
     }
@@ -216,13 +239,21 @@ static void render_nav(const TrackerState &st, const NavOutput &nav,
         rlcd_draw_text(RLCD_W - (int)strlen(buf) * 16 - 10, 186, buf, 2, false);
     }
 
+    // closing/separating trend — the number a convoy driver actually watches
+    if (trend_ok) {
+        if (trend_mph > 2.0f)       snprintf(buf, sizeof(buf), "closing %.0f mph", trend_mph);
+        else if (trend_mph < -2.0f) snprintf(buf, sizeof(buf), "apart %.0f mph", -trend_mph);
+        else                        snprintf(buf, sizeof(buf), "holding");
+        rlcd_draw_text(RLCD_W - (int)strlen(buf) * 16 - 10, 210, buf, 2, false);
+    }
+
     if (nav.heading_valid) {
         snprintf(buf, sizeof(buf), "needle = %s", sname(st));
-        rlcd_draw_text(216, 216, buf, 1, false);
+        rlcd_draw_text(216, 240, buf, 1, false);
         snprintf(buf, sizeof(buf), "dart   = %s", pname(st));
-        rlcd_draw_text(216, 232, buf, 1, false);
+        rlcd_draw_text(216, 256, buf, 1, false);
     } else {
-        rlcd_draw_text(RLCD_W - 7 * 16 - 10, 216, "stopped", 2, false);
+        rlcd_draw_text(RLCD_W - 7 * 16 - 10, 238, "stopped", 2, false);
     }
 
     // priority banners
@@ -234,8 +265,12 @@ static void render_nav(const TrackerState &st, const NavOutput &nav,
     }
     else if (warn)
         banner(28, nav.arrow_deg > 0 ? "CHANGE COURSE >>" : "<< CHANGE COURSE");
+    else if (st.partner_batt <= 20) {  // partner's radio about to die
+        snprintf(buf, sizeof(buf), "%s BATTERY %u%%", pname(st), st.partner_batt);
+        banner(28, buf);
+    }
 
-    snprintf(buf, sizeof(buf), "link %s - tap:info hold:reset",
+    snprintf(buf, sizeof(buf), "link %s - tap:next hold:reset",
              st.ble_connected ? "OK" : "LOST");
     rlcd_draw_text(8, 288, buf, 1, false);
 }
@@ -264,7 +299,12 @@ static void render_status(const TrackerState &st, const NavOutput &nav) {
         snprintf(buf, sizeof(buf), "%-3s %.5f %.5f", me, st.self.lat_deg, st.self.lon_deg);
         ctext(80, buf, 2, false);
         fmt_age(st.self.age_s, age, sizeof(age));
-        snprintf(buf, sizeof(buf), "spd %.0f mph - age %s", st.self.speed_mps * 2.23694f, age);
+        if (st.self_batt <= 100)
+            snprintf(buf, sizeof(buf), "spd %.0f mph - %s - %u%%",
+                     st.self.speed_mps * 2.23694f, age, st.self_batt);
+        else
+            snprintf(buf, sizeof(buf), "spd %.0f mph - age %s",
+                     st.self.speed_mps * 2.23694f, age);
         ctext(104, buf, 2, false);
     } else {
         snprintf(buf, sizeof(buf), "%-3s waiting for GPS fix", me);
@@ -275,7 +315,10 @@ static void render_status(const TrackerState &st, const NavOutput &nav) {
         snprintf(buf, sizeof(buf), "%-3s %.5f %.5f", ptr, st.partner.lat_deg, st.partner.lon_deg);
         ctext(142, buf, 2, false);
         fmt_age(st.partner.age_s, age, sizeof(age));
-        snprintf(buf, sizeof(buf), "age %s", age);
+        if (st.partner_batt <= 100)
+            snprintf(buf, sizeof(buf), "age %s - batt %u%%", age, st.partner_batt);
+        else
+            snprintf(buf, sizeof(buf), "age %s", age);
         ctext(166, buf, 2, false);
     } else {
         snprintf(buf, sizeof(buf), "%-3s not heard yet", ptr);
@@ -288,7 +331,27 @@ static void render_status(const TrackerState &st, const NavOutput &nav) {
         snprintf(buf, sizeof(buf), "%s IS %s OF %s", ptr, cardinal8(nav.bearing_deg), me);
         ctext(250, buf, 2, false);
     }
-    rlcd_draw_text(8, 282, "tap:compass hold:reset", 1, false);
+    rlcd_draw_text(8, 282, "tap:messages hold:reset", 1, false);
+}
+
+static void render_messages(const TrackerState &st) {
+    char buf[64], age[12];
+    rlcd_clear(true);
+    ctext(8, "MESSAGES", 2, false);
+    if (st.msg_hist_n == 0) {
+        ctext(140, "no messages", 2, false);
+    } else {
+        for (int i = 0; i < st.msg_hist_n && i < TRACKER_MSG_HIST; i++) {
+            int y = 52 + i * 56;
+            fmt_age((millis() - st.msg_hist[i].ms) / 1000UL, age, sizeof(age));
+            snprintf(buf, sizeof(buf), "%s - %s ago", st.msg_hist[i].from, age);
+            rlcd_draw_text(10, y, buf, 1, false);
+            snprintf(buf, sizeof(buf), "%.24s", st.msg_hist[i].text);
+            rlcd_draw_text(10, y + 14, buf, 2, false);
+            rlcd_fill_rect(10, y + 36, RLCD_W - 20, 1, false);
+        }
+    }
+    rlcd_draw_text(8, 282, "tap:compass hold:CLEAR ALL", 1, false);
 }
 
 static void render_searching(const TrackerState &st) {
@@ -309,13 +372,21 @@ void ui_render_task(void *arg) {
     char up[16];
     int tick = 0, held = 0, flash_ticks = 0, off_ticks = 0;
     bool warn = false;
+    const char *flash_msg = "TRACKING RESET";
+    // closing/separating trend state (EMA over ~5 s of 500 ms samples)
+    float trend_ema_mps = 0.0f, prev_dist_m = 0.0f;
+    bool trend_ok = false, trend_have_prev = false;
 
     for (;;) {
-        // KEY: tap = page toggle, hold ~1 s = tracking reset
+        // KEY: tap = next page, hold ~1 s = reset (messages page: clear history)
         if (digitalRead(TRACK_RESET_PIN) == LOW) {
-            if (++held == 2) { node_table_reset(); flash_ticks = 4; }
+            if (++held == 2) {
+                if (s_page == 2) { node_table_clear_messages(); flash_msg = "MESSAGES CLEARED"; }
+                else             { node_table_reset();          flash_msg = "TRACKING RESET"; }
+                flash_ticks = 4;
+            }
         } else {
-            if (held == 1) s_page ^= 1; // released after a short tap
+            if (held == 1) s_page = (s_page + 1) % 3; // released after a short tap
             held = 0;
         }
 
@@ -323,6 +394,21 @@ void ui_render_task(void *arg) {
         tracker_store_get(&st);
         dr_apply(&st);  // project both fixes forward along course/speed (age untouched)
         NavOutput nav = nav_compute(&st);
+
+        // distance-rate: positive = closing. Only meaningful on live-ish data.
+        if (nav.valid && st.partner.age_s <= STALE_AGE_S) {
+            if (trend_have_prev) {
+                float rate = (prev_dist_m - nav.distance_m) / 0.5f;  // m/s, 500 ms ticks
+                trend_ema_mps = 0.9f * trend_ema_mps + 0.1f * rate;
+                trend_ok = true;
+            }
+            prev_dist_m = nav.distance_m;
+            trend_have_prev = true;
+        } else {
+            trend_ok = false;
+            trend_have_prev = false;
+            trend_ema_mps = 0.0f;
+        }
 
         // off-course warning state machine (5 s on, clears when back on course)
         if (nav.valid && nav.heading_valid && fabsf(nav.arrow_deg) > WARN_DEG) {
@@ -335,12 +421,14 @@ void ui_render_task(void *arg) {
 
         if (s_have_panel) {
             if (!nav.valid && s_page == 0) render_searching(st);
-            else if (s_page == 0)          render_nav(st, nav, warn, (tick & 1) == 0);
-            else                           render_status(st, nav);
+            else if (s_page == 0)          render_nav(st, nav, warn, (tick & 1) == 0,
+                                                      trend_ok, trend_ema_mps * 2.23694f);
+            else if (s_page == 1)          render_status(st, nav);
+            else                           render_messages(st);
             if (flash_ticks > 0) {
                 flash_ticks--;
                 rlcd_fill_rect(0, 130, RLCD_W, 34, false);
-                ctext(139, "TRACKING RESET", 2, true);
+                ctext(139, flash_msg, 2, true);
             }
             // Mesh text popup: "RG: Hi" for a few seconds after reception.
             if (st.msg_seq != 0 && (millis() - st.msg_ms) < MSG_POPUP_MS) {

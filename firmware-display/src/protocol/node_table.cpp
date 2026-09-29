@@ -23,27 +23,41 @@ static Entry s_self, s_partner;
 static uint32_t s_utc_epoch;   // latest GPS wall-clock seen in any packet
 static uint32_t s_utc_ref_ms;
 
-// num -> short_name cache. Names can arrive (config dump) before we know which
-// node becomes self/partner, so keep the last few and look up at publish time.
+// num -> short_name/battery cache. Data can arrive (config dump) before we
+// know which node becomes self/partner, so keep the last few and look up at
+// publish time.
 #define NAME_CACHE_N 6
-typedef struct { uint32_t num; char name[TRACKER_NAME_LEN]; } NameEntry;
+typedef struct {
+    uint32_t num;
+    char     name[TRACKER_NAME_LEN];
+    uint8_t  batt;    // TRACKER_BATT_UNKNOWN until telemetry heard
+} NameEntry;
 static NameEntry s_names[NAME_CACHE_N];
 static int s_name_next;
 
-void node_table_set_name(uint32_t node_num, const char *short_name) {
-    if (node_num == 0 || short_name == NULL || short_name[0] == '\0') return;
-    for (int i = 0; i < NAME_CACHE_N; i++) {
-        if (s_names[i].num == node_num) {
-            strncpy(s_names[i].name, short_name, TRACKER_NAME_LEN - 1);
-            return;
-        }
-    }
+static NameEntry *cache_slot(uint32_t node_num) {
+    for (int i = 0; i < NAME_CACHE_N; i++)
+        if (s_names[i].num == node_num) return &s_names[i];
     NameEntry *e = &s_names[s_name_next];
     s_name_next = (s_name_next + 1) % NAME_CACHE_N;
+    memset(e, 0, sizeof(*e));
     e->num = node_num;
-    memset(e->name, 0, sizeof(e->name));
+    e->batt = TRACKER_BATT_UNKNOWN;
+    return e;
+}
+
+void node_table_set_name(uint32_t node_num, const char *short_name) {
+    if (node_num == 0 || short_name == NULL || short_name[0] == '\0') return;
+    NameEntry *e = cache_slot(node_num);
+    if (strncmp(e->name, short_name, TRACKER_NAME_LEN - 1) == 0) return;
     strncpy(e->name, short_name, TRACKER_NAME_LEN - 1);
     Serial.printf("[node] name 0x%08lx = '%s'\n", (unsigned long)node_num, e->name);
+}
+
+void node_table_battery(uint32_t from_num, uint32_t battery_level) {
+    if (from_num == 0) return;
+    NameEntry *e = cache_slot(from_num);
+    e->batt = (battery_level > 101) ? 101 : (uint8_t)battery_level;
 }
 
 static const char *lookup_name(uint32_t node_num) {
@@ -53,22 +67,44 @@ static const char *lookup_name(uint32_t node_num) {
     return "";
 }
 
-// Latest mesh text message (canned or typed).
+// Latest mesh text message (canned or typed) + a small received history.
 static uint32_t s_msg_seq;
 static uint32_t s_msg_ms;
 static uint32_t s_msg_from_num;
 static char     s_msg_text[TRACKER_MSG_LEN];
+static TrackerMsg s_hist[TRACKER_MSG_HIST];      // [0] = newest
+static uint32_t   s_hist_num[TRACKER_MSG_HIST];  // sender node nums (names resolve at publish)
+static uint8_t    s_hist_n;
 
 void node_table_text(uint32_t from_num, const uint8_t *text, size_t len) {
     if (text == NULL || len == 0) return;
+    if (from_num == s_self_num) return;  // radio echoes our own sends over BLE:
+                                         // only the RECEIVING display notifies
     if (len > TRACKER_MSG_LEN - 1) len = TRACKER_MSG_LEN - 1;
     memcpy(s_msg_text, text, len);
     s_msg_text[len] = '\0';
     s_msg_from_num = from_num;
     s_msg_ms = millis();
     s_msg_seq++;
+    // push into history, newest first
+    for (int i = TRACKER_MSG_HIST - 1; i > 0; i--) {
+        s_hist[i] = s_hist[i - 1];
+        s_hist_num[i] = s_hist_num[i - 1];
+    }
+    memset(&s_hist[0], 0, sizeof(s_hist[0]));
+    memcpy(s_hist[0].text, s_msg_text, len + 1);
+    s_hist[0].ms = s_msg_ms;
+    s_hist_num[0] = from_num;
+    if (s_hist_n < TRACKER_MSG_HIST) s_hist_n++;
     Serial.printf("[node] text from 0x%08lx: \"%s\"\n",
                   (unsigned long)from_num, s_msg_text);
+}
+
+void node_table_clear_messages(void) {
+    s_hist_n = 0;
+    s_msg_seq = 0;  // also dismisses any active popup
+    memset(s_hist, 0, sizeof(s_hist));
+    Serial.println("[node] message history cleared");
 }
 
 void node_table_init(void) {
@@ -178,6 +214,19 @@ void node_table_publish(bool ble_connected) {
                      (unsigned long)(s_msg_from_num & 0xFFFF));
         }
         strncpy(st.msg_text, s_msg_text, TRACKER_MSG_LEN - 1);
+    }
+    st.msg_hist_n = s_hist_n;
+    for (int i = 0; i < s_hist_n; i++) {
+        st.msg_hist[i] = s_hist[i];
+        const char *from = lookup_name(s_hist_num[i]);
+        if (from[0]) strncpy(st.msg_hist[i].from, from, TRACKER_NAME_LEN - 1);
+        else snprintf(st.msg_hist[i].from, TRACKER_NAME_LEN, "%04lx",
+                      (unsigned long)(s_hist_num[i] & 0xFFFF));
+    }
+    st.self_batt = st.partner_batt = TRACKER_BATT_UNKNOWN;
+    for (int i = 0; i < NAME_CACHE_N; i++) {
+        if (s_names[i].num == s_self_num)    st.self_batt = s_names[i].batt;
+        if (s_names[i].num == s_partner_num) st.partner_batt = s_names[i].batt;
     }
     tracker_store_set(&st);
 }
