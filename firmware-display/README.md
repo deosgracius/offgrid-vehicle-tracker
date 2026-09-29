@@ -62,6 +62,17 @@ do this (stock Meshtastic supports only a static `tzdef` string — currently
 set to CST6CDT for the bench); that screen is not driver-facing, so cosmetic.
 Implementation slot: a `nav/local_time` helper feeding Josiah's UI.
 
+## Fleet (as of 2026-09-29 — both displays flashed and verified)
+
+| Unit | USB MAC (SER= in port listing) | Pairs with |
+|---|---|---|
+| Display 1 | A4:CB:8F:D0:7D:40 | SF (!49b5ead4, BLE 8c:fd:49:b5:ea:d5) |
+| Display 2 | 94:A9:90:DD:14:3C | RG (!49b5bb5c, BLE 8c:fd:49:b5:bb:5d) |
+
+Radios also enumerate as 303A:1001 — their MACs start 8C:FD:49. **Check the
+SER= before any `pio ... -t upload`**: flashing a radio bricks its Meshtastic
+(see Flashing trap in hardware/README.md; nearly repeated 2026-09-29).
+
 ## Replacement-display bring-up checklist (run top to bottom when the new panel arrives)
 
 Precondition: both radios provisioned per `hardware/README.md` (Group9 @ 912.875,
