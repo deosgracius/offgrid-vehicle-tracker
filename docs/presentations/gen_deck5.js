@@ -12,7 +12,7 @@ const HFONT = "Arial", BFONT = "Arial", MONO = "Courier New";
 const D5 = "C:/Users/deogr/AppData/Local/Temp/claude/C--Users-deogr-Documents-Fall-Project-Off-Grid-Vehicle-dection-project/e8b2e8fa-1513-4aa8-a8f6-ce4fcd20e664/scratchpad/deck5/";
 const IMG = "C:/Users/deogr/AppData/Local/Temp/claude/C--Users-deogr-Documents-Fall-Project-Off-Grid-Vehicle-dection-project/e8b2e8fa-1513-4aa8-a8f6-ce4fcd20e664/images/";
 
-const TOTAL = 12;
+const TOTAL = 14;
 let sheetNo = 0;
 
 function frame(s, owner, sheetTitle) {
@@ -77,7 +77,7 @@ function pic(s, path, x, y, w, h, cap) {
     ["02\u201304", "DEO", "what makes it possible, and how the link happens"],
     ["05\u201307", "VICTOR", "the math: frequency, signal margin, airtime"],
     ["08\u201310", "CANNON", "live demo on the radios + how we tested"],
-    ["11\u201312", "JOSIAH", "3D-printed armor for the display"]];
+    ["11\u201314", "JOSIAH", "3D-printed armor + the driver display, live on glass"]];
   rows.forEach((r, i) => {
     const y = 3.75 + i * 0.62;
     s.addShape("rect", { x: 0.72, y, w: 8.3, h: 0.52, fill: { color: i % 2 ? CARD : PAPER }, line: { color: RULE, width: 0.75 } });
@@ -298,7 +298,7 @@ function pic(s, path, x, y, w, h, cap) {
   const cells = [
     [IMG + "13.jpg", "DISTANCE \u2014 fills when both\nradios hold a GPS fix"],
     [IMG + "12.jpg", "BEARING \u2014 compass direction\nto the partner vehicle"],
-    [IMG + "20.jpg", "POSITION \u2014 sats, fix, altitude\n(indoors: No Fix, honestly)"],
+    [IMG + "29.jpg", "POSITION \u2014 14 sats, full fix\n(cased radio, in-vehicle)"],
     [IMG + "27.jpg", "LAST HEARD \u2014 seconds since\neach node spoke"],
     [IMG + "9.jpg", "LORA \u2014 preset, live frequency,\nchannel utilization"],
     [IMG + "22.jpg", "SYSTEM \u2014 firmware, memory\n(ver 2.7.26 on both)"],
@@ -401,6 +401,33 @@ function pic(s, path, x, y, w, h, cap) {
     { text: "print the night the replacement panel ships \u2014 armor on before first power-up.", options: { fontSize: 10.5, color: "222A3F" } }],
     { x: 9.52, y: 5.4, w: 3.1, h: 0.9, fontFace: BFONT, isTextBox: true, margin: 0, valign: "middle" });
   s.addNotes("PRESENTER PREP - Sheet 12 (Josiah, ~90 s). Keep it brisk - five rows, one warning, one photo. Seven printed parts; the back is deliberately TWO pieces so the battery bay and speaker stay reachable without disassembly. Settings vocabulary, one breath each: 0.2 mm layers - each deposited slice a fifth of a millimeter, the strength/speed workhorse; organic supports - tree-shaped sacrificial scaffolding under overhangs, snapped off after; fuzzy skin - the nozzle deliberately jitters to texture the outer walls, hiding layer lines and adding grip; no brim - the helper skirt for bed adhesion isn't needed here. Material: PETG over PLA because a Texas dashboard exceeds PLA's roughly 60-degree softening point; PETG holds to about 80. Assembly is four moves ending in the ONE RULE row - the screw holes are in the display's own back, so 6 mm maximum length or the screws press the glass; this is the model author's own warning. Acceptance is measurable, same discipline as the radio sheets: no pressure on glass, everything usable, BLE within 2 dB of the bare panel, survives a 1-meter drop. Plan: the print runs the night the replacement panel ships.");
+}
+
+// ============================================================ SHEET 13 · JOSIAH, the UI live
+{
+  const s = pres.addSlide();
+  frame(s, "JOSIAH", "the driver display, live");
+  title(s, "The Driver Display, Live on Glass");
+  pic(s, IMG + "31.jpg", 0.7, 1.3, 5.9, 4.42, "compass page mid-demo: callsign header, \u201cead4<->RG OK\u201d link tag,\nand the canned message \u201cRG: Are you injured?\u201d popped over the page");
+  pic(s, IMG + "32.jpg", 7.0, 1.3, 5.75, 4.31, "status page: both radios named with live fixes \u2014 \u201cradios COMMUNICATING\u201d,\nseparation 13 ft, \u201cRG IS N OF ead4\u201d");
+  s.addShape("rect", { x: 0.7, y: 6.15, w: 12.05, h: 0.55, fill: { color: CARD }, line: { color: M.JOSIAH, width: 1.25 } });
+  s.addText([{ text: "EVERYTHING ON THESE SCREENS IS LIVE RADIO DATA  ", options: { bold: true, fontFace: MONO, fontSize: 10, color: M.JOSIAH } },
+    { text: "callsigns from NodeInfo \u00b7 link tag from packet freshness \u00b7 popup from the mesh text channel \u00b7 13 ft from two GPS fixes", options: { fontSize: 10.5, color: "222A3F" } }],
+    { x: 0.9, y: 6.22, w: 11.7, h: 0.42, fontFace: BFONT, isTextBox: true, margin: 0, valign: "middle" });
+  s.addNotes("PRESENTER PREP - Sheet 13 (Josiah, ~90 s). These are photos of the replacement panel running the real product - nothing simulated. Left, the compass page mid-demo: the header names the partner by its radio callsign RG; top-right the 'ead4<->RG OK' tag is computed from packet freshness (partner heard within 90 seconds); and the dark band is the message popup - a canned 'Are you injured?' sent from RG's button menu, decoded by the display and shown for eight seconds. Right, the status page: both radios named with live coordinates, the honest per-node data ages, the 'radios COMMUNICATING' line, and the headline number - THIRTEEN FEET of measured separation between two GPS receivers sitting on one table, with the relative direction spelled out. Point once at the footer clock: location-aware local time, also from the radio data. If asked how the popup works: text messages ride the same decode path as positions; the display just learned to read one more packet type.");
+}
+
+// ============================================================ SHEET 14 · JOSIAH, the product on one table
+{
+  const s = pres.addSlide();
+  frame(s, "JOSIAH", "system, assembled");
+  title(s, "The Product, On One Table");
+  pic(s, IMG + "33.jpg", 0.7, 1.35, 8.4, 4.72, "both radios in printed enclosures, antennas up \u00b7 driver display between them reading 11 ft \u2014\nthe complete off-grid tracking chain, no phone, no tower, no internet");
+  pic(s, IMG + "34.jpg", 9.55, 1.35, 3.07, 4.09, "compass page: RG, 24 ft,\nhonest age, \u201cstopped\u201d");
+  s.addShape("rect", { x: 9.4, y: 6.0, w: 3.35, h: 0.62, fill: { color: INK } });
+  s.addText("NEXT: the display\u2019s own case prints this week \u2014 then the drive test.",
+    { x: 9.55, y: 6.07, w: 3.05, h: 0.5, fontSize: 10, color: PAPER, fontFace: BFONT, isTextBox: true, margin: 0, valign: "middle" });
+  s.addNotes("PRESENTER PREP - Sheet 14 (Josiah, ~60 s, closer). One photo, one sentence: everything the project promised is on this table and working - two radios in printed enclosures with their antennas, the driver display between them showing the partner eleven feet away, and not a phone, tower, or internet connection anywhere in the chain. The right photo is the compass page a viewer would see from the driver's seat: partner callsign, distance in feet at this range, the data age counting honestly, 'stopped' because neither radio is moving. Close with the plan box: the display's own printed case (sheets 11-12) is the last piece of packaging, and with hardware complete the two-vehicle drive test is next - same table, stretched across town.");
 }
 
 pres.writeFile({ fileName: "C:/Users/deogr/Documents/Fall Project/Off-Grid Vehicle dection project/docs/presentations/Group9_Presentation5_RadioLink.pptx" })
