@@ -8,7 +8,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define TRACKER_STATE_VERSION 2
+#define TRACKER_STATE_VERSION 3
+
+// Meshtastic short names are up to 4 UTF-8 bytes; +1 for NUL, padded.
+#define TRACKER_NAME_LEN 8
 
 // One GPS fix. Angles in degrees, distances in meters, speeds in m/s.
 typedef struct {
@@ -24,6 +27,10 @@ typedef struct {
     Fix      self;          // own vehicle (from local Heltec's GPS via BLE)
     Fix      partner;       // partner vehicle (from mesh Position packets)
     bool     ble_connected; // in-cab link to our Heltec is up
+    // Radio short names from NodeInfo (e.g. "SF", "RG"). Empty string = not
+    // learned yet; UI falls back to generic ME/PTR labels.
+    char     self_name[TRACKER_NAME_LEN];
+    char     partner_name[TRACKER_NAME_LEN];
     // GPS wall-clock: UTC epoch seconds captured from the latest Position
     // packet, plus the local millis() when it was captured. Current UTC =
     // utc_epoch + (millis() - utc_ref_ms)/1000. 0 = no time received yet.

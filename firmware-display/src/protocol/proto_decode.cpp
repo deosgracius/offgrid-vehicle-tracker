@@ -33,6 +33,13 @@ static void handle_mesh_packet(const meshtastic_MeshPacket *pkt) {
         } else {
             Serial.printf("[proto] Position decode failed: %s\n", PB_GET_ERROR(&is));
         }
+    } else if (data->portnum == meshtastic_PortNum_NODEINFO_APP) {
+        // Live node announcement: carries the User record (names + pubkey).
+        meshtastic_User user = meshtastic_User_init_default;
+        pb_istream_t is = pb_istream_from_buffer(data->payload.bytes, data->payload.size);
+        if (pb_decode(&is, meshtastic_User_fields, &user)) {
+            node_table_set_name(pkt->from, user.short_name);
+        }
     }
     // Other portnums (TEXT_MESSAGE_APP, TELEMETRY_APP, ...) ignored for now.
 }
@@ -56,6 +63,7 @@ bool proto_decode_from_radio(const uint8_t *buf, size_t len) {
         Serial.printf("[proto] node_info 0x%08lx '%s'\n",
                       (unsigned long)ni->num,
                       ni->has_user ? ni->user.long_name : "?");
+        if (ni->has_user) node_table_set_name(ni->num, ni->user.short_name);
         if (ni->has_position) handle_position(ni->num, &ni->position);
         break;
     }

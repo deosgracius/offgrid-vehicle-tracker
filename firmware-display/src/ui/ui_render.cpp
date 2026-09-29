@@ -130,11 +130,19 @@ static void draw_blinker(int dir, bool hard, bool phase) {
 
 // ---- pages -----------------------------------------------------------------
 
+// Radio callsigns when learned (e.g. "SF", "RG"); generic labels until then.
+static const char *pname(const TrackerState &st) {
+    return st.partner_name[0] ? st.partner_name : "PARTNER";
+}
+static const char *sname(const TrackerState &st) {
+    return st.self_name[0] ? st.self_name : "YOU";
+}
+
 static void render_nav(const TrackerState &st, const NavOutput &nav,
                        bool warn, bool phase) {
     char buf[48], dist[16], age[12];
     rlcd_clear(true);
-    ctext(6, "PARTNER", 2, false);
+    ctext(6, pname(st), 2, false);
 
     // North-up compass, left side. Two INDEPENDENT pointers:
     //   fat dart   = partner's absolute bearing (moves when THEY move)
@@ -165,15 +173,21 @@ static void render_nav(const TrackerState &st, const NavOutput &nav,
     snprintf(buf, sizeof(buf), "age %s", age);
     rlcd_draw_text(RLCD_W - (int)strlen(buf) * 16 - 10, 132, buf, 2, false);
     if (nav.heading_valid) {
-        rlcd_draw_text(216, 170, "needle = YOU", 1, false);
-        rlcd_draw_text(216, 186, "dart   = PARTNER", 1, false);
+        snprintf(buf, sizeof(buf), "needle = %s", sname(st));
+        rlcd_draw_text(216, 170, buf, 1, false);
+        snprintf(buf, sizeof(buf), "dart   = %s", pname(st));
+        rlcd_draw_text(216, 186, buf, 1, false);
     } else {
         rlcd_draw_text(RLCD_W - 7 * 16 - 10, 166, "stopped", 2, false);
     }
 
     // priority banners
-    if (!st.ble_connected)                     banner(28, "RADIO LINK LOST");
-    else if (st.partner.age_s > STALE_AGE_S)   banner(28, "PARTNER DATA STALE");
+    if (!st.ble_connected) {
+        banner(28, "RADIO LINK LOST");
+    } else if (st.partner.age_s > STALE_AGE_S) {
+        snprintf(buf, sizeof(buf), "%s DATA STALE", pname(st));
+        banner(28, buf);
+    }
     else if (warn)
         banner(28, nav.arrow_deg > 0 ? "CHANGE COURSE >>" : "<< CHANGE COURSE");
 
@@ -188,30 +202,34 @@ static void render_status(const TrackerState &st, const NavOutput &nav) {
     ctext(8, "OVERALL TRACKER", 2, false);
     ctext(42, st.ble_connected ? "LINK CONNECTED" : "LINK SEARCHING...", 2, false);
 
+    const char *me  = st.self_name[0]    ? st.self_name    : "ME";
+    const char *ptr = st.partner_name[0] ? st.partner_name : "PTR";
     if (st.self.valid) {
-        snprintf(buf, sizeof(buf), "ME  %.5f %.5f", st.self.lat_deg, st.self.lon_deg);
+        snprintf(buf, sizeof(buf), "%-3s %.5f %.5f", me, st.self.lat_deg, st.self.lon_deg);
         ctext(80, buf, 2, false);
         fmt_age(st.self.age_s, age, sizeof(age));
         snprintf(buf, sizeof(buf), "spd %.0f mph - age %s", st.self.speed_mps * 2.23694f, age);
         ctext(104, buf, 2, false);
     } else {
-        ctext(80, "ME  waiting for GPS fix", 2, false);
+        snprintf(buf, sizeof(buf), "%-3s waiting for GPS fix", me);
+        ctext(80, buf, 2, false);
     }
 
     if (st.partner.valid) {
-        snprintf(buf, sizeof(buf), "PTR %.5f %.5f", st.partner.lat_deg, st.partner.lon_deg);
+        snprintf(buf, sizeof(buf), "%-3s %.5f %.5f", ptr, st.partner.lat_deg, st.partner.lon_deg);
         ctext(142, buf, 2, false);
         fmt_age(st.partner.age_s, age, sizeof(age));
         snprintf(buf, sizeof(buf), "age %s", age);
         ctext(166, buf, 2, false);
     } else {
-        ctext(142, "PTR no partner heard yet", 2, false);
+        snprintf(buf, sizeof(buf), "%-3s not heard yet", ptr);
+        ctext(142, buf, 2, false);
     }
 
     if (nav.valid) {
         fmt_miles(nav.distance_m, dist, sizeof(dist));
         ctext(200, dist, 5, false);
-        snprintf(buf, sizeof(buf), "PARTNER IS %s OF YOU", cardinal8(nav.bearing_deg));
+        snprintf(buf, sizeof(buf), "%s IS %s OF %s", ptr, cardinal8(nav.bearing_deg), me);
         ctext(250, buf, 2, false);
     }
     rlcd_draw_text(8, 282, "tap:compass hold:reset", 1, false);
@@ -220,7 +238,8 @@ static void render_status(const TrackerState &st, const NavOutput &nav) {
 static void render_searching(const TrackerState &st) {
     char buf[48];
     rlcd_clear(true);
-    ctext(96, "SEARCHING FOR PARTNER", 2, false);
+    snprintf(buf, sizeof(buf), "SEARCHING FOR %s", pname(st));
+    ctext(96, buf, 2, false);
     snprintf(buf, sizeof(buf), "radio link: %s", st.ble_connected ? "connected" : "connecting...");
     ctext(140, buf, 2, false);
     snprintf(buf, sizeof(buf), "own GPS:  %s", st.self.valid ? "locked" : "acquiring...");

@@ -7,6 +7,11 @@
 void node_table_init(void);
 void node_table_set_self_num(uint32_t node_num);
 
+// Called by proto_decode for every NodeInfo/User learned (config dump or live
+// packet). Caches num->short_name; names may arrive before the node is
+// selected as self/partner, so lookups happen at publish time.
+void node_table_set_name(uint32_t node_num, const char *short_name);
+
 // Called by proto_decode for every position learned (live packet or config-dump
 // snapshot). lat/lon in 1e-7 deg (Meshtastic wire format), track in 1e-5 deg,
 // speed in km/h (converted to m/s internally). has_* mirror the proto flags.

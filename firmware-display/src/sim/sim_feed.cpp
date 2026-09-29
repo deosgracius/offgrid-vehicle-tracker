@@ -35,6 +35,9 @@ void sim_feed_tick(float dt_s, TrackerState *out) {
     s_t += dt_s;
     memset(out, 0, sizeof(*out));
     out->ble_connected = true;
+    // Real radio callsigns so sim demos match the product screens.
+    strncpy(out->self_name, "SF", TRACKER_NAME_LEN - 1);
+    strncpy(out->partner_name, "RG", TRACKER_NAME_LEN - 1);
     // fake GPS wall clock (a Monday noon UTC in Sep 2026) so the display's
     // location-aware clock renders in sim mode too
     out->utc_epoch = 1789041600UL + (uint32_t)s_t;

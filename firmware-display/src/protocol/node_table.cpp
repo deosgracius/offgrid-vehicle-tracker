@@ -23,10 +23,42 @@ static Entry s_self, s_partner;
 static uint32_t s_utc_epoch;   // latest GPS wall-clock seen in any packet
 static uint32_t s_utc_ref_ms;
 
+// num -> short_name cache. Names can arrive (config dump) before we know which
+// node becomes self/partner, so keep the last few and look up at publish time.
+#define NAME_CACHE_N 6
+typedef struct { uint32_t num; char name[TRACKER_NAME_LEN]; } NameEntry;
+static NameEntry s_names[NAME_CACHE_N];
+static int s_name_next;
+
+void node_table_set_name(uint32_t node_num, const char *short_name) {
+    if (node_num == 0 || short_name == NULL || short_name[0] == '\0') return;
+    for (int i = 0; i < NAME_CACHE_N; i++) {
+        if (s_names[i].num == node_num) {
+            strncpy(s_names[i].name, short_name, TRACKER_NAME_LEN - 1);
+            return;
+        }
+    }
+    NameEntry *e = &s_names[s_name_next];
+    s_name_next = (s_name_next + 1) % NAME_CACHE_N;
+    e->num = node_num;
+    memset(e->name, 0, sizeof(e->name));
+    strncpy(e->name, short_name, TRACKER_NAME_LEN - 1);
+    Serial.printf("[node] name 0x%08lx = '%s'\n", (unsigned long)node_num, e->name);
+}
+
+static const char *lookup_name(uint32_t node_num) {
+    if (node_num != 0)
+        for (int i = 0; i < NAME_CACHE_N; i++)
+            if (s_names[i].num == node_num) return s_names[i].name;
+    return "";
+}
+
 void node_table_init(void) {
     s_self_num = s_partner_num = 0;
     memset(&s_self, 0, sizeof(s_self));
     memset(&s_partner, 0, sizeof(s_partner));
+    memset(s_names, 0, sizeof(s_names));
+    s_name_next = 0;
 }
 
 void node_table_set_self_num(uint32_t node_num) {
@@ -109,10 +141,13 @@ void node_table_publish(bool ble_connected) {
     refresh_age(&s_self);
     refresh_age(&s_partner);
     TrackerState st;
+    memset(&st, 0, sizeof(st));
     st.self = s_self.fix;
     st.partner = s_partner.fix;
     st.ble_connected = ble_connected;
     st.utc_epoch = s_utc_epoch;
     st.utc_ref_ms = s_utc_ref_ms;
+    strncpy(st.self_name, lookup_name(s_self_num), TRACKER_NAME_LEN - 1);
+    strncpy(st.partner_name, lookup_name(s_partner_num), TRACKER_NAME_LEN - 1);
     tracker_store_set(&st);
 }
