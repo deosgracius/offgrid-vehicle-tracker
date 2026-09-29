@@ -3,6 +3,7 @@
 #pragma once
 #include <stdint.h>
 #include <stdbool.h>
+#include <stddef.h>
 
 void node_table_init(void);
 void node_table_set_self_num(uint32_t node_num);
@@ -11,6 +12,11 @@ void node_table_set_self_num(uint32_t node_num);
 // packet). Caches num->short_name; names may arrive before the node is
 // selected as self/partner, so lookups happen at publish time.
 void node_table_set_name(uint32_t node_num, const char *short_name);
+
+// Called by proto_decode for every TEXT_MESSAGE_APP payload (raw UTF-8, not
+// NUL-terminated). Kept as "the latest message" and published with a seq
+// bump; the UI pops it up for a few seconds.
+void node_table_text(uint32_t from_num, const uint8_t *text, size_t len);
 
 // Called by proto_decode for every position learned (live packet or config-dump
 // snapshot). lat/lon in 1e-7 deg (Meshtastic wire format), track in 1e-5 deg,

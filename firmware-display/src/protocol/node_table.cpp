@@ -53,6 +53,24 @@ static const char *lookup_name(uint32_t node_num) {
     return "";
 }
 
+// Latest mesh text message (canned or typed).
+static uint32_t s_msg_seq;
+static uint32_t s_msg_ms;
+static uint32_t s_msg_from_num;
+static char     s_msg_text[TRACKER_MSG_LEN];
+
+void node_table_text(uint32_t from_num, const uint8_t *text, size_t len) {
+    if (text == NULL || len == 0) return;
+    if (len > TRACKER_MSG_LEN - 1) len = TRACKER_MSG_LEN - 1;
+    memcpy(s_msg_text, text, len);
+    s_msg_text[len] = '\0';
+    s_msg_from_num = from_num;
+    s_msg_ms = millis();
+    s_msg_seq++;
+    Serial.printf("[node] text from 0x%08lx: \"%s\"\n",
+                  (unsigned long)from_num, s_msg_text);
+}
+
 void node_table_init(void) {
     s_self_num = s_partner_num = 0;
     memset(&s_self, 0, sizeof(s_self));
@@ -149,5 +167,17 @@ void node_table_publish(bool ble_connected) {
     st.utc_ref_ms = s_utc_ref_ms;
     strncpy(st.self_name, lookup_name(s_self_num), TRACKER_NAME_LEN - 1);
     strncpy(st.partner_name, lookup_name(s_partner_num), TRACKER_NAME_LEN - 1);
+    st.msg_seq = s_msg_seq;
+    st.msg_ms = s_msg_ms;
+    if (s_msg_seq != 0) {
+        const char *from = lookup_name(s_msg_from_num);
+        if (from[0]) {
+            strncpy(st.msg_from, from, TRACKER_NAME_LEN - 1);
+        } else {  // name not learned yet: last 4 hex digits of the node id
+            snprintf(st.msg_from, TRACKER_NAME_LEN, "%04lx",
+                     (unsigned long)(s_msg_from_num & 0xFFFF));
+        }
+        strncpy(st.msg_text, s_msg_text, TRACKER_MSG_LEN - 1);
+    }
     tracker_store_set(&st);
 }

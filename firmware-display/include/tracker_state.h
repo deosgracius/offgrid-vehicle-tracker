@@ -8,10 +8,12 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define TRACKER_STATE_VERSION 3
+#define TRACKER_STATE_VERSION 4
 
 // Meshtastic short names are up to 4 UTF-8 bytes; +1 for NUL, padded.
 #define TRACKER_NAME_LEN 8
+// Longest text shown on the display popup (canned messages are ~20 chars).
+#define TRACKER_MSG_LEN  40
 
 // One GPS fix. Angles in degrees, distances in meters, speeds in m/s.
 typedef struct {
@@ -31,6 +33,13 @@ typedef struct {
     // learned yet; UI falls back to generic ME/PTR labels.
     char     self_name[TRACKER_NAME_LEN];
     char     partner_name[TRACKER_NAME_LEN];
+    // Last mesh text message (canned or typed). msg_seq increments per new
+    // message (0 = none yet); msg_ms is the local millis() at reception so
+    // the UI can time its popup. msg_from is the sender's short name.
+    uint32_t msg_seq;
+    uint32_t msg_ms;
+    char     msg_from[TRACKER_NAME_LEN];
+    char     msg_text[TRACKER_MSG_LEN];
     // GPS wall-clock: UTC epoch seconds captured from the latest Position
     // packet, plus the local millis() when it was captured. Current UTC =
     // utc_epoch + (millis() - utc_ref_ms)/1000. 0 = no time received yet.

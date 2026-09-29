@@ -20,6 +20,8 @@
 // HOLDING KEY ~1 s (instead of tapping) still fires the tracking reset.
 #define TRACK_RESET_PIN 18
 #define STALE_AGE_S     120
+#define MESH_FRESH_S    90      // partner heard within this = "SF<->RG OK"
+#define MSG_POPUP_MS    8000    // mesh text message stays on screen this long
 #define BLINK_DEG       30.0f   // |arrow| beyond this -> blinker on
 #define WARN_DEG        45.0f   // |arrow| beyond this counts toward warning
 #define WARN_ON_TICKS   10      // 10 x 500 ms = 5 s off-course -> warning
@@ -138,11 +140,27 @@ static const char *sname(const TrackerState &st) {
     return st.self_name[0] ? st.self_name : "YOU";
 }
 
+// "Both radios communicating" = the partner's data is fresh. The display rides
+// on SF, so this directly proves SF hears RG; in a 2-node mesh the reverse
+// direction is symmetric (and was proven by round-trip traceroute).
+static bool mesh_ok(const TrackerState &st) {
+    return st.partner.valid && st.partner.age_s <= MESH_FRESH_S;
+}
+
+// Small top-right tag, e.g. "SF<->RG OK", drawn only while the link is fresh.
+static void draw_mesh_tag(const TrackerState &st) {
+    if (!mesh_ok(st)) return;
+    char buf[24];
+    snprintf(buf, sizeof(buf), "%s<->%s OK", sname(st), pname(st));
+    rlcd_draw_text(RLCD_W - (int)strlen(buf) * 8 - 6, 8, buf, 1, false);
+}
+
 static void render_nav(const TrackerState &st, const NavOutput &nav,
                        bool warn, bool phase) {
     char buf[48], dist[16], age[12];
     rlcd_clear(true);
     ctext(6, pname(st), 2, false);
+    draw_mesh_tag(st);
 
     // North-up compass, left side. Two INDEPENDENT pointers:
     //   fat dart   = partner's absolute bearing (moves when THEY move)
@@ -201,6 +219,18 @@ static void render_status(const TrackerState &st, const NavOutput &nav) {
     rlcd_clear(true);
     ctext(8, "OVERALL TRACKER", 2, false);
     ctext(42, st.ble_connected ? "LINK CONNECTED" : "LINK SEARCHING...", 2, false);
+    if (mesh_ok(st)) {
+        snprintf(buf, sizeof(buf), "radios: %s<->%s COMMUNICATING",
+                 st.self_name[0] ? st.self_name : "ME",
+                 st.partner_name[0] ? st.partner_name : "PTR");
+    } else if (st.partner.valid) {
+        char qage[12];
+        fmt_age(st.partner.age_s, qage, sizeof(qage));
+        snprintf(buf, sizeof(buf), "radios: quiet for %s", qage);
+    } else {
+        snprintf(buf, sizeof(buf), "radios: no contact yet");
+    }
+    ctext(64, buf, 1, false);
 
     const char *me  = st.self_name[0]    ? st.self_name    : "ME";
     const char *ptr = st.partner_name[0] ? st.partner_name : "PTR";
@@ -285,6 +315,15 @@ void ui_render_task(void *arg) {
                 flash_ticks--;
                 rlcd_fill_rect(0, 130, RLCD_W, 34, false);
                 ctext(139, "TRACKING RESET", 2, true);
+            }
+            // Mesh text popup: "RG: Hi" for a few seconds after reception.
+            if (st.msg_seq != 0 && (millis() - st.msg_ms) < MSG_POPUP_MS) {
+                char msg[64];
+                snprintf(msg, sizeof(msg), "%s: %.32s", st.msg_from, st.msg_text);
+                if ((int)strlen(msg) * 16 > RLCD_W - 8)  // too wide at scale 2
+                    msg[(RLCD_W - 8) / 16] = '\0';
+                rlcd_fill_rect(0, 104, RLCD_W, 34, false);
+                ctext(113, msg, 2, true);
             }
             // location-aware clock, top-left (GPS UTC -> local zone by position)
             if (st.utc_epoch != 0) {

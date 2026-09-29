@@ -33,6 +33,9 @@ static void handle_mesh_packet(const meshtastic_MeshPacket *pkt) {
         } else {
             Serial.printf("[proto] Position decode failed: %s\n", PB_GET_ERROR(&is));
         }
+    } else if (data->portnum == meshtastic_PortNum_TEXT_MESSAGE_APP) {
+        // Payload is raw UTF-8 text (not a protobuf) — canned or typed.
+        node_table_text(pkt->from, data->payload.bytes, data->payload.size);
     } else if (data->portnum == meshtastic_PortNum_NODEINFO_APP) {
         // Live node announcement: carries the User record (names + pubkey).
         meshtastic_User user = meshtastic_User_init_default;
