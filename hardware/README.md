@@ -73,6 +73,16 @@ peer's live fix. Also: a stale node-DB position entry poisons the distance
 screen (ours showed ~11 km between radios on the same desk) until any fresh
 position packet overwrites it.
 
+**Battery-death CONFIG LOSS (2026-09-30 — affects BOTH radios):** letting a
+radio's battery run dead can silently revert configuration on the next boot —
+observed twice in one night: RG lost its channels (back to the public slot),
+SF lost EVERYTHING (factory channel, role, bluetooth, telemetry, owner name).
+Symptom is always the same: healthy screens, total mutual silence. PRE-FLIGHT
+RULE before any test or drive: check both OLED LoRa screens read 912.875 MHz —
+two seconds, catches every variant of this. OPERATING RULE: don't run the
+radios to empty; power off or charge before the battery dies. Recovery: this
+section's recipe top to bottom, then verify a power-cycle keeps 912.875.
+
 **Flat-battery wedge (2026-09-27):** a radio whose battery ran flat can come
 back half-alive when charged: OLED renders and shows a GPS fix, but the LoRa
 TX and USB serial are both frozen (nothing heard from it for 18 h; CLI could
