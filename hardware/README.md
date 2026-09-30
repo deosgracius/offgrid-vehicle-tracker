@@ -17,13 +17,14 @@ python -m meshtastic --port COMx --set bluetooth.mode NO_PIN   # only if a displ
 python -m meshtastic --port COMx --set telemetry.device_update_interval 300   # 5-min heartbeat keeps online counters honest on the bench
 python -m meshtastic --port COMx --set device.role CLIENT_MUTE   # 2-node system: relaying each other's packets is pure airtime waste (halves ChUtil). REVERT to CLIENT if a 3rd node/relay is ever added
 python -m meshtastic --port COMx --set canned_message.enabled true
-python -m meshtastic --port COMx --set-canned-message "OK|Yes|No|Hi|How are you?|All good|Need help|Are you injured?|Send position|Position updated|On my way|Wait there|Arrived|Low battery|Heading home"
+python -m meshtastic --port COMx --set-canned-message "OK|Yes|No|Hello|How are you?|I am good|Help!|Are you hurt?|Send position|On my way|Wait there|I am here|Follow me|Slow down|Stop|Turn left|Turn right|Turn back|Beer later?|Low battery|Going home"
 ```
 
-(Canned messages: on-screen preset texts selectable with the user button —
-quick replies first, then status/safety/position/movement. Both radios carry
-the identical set (applied + `--get-canned-message`-verified 2026-09-25) so
-every prompt has its short answer available on the other end.)
+(Canned messages: on-screen preset texts selectable with the user button.
+21 full-word messages — quick replies, safety, position, driving commands
+(Stop / Turn left / Turn right), social, status. HARD LIMIT: the whole set is
+one string capped at 200 characters by stock firmware; this set uses 194.
+Both radios carry the identical set, applied + read-back-verified 2026-09-30.)
 
 **Config-write trap (cost us an afternoon):** settings that trigger a reboot
 (`lora.region`, `bluetooth.mode`) may silently revert when set via
