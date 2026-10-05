@@ -21,6 +21,14 @@
 #define TRACK_RESET_PIN 18
 #define STALE_AGE_S     120
 #define MESH_FRESH_S    90      // partner heard within this = "SF<->RG OK"
+// Early-staleness cue (hollow dart + inverted age) is cadence-aware: a MOVING
+// partner broadcasts every 10 s, so >30 s means 3 missed packets and the cue
+// is honest. A PARKED partner only broadcasts every 60 s, so 30 s is normal
+// silence, not staleness -- the drive test showed the cue crying wolf at 59 s
+// with the partner parked 600 ft away. Parked threshold = 1.5x their cadence.
+#define AGING_MOVING_S  30
+#define AGING_PARKED_S  90
+#define PARKED_MPS      0.9f    // ~2 mph: below this the partner counts as parked
 #define MSG_POPUP_MS    8000    // mesh text message stays on screen this long
 #define BLINK_DEG       30.0f   // |arrow| beyond this -> blinker on
 #define WARN_DEG        45.0f   // |arrow| beyond this counts toward warning
@@ -156,6 +164,13 @@ static bool mesh_ok(const TrackerState &st) {
     return st.partner.valid && st.partner.age_s <= MESH_FRESH_S;
 }
 
+// Cadence-aware early-staleness check (see AGING_* above): true once the
+// partner's silence exceeds what their last reported speed makes normal.
+static bool partner_aging(const TrackerState &st) {
+    bool parked = st.partner.speed_mps < PARKED_MPS;
+    return st.partner.age_s > (uint32_t)(parked ? AGING_PARKED_S : AGING_MOVING_S);
+}
+
 // Small top-right tag, e.g. "SF<->RG OK", drawn only while the link is fresh.
 static void draw_mesh_tag(const TrackerState &st) {
     if (!mesh_ok(st)) return;
@@ -193,13 +208,13 @@ static void render_nav(const TrackerState &st, const NavOutput &nav,
     }
     if (nav.heading_valid) {
         draw_arrow(cx, cy, RING - 14, nav.arrow_deg,         // partner vs nose
-                   st.partner.age_s <= 30);                  // hollow = projected
+                   !partner_aging(st));                      // hollow = stale-ish
         // fixed index mark at 12 o'clock = your hood
         fill_triangle(cx - 6, cy - RING + 1, cx + 6, cy - RING + 1,
                       cx, cy - RING + 12, false);
     } else {
         draw_arrow(cx, cy, RING - 14, nav.bearing_deg,       // absolute bearing
-                   st.partner.age_s <= 30);
+                   !partner_aging(st));
     }
 
     // blinkers from the RELATIVE angle (driving only)
@@ -224,12 +239,13 @@ static void render_nav(const TrackerState &st, const NavOutput &nav,
     }
     rlcd_draw_text(RLCD_W - (int)strlen(buf) * 16 - 10, 128, buf, 2, false);
 
-    // data age — inverted (white-on-black) past 30 s as an early staleness cue
+    // data age — inverted (white-on-black) as an early staleness cue, with a
+    // cadence-aware threshold so a parked partner's normal 60 s gap stays calm
     fmt_age(st.partner.age_s, age, sizeof(age));
     snprintf(buf, sizeof(buf), "age %s", age);
     {
         int tw = (int)strlen(buf) * 16;
-        bool aging = st.partner.age_s > 30;
+        bool aging = partner_aging(st);
         if (aging) rlcd_fill_rect(RLCD_W - tw - 14, 154, tw + 8, 22, false);
         rlcd_draw_text(RLCD_W - tw - 10, 157, buf, 2, aging);
     }
