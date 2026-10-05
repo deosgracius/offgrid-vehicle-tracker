@@ -103,19 +103,6 @@ static void draw_arrow(int cx, int cy, float R, float deg, bool solid) {
     }
 }
 
-// Thin needle showing OWN heading (tip at radius R, slim base).
-static void draw_needle(int cx, int cy, float R, float deg) {
-    float a = deg * (float)M_PI / 180.0f, ca = cosf(a), sa = sinf(a);
-    const float px[3] = {0.0f, 4.0f, -4.0f};
-    const float py[3] = {R, -0.15f * R, -0.15f * R};
-    float sx[3], sy[3];
-    for (int i = 0; i < 3; i++) {
-        float rx = px[i] * ca + py[i] * sa, ry = -px[i] * sa + py[i] * ca;
-        sx[i] = cx + rx; sy[i] = cy - ry;
-    }
-    fill_triangle(sx[0], sy[0], sx[1], sy[1], sx[2], sy[2], false);
-}
-
 static void fmt_miles(float m, char *out, size_t olen) {
     float mi = m / 1609.344f;
     if (mi >= 10.0f)      snprintf(out, olen, "%.0f mi", mi);
@@ -184,21 +171,35 @@ static void render_nav(const TrackerState &st, const NavOutput &nav,
     ctext(6, pname(st), 2, false);
     draw_mesh_tag(st);
 
-    // North-up compass, left side. Two INDEPENDENT pointers:
-    //   fat dart   = partner's absolute bearing (moves when THEY move)
-    //   thin needle = own course               (swings live as YOU turn)
-    // Steer until the needle covers the dart.
+    // Compass, left side. COURSE-UP while driving: the top of the ring is
+    // always straight ahead, so the dart reads like a windshield pointer
+    // (dart up = partner dead ahead) and the cardinal letters rotate around
+    // the ring -- heading south puts S at the top, exactly like a car's
+    // navigation display. The driver never has to rotate the unit or do the
+    // mental N-up transform. While stopped there is no nose to be relative
+    // to, so the ring falls back to north-up with the dart at absolute
+    // bearing (matching the "SE of you" wording used when parked).
     const int cx = 100, cy = 172, RING = 68;
     rlcd_draw_circle(cx, cy, RING, 2, false);
-    rlcd_draw_text(cx - 7,        cy - RING - 22, "N", 2, false);
-    rlcd_draw_text(cx + RING + 8, cy - 8,         "E", 2, false);
-    rlcd_draw_text(cx - 7,        cy + RING + 6,  "S", 2, false);
-    rlcd_draw_text(cx - RING - 24, cy - 8,        "W", 2, false);
-
-    draw_arrow(cx, cy, RING - 14, nav.bearing_deg,           // partner
-               st.partner.age_s <= 30);                      // hollow = projected
+    {
+        static const char *card[4] = {"N", "E", "S", "W"};
+        float rot = nav.heading_valid ? st.self.course_deg : 0.0f;
+        for (int i = 0; i < 4; i++) {
+            float a = ((float)i * 90.0f - rot) * (float)M_PI / 180.0f;
+            int lx = cx + (int)lroundf(sinf(a) * (RING + 17)) - 7;
+            int ly = cy - (int)lroundf(cosf(a) * (RING + 17)) - 8;
+            rlcd_draw_text(lx, ly, card[i], 2, false);
+        }
+    }
     if (nav.heading_valid) {
-        draw_needle(cx, cy, RING - 4, st.self.course_deg);   // me
+        draw_arrow(cx, cy, RING - 14, nav.arrow_deg,         // partner vs nose
+                   st.partner.age_s <= 30);                  // hollow = projected
+        // fixed index mark at 12 o'clock = your hood
+        fill_triangle(cx - 6, cy - RING + 1, cx + 6, cy - RING + 1,
+                      cx, cy - RING + 12, false);
+    } else {
+        draw_arrow(cx, cy, RING - 14, nav.bearing_deg,       // absolute bearing
+                   st.partner.age_s <= 30);
     }
 
     // blinkers from the RELATIVE angle (driving only)
