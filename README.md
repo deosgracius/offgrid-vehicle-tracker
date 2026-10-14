@@ -34,8 +34,3 @@ hardware/            Victor — radio configs, antenna notes, range-test logs
 testing/             Cannon — power, mounting, integration & drive-test logs
 ```
 
-## Gantt chart
-
-Open [planning/Group9_Gantt.html](planning/Group9_Gantt.html) in a browser.
-To change the plan: edit [planning/tasks.json](planning/tasks.json), then run
-`planning/Update_Gantt.bat` (or `python planning/build_gantt.py`) and commit both files.
