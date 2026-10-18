@@ -20,6 +20,15 @@
 // HOLDING KEY ~1 s (instead of tapping) still fires the tracking reset.
 #define TRACK_RESET_PIN 18
 #define STALE_AGE_S     120
+#define LOST_AGE_S      180     // stale this long -> escalate to the flashing
+                                // LINK LOST alarm. The display cannot know WHY
+                                // packets stopped (range, terrain, partner off),
+                                // so the alarm reports the duration of silence
+                                // and the last-known location: the two facts
+                                // that are true in every cause, and the second
+                                // one is the recovery action (canyon test
+                                // 2026-10-18: driving toward last-known healed
+                                // every outage without a button press).
 #define MESH_FRESH_S    90      // partner heard within this = "SF<->RG OK"
 // Early-staleness cue (hollow dart + inverted age) is cadence-aware: a MOVING
 // partner broadcasts every 10 s, so >30 s means 3 missed packets and the cue
@@ -133,6 +142,15 @@ static const char *cardinal8(float deg) {
 static void banner(int y, const char *txt) {
     rlcd_fill_rect(0, y, RLCD_W, 26, false);
     ctext(y + 5, txt, 2, true);
+}
+
+// Inverse-video banner (white bar, black text, black frame) -- alternating
+// this with banner() at the render rate makes the LINK LOST alarm flash.
+static void banner_inv(int y, const char *txt) {
+    rlcd_fill_rect(0, y, RLCD_W, 26, true);
+    rlcd_fill_rect(0, y, RLCD_W, 2, false);
+    rlcd_fill_rect(0, y + 24, RLCD_W, 2, false);
+    ctext(y + 5, txt, 2, false);
 }
 
 // Blinker chevrons at the top corners. dir: -1 left, +1 right. hard doubles it.
@@ -276,6 +294,25 @@ static void render_nav(const TrackerState &st, const NavOutput &nav,
     // priority banners
     if (!st.ble_connected) {
         banner(28, "RADIO LINK LOST");
+    } else if (st.partner.valid && st.partner.age_s > LOST_AGE_S) {
+        // Escalated out-of-contact alarm: flashes, and alternates the loss
+        // notice with the last-known location so the glance carries the
+        // recovery action (drive toward where they were).
+        if (phase) {
+            fmt_age(st.partner.age_s, age, sizeof(age));
+            snprintf(buf, sizeof(buf), "%s LOST %s", pname(st), age);
+            banner(28, buf);
+        } else {
+            fmt_miles(nav.distance_m, dist, sizeof(dist));
+            if (nav.heading_valid) {
+                int hour = (int)roundf(nav_wrap360(nav.arrow_deg) / 30.0f) % 12;
+                if (hour == 0) hour = 12;
+                snprintf(buf, sizeof(buf), "LAST %s at %d:00", dist, hour);
+            } else {
+                snprintf(buf, sizeof(buf), "LAST %s %s", dist, cardinal8(nav.bearing_deg));
+            }
+            banner_inv(28, buf);
+        }
     } else if (st.partner.age_s > STALE_AGE_S) {
         snprintf(buf, sizeof(buf), "%s DATA STALE", pname(st));
         banner(28, buf);
