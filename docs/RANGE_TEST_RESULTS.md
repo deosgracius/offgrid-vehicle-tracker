@@ -108,10 +108,34 @@ with no reboot.
 - **Operator guidance (now in the user guide):** in canyon country, expect the
   stale banner often; it is reporting blocked line of sight, not a fault, and
   it clears itself as the road opens.
+- **The rim elevation finding: antenna height beat the flat-ground range.** RG
+  sat parked at the rim staging point (~1102 m), giving the pair one elevated
+  antenna. On stretches where the rim had line of sight to the moving vehicle,
+  the SF display stayed live out to roughly 4.7 miles before its first
+  staleness, beyond the 3.75-mile edge measured car-to-car on flat open road,
+  while the same morning produced stalls from 1.29 miles behind rock. One
+  parking spot demonstrated both extremes, and it is the repeater-on-high-
+  ground argument measured by accident: elevation, not transmit power, is the
+  cheapest range multiplier this system has.
+- **The two displays alarm at different distances by design, not by RF
+  asymmetry.** The LoRa link is reciprocal, but SF's display was watching a
+  parked partner (60 s cadence, 90 s stale threshold) while RG's display was
+  watching a moving one (10 s cadence, 30 s threshold), so RG's screen flagged
+  earlier and more often. Comparing the two screens' banners therefore
+  compares thresholds, not signal paths.
+- **A stale display is still exactly correct when the partner is parked.** The
+  displayed separation is the driver's own live GPS position measured against
+  the partner's last-known fix; a parked partner's last-known fix never stops
+  being true. Driving out of range from a parked RG, the mileage would keep
+  counting accurately indefinitely, with only the age chip reporting that the
+  underlying data is old. With two moving vehicles the partner's dot becomes a
+  projection instead; that distinction is why the age is always displayed.
 
 ## Status
 
 Both planned range campaigns (open-road maximum and no-line-of-sight canyon)
 are measured. The verification program's range characterization is complete.
 Remaining optional refinement: repeat either run with a magnetic roof antenna
-to quantify the car-body penalty directly.
+to quantify the car-body penalty directly. The rim elevation finding sharpens
+the New Mexico open-road prediction: with any elevation on one end, the link
+should beat the 3.75-mile flat-ground edge.
