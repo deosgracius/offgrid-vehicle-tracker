@@ -1,4 +1,11 @@
-# Range Test Results, 2026-10-05
+# Range Test Results
+
+Two campaigns bracket the system's real-world envelope: an open-road maximum-range
+test (2026-10-05) and a canyon no-line-of-sight test (2026-10-18). Together they
+show that range is a property of terrain, not of the radios: fully reliable to
+3.26 miles on open road, intermittent at any distance behind rock.
+
+# Test 1: Open road, 2026-10-05
 
 Open-road range test per `RANGE_TEST_PLAN.md`, executed on the evening of 2026-10-05
 on N County Road 2000 north of Lubbock (straight farm road, flat terrain, clear line
@@ -51,8 +58,60 @@ ran about a kilometer past it.
   budget's 20 dB reserve was for. A roof-mounted antenna remains the single biggest
   available range upgrade.
 
+# Test 2: Canyon terrain (Palo Duro), 2026-10-18
+
+Pre-dawn two-vehicle run in caprock canyon terrain near Canyon, TX (RG kit's
+GPS placed the rim staging point at 34.9098, -101.9176, altitude 1102 m,
+read from the node database after the test). Same hardware, same in-cabin
+antennas. All data points read from video of the live screens; clock times
+and display uptime counters on the screens give the timeline.
+
+## Result in one line
+
+**Behind rock, the link is intermittent at any distance: stale banners
+appeared from 1.29 miles, yet single packets were still caught at 4.28 miles
+when the terrain opened.** The link healed on its own every time line of
+sight returned, with no operator action.
+
+## Measured timeline
+
+| Time (CDT) | Separation | Data age | Reading |
+|---|---|---|---|
+| 7:27a | 2.78 mi | 2 min, STALE | Outbound; canyon wall between vehicles |
+| 7:30a | 4.28 mi | 1 min | Age reset while stale: a packet got through as a ridgeline opened |
+| 7:31a | ~3.92 mi | 2 min | Stale again, vehicle nearly stopped |
+| 7:32a | 4.46 mi | 3 min, STALE | Deepest point of the run |
+| 7:38a | 2.90 mi | 54 s | Return leg; reacquisition beginning |
+| 7:42a | 1.45 mi | 11 s | Fully live, partner at 12 o'clock, closing 45 mph |
+| ~7:44a | 0.33 mi | 21 s | Guided final approach (CHANGE COURSE chevrons, then clean) |
+
+Stale events also occurred inside 1.29 miles whenever canyon geometry blocked
+the path. One display ran uptime 1910 s through 2789 s across the sequence
+with no reboot.
+
+## Findings
+
+- **Distance is not the variable in broken terrain; line of sight is.** A mile
+  and a quarter behind a caprock wall is a harder link than 3.26 open miles.
+  Stale onset by distance: ~0.5 mi in town, ~2.8 mi in canyon (first event),
+  3.75 mi on open road. Same hardware in all three.
+- **The link is intermittent, not binary.** Packets were caught at 4+ miles
+  through momentary gaps in the terrain. The age chip resetting from 2 min to
+  1 min at 4.28 mi is a single ridge-top packet, visible on camera.
+- **Recovery is automatic.** Every outage ended by driving until the geometry
+  opened: 54 s age by 2.90 mi inbound, 11 s by 1.45 mi. No buttons pressed.
+- **Honesty held under the hardest conditions yet.** Every outage was flagged
+  (STALE banner, inverted age, hollow dart); every number on screen was either
+  fresh or visibly labeled as a projection. Radio configs were verified clean
+  on both units after the test, confirming the stalls were terrain, not
+  configuration.
+- **Operator guidance (now in the user guide):** in canyon country, expect the
+  stale banner often; it is reporting blocked line of sight, not a fault, and
+  it clears itself as the road opens.
+
 ## Status
 
-The last open item in the verification program (the range characterization of
-RANGE_TEST_PLAN.md) is now measured. Remaining optional refinement: repeat with a
-magnetic roof antenna to quantify the car-body penalty directly.
+Both planned range campaigns (open-road maximum and no-line-of-sight canyon)
+are measured. The verification program's range characterization is complete.
+Remaining optional refinement: repeat either run with a magnetic roof antenna
+to quantify the car-body penalty directly.
