@@ -1,0 +1,345 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Technical Report</title>
+<style>
+ @page { margin: 60px 0 64px 0; }
+ body { font-family: "Times New Roman", Times, serif; font-size: 12pt; color: #111722; margin: 0; line-height: 1.44; }
+ .page { padding: 0 64px; max-width: 7.0in; margin: 0 auto; }
+ .cover { padding: 30px 70px 40px 70px; page-break-after: always; text-align: center; }
+ .cover .inst { font-size: 12.5pt; letter-spacing: 1px; }
+ .cover h1 { font-size: 22pt; margin: 34px 0 8px 0; line-height: 1.25; }
+ .cover .sub { font-size: 13pt; font-style: italic; margin-bottom: 26px; }
+ .cover img { width: 470px; border: 1px solid #111722; padding: 8px; }
+ .cover .auth { margin-top: 26px; font-size: 12pt; line-height: 1.7; }
+ h2 { font-size: 14pt; margin: 21px 0 5px 0; page-break-after: avoid; }
+ h3 { font-size: 12.5pt; margin: 13px 0 3px 0; page-break-after: avoid; }
+ p { margin: 0 0 8px 0; text-align: justify; }
+ .abstract { margin: 0 40px 10px 40px; font-size: 11.5pt; }
+ .abstract p { text-align: justify; }
+ table { border-collapse: collapse; width: 100%; margin: 7px 0 10px 0; page-break-inside: avoid; }
+ td, th { border: 1px solid #555; padding: 3px 7px; font-size: 10.5pt; vertical-align: top; text-align: left; }
+ th { font-weight: bold; background: #EEF1F5; }
+ code { font-family: "Courier New", monospace; font-size: 10.5pt; }
+ .eqimg { display: block; max-width: 100%; max-height: 54px; width: auto; height: auto; margin: 7px auto 3px auto; }
+ .fig { text-align: center; margin: 9px 0; page-break-inside: avoid; }
+ .fig img { max-width: 78%; border: 1px solid #555; }
+ .fig .two img { max-width: 46%; }
+ .cap { font-size: 10.5pt; margin-top: 4px; text-align: center; }
+ li { margin: 3px 0; }
+ ol.refs { margin: 6px 0 0 0; padding-left: 0.4in; } ol.refs li { text-align: left; margin-bottom: 9px; font-size: 12pt; }
+ sup { font-size: 8.5pt; }
+</style></head><body>
+
+<div class="cover">
+ <div class="inst">TEXAS TECH UNIVERSITY<br>DEPARTMENT OF ELECTRICAL AND COMPUTER ENGINEERING<br>CAPSTONE PROJECT LABORATORY</div>
+ <h1>Infrastructure-Free Vehicle-to-Vehicle Tracking:<br>Design and Analysis of a LoRa Position Link Between Two Heltec WiFi LoRa 32 V4 Nodes with Dedicated Dashboard Displays</h1>
+ <div class="sub">A Technical Report on the Off-Grid Vehicle Tracker</div>
+ <div class="auth" style="margin-top:150px;">Group 9<br>Deo &middot; Josiah &middot; Victor &middot; Cannon<br>Sponsor: Dr. Richard Gale<br>Fall 2026</div>
+</div>
+
+<div class="page">
+<h2 style="text-align:center; margin-top:0;">Abstract</h2>
+<div class="abstract">
+<p>This report explains how two vehicles track each other with no cellular network, no internet, and no infrastructure of any kind between them. Each vehicle carries a Heltec WiFi LoRa 32 V4 radio node running the open-source Meshtastic firmware and a Waveshare ESP32-S3 reflective-LCD dashboard display running firmware written by this team. The radios learn their own positions from GNSS satellites and broadcast them to each other over a 915 MHz LoRa link; each display receives the decoded traffic from its local radio over Bluetooth Low Energy and converts it into a live navigation screen showing the partner's direction, distance, and speed. The report develops the complete chain that makes this possible: the chirp spread spectrum physical layer that decodes signals 17.5 dB below the noise floor, the time-on-air arithmetic that prices every packet at roughly 0.56 seconds, the 161 dB link budget that supports a 3 to 5 km design range, the Meshtastic channel contract in which a hashed channel name becomes the operating frequency, and the published Bluetooth Client API that allowed a custom display to attach to unmodified radio firmware. All claims are tied to measurements made on this hardware, and all mathematics is worked with this system's actual parameters.</p>
+</div>
+
+<h2>Acknowledgement</h2>
+<p>This project is carried out collaboratively by the four members of Group 9, each contributing complementary expertise. Deo Mwala serves as software lead for the protocol layer: the Bluetooth Low Energy client that connects each display to its radio, the protocol-buffer decoding of the Meshtastic stream, and the node table that turns packets into tracked state. Josiah leads the display and navigation firmware, including the navigation mathematics of Section 8 and the three-page driver interface. Victor is the radio and hardware lead, responsible for provisioning and configuring the Meshtastic radios, antenna selection, and the range testing program. Cannon is the systems and test lead, responsible for integration testing and the verification record of Section 10. The team thanks its sponsor, Dr. Richard Gale, for his guidance and for the weekly design reviews that shaped this system, and acknowledges the Meshtastic open-source community, whose documented firmware and published Client API form the foundation this project builds on.</p>
+
+<h2>1. Introduction</h2>
+<p>Modern vehicle tracking assumes infrastructure. A phone reports its position through a cell tower; a fleet tracker reports through a satellite service; both stop working exactly where tracking matters most, on desert trails, in mountain valleys, and on rural highways beyond coverage. The goal of this project is a system in which two vehicles always know each other's position using nothing but the equipment they carry. There are no accounts, no subscriptions, and no third party between them.</p>
+<p>Five ideas organize this entire report, and essentially every behavior and every failure of the system traces back to one of them.</p>
+<ol>
+<li><b>Agreement is the connection.</b> There is no session, pairing, or handshake between the radios; they exchange data exactly when they independently agree on frequency, modulation, and encryption key. This is the report's thesis, and every failure in Section 9 is one of these agreements quietly broken.</li>
+<li><b>The name is the frequency.</b> The radios store no frequency; they derive one by hashing the channel name, so checking one number on a screen verifies the deepest layer of the agreement (Section 6.1).</li>
+<li><b>Decibels are ratios, and LoRa decodes below the noise.</b> Signal quantities are logarithmic, every 6 dB of margin roughly doubles range, and the modulation reads signals quieter than the noise floor itself (Sections 4 and 5).</li>
+<li><b>Online is arithmetic, not a connection.</b> Every liveness indicator is a comparison between the current time and a stored timestamp, so when an indicator lies, a timestamp is lying (Section 6.4).</li>
+<li><b>Airtime is the budget.</b> Only one node can speak at a time and every packet costs real channel time, so reporting cadence is a resource allocation problem, not a preference (Section 6.3).</li>
+</ol>
+<p>Every design decision in the following sections either establishes one of those agreements, budgets the physical resources that keep the agreement usable, or displays the agreed information honestly to a driver. Section 2 defines the architecture. Sections 3 through 5 build the radio node and its physical layer from the datasheet upward, in the same order the signal itself is built. Section 6 explains the protocol layer that turns raw packets into a private, self-managing channel. Sections 7 and 8 cross into the display node and the navigation mathematics it computes. Section 9 presents the failures encountered on real hardware and the rules they taught, Section 10 reports the experimental verification, Section 11 outlines future work, and Section 12 concludes.</p>
+<p>The work described here was divided among the four members of Group 9, and each technical section below carries the name of the member responsible for that part of the system. Victor, the radio and hardware lead, configured the radios and characterized the physical layer (Sections 3 and 4). Cannon, the systems and test lead, built the measurement harness behind the link budget and led the drive testing (Sections 5 and 10, the latter jointly with Victor). Deo wrote the protocol firmware, including the Bluetooth client and packet decoding that connect the two nodes (Section 6 and Section 7.2). Josiah wrote the display and navigation firmware that turns decoded packets into the driver's screen (Sections 7 and 8). The remaining sections, including the architecture, the failure catalog, and this introduction, are joint work.</p>
+
+<h2>2. System Architecture</h2>
+<p>The system consists of four embedded devices arranged in two identical halves, one per vehicle. Each half contains a radio node and a display node.</p>
+<table>
+<tr><th>Device</th><th>Hardware</th><th>Firmware</th><th>Role</th></tr>
+<tr><td>Radio node (2)</td><td>Heltec WiFi LoRa 32 V4</td><td>Stock Meshtastic 2.7.26</td><td>Acquires its own GNSS fix; broadcasts position, telemetry, and text over LoRa; serves decoded traffic to its display over BLE</td></tr>
+<tr><td>Display node (2)</td><td>Waveshare ESP32-S3-RLCD-4.2</td><td>Custom, written by Group 9</td><td>Connects to its local radio over BLE; decodes the protocol stream; renders direction, distance, speed, messages, and warnings</td></tr>
+</table>
+<p>Figure 1, presented on its own page at the end of this section, shows the complete signal path. Information flows in one direction around a loop. Vehicle A's radio measures its position and broadcasts it over LoRa; vehicle B's radio receives and decrypts the packet and holds it in a node database; vehicle B's display drains that database over Bluetooth Low Energy and renders the result. The same path runs simultaneously in the opposite direction. The deliberate consequence of this architecture is that the two engineering problems are separable: the radio link is a solved, heavily tested open-source system that this team configures and characterizes but does not modify, while the display is entirely this team's code attached at a published interface. Section 7.2 examines that interface, because it is the single decision that made the project feasible in one semester.</p>
+
+<h3>2.1 Design requirements</h3>
+<p>The requirements below were fixed early with the sponsor and drive every quantitative choice in this report. Each one traces to the section that satisfies it, and the verification program of Section 10 tests against them directly.</p>
+<table>
+<tr><th>Requirement</th><th>Target</th><th>Addressed in</th></tr>
+<tr><td>Operate with no infrastructure</td><td>No cellular, internet, or third-party service in the data path</td><td>Entire architecture (Section 2)</td></tr>
+<tr><td>Useful range in real terrain</td><td>3 to 5 km with buildings and terrain in the way</td><td>Link budget (Section 5)</td></tr>
+<tr><td>Fresh positions while driving</td><td>Updates at least every 10 seconds and 20 meters when moving</td><td>Cadence contract (Section 6.3)</td></tr>
+<tr><td>Readable on a dashboard</td><td>Legible in direct sunlight without glare at night</td><td>Reflective display (Section 7.1)</td></tr>
+<tr><td>Two-way messaging</td><td>Preset texts deliverable without typing while driving</td><td>Protocol layer and display (Sections 6 and 7)</td></tr>
+<tr><td>Honest staleness</td><td>The driver can always tell measurement from estimate</td><td>Liveness semantics and dead reckoning (Sections 6.4 and 8.3)</td></tr>
+<tr><td>Privacy from casual interception</td><td>No position or message readable by a third party</td><td>Encryption model (Section 6.2)</td></tr>
+<tr><td>Independent power</td><td>A full day of operation on internal batteries</td><td>Node hardware (Sections 3 and 7.1)</td></tr>
+</table>
+
+<div style="page-break-before: always; page-break-after: always;">
+<h2 style="border:none; padding-left:0; text-align:center;">Figure 1. The System Architecture</h2>
+<div class="fig" style="margin-top:4px;">
+<img src="file:///C:/Users/deogr/Documents/Fall Project/Off-Grid Vehicle dection project/docs/system-diagram.png" style="max-width:97%;">
+<div class="cap">Figure 1. Complete system architecture of the Off-Grid Vehicle Tracker. Each vehicle pairs a stock Meshtastic radio with a custom-firmware reflective display; the vehicles share only the 915 MHz LoRa channel.</div>
+</div>
+<p>The diagram reads left to right, following the data. The left half is vehicle A's hardware: the GNSS module feeds the Heltec radio over a serial NMEA link, the radio drives its LoRa transceiver over SPI and its status OLED over I2C, and vehicle power reaches both devices through a 12 V to USB-C adapter. The radio owns both wireless links that leave the box: the 915 MHz LoRa channel to the partner vehicle at the bottom left, and the short-range Bluetooth GATT link that carries the decoded packet stream to the Waveshare display.</p>
+<p>The right half is the firmware this team wrote, drawn as the two tasks it actually runs. The protocol side connects, decodes each FromRadio protobuf, and maintains the node table; it writes its results into TrackerState, the mutex-protected structure in the center that is the single interface between the halves. The navigation and interface side only reads: it computes distance and bearing from the two stored fixes and renders the three screen pages at two frames per second. One writer, one reader, one shared structure; that discipline is why the firmware has no data races by construction.</p>
+<p>The strip along the bottom places the system in telecom terms: an application layer of 30 to 40 byte position payloads, a network layer of managed flooding with CSMA and a hop limit, and a LoRa chirp spread spectrum physical layer decoding 17.5 dB below the noise floor. Vehicle B, noted at the lower left, runs an identical hardware and firmware stack, which is what makes the whole system symmetric: every arrow in this figure exists twice, once in each direction.</p>
+</div>
+<h2>3. The Radio Node: Heltec WiFi LoRa 32 V4 <span style="font-weight:normal; font-style:italic;">(Victor)</span></h2>
+<p>The Heltec V4 is a development board that integrates the three subsystems a tracking node needs. An Espressif ESP32-S3 microcontroller, a dual-core Xtensa LX7 at 240 MHz with 8 MB of flash, runs the Meshtastic firmware and its FreeRTOS task set (Espressif). A Semtech SX1262 transceiver provides the sub-GHz LoRa physical layer; it is a half-duplex radio covering 150 to 960 MHz, programmable in spreading factor, bandwidth, and coding rate, with a receive sensitivity that reaches -131 dBm at the settings used here (Semtech, <i>SX1261/2</i>). A u-blox GNSS module supplies position fixes, typically converging to a five-satellite fix within a minute under open sky. The board carries a 0.96-inch OLED status screen, a USB-C port for provisioning, and a lithium cell for operation away from vehicle power.</p>
+<h3>3.1 Inside the transceiver</h3>
+<p>Figure 2 reproduces the SX1262's internal block diagram from the datasheet, and it rewards a careful walk from left to right because the whole receive path of Section 4 lives inside it. The antenna enters through a matching network and low-pass filter. On receive, a low-noise amplifier lifts the faint arriving signal, a mixer driven by the phase-locked loop translates it down from 913 MHz, and an analog-to-digital converter hands the result to one of two demodulators, the LoRa modem used here or a conventional FSK modem. The protocol engine assembles demodulated bits into packets in the data buffer, which the ESP32-S3 reads over a four-wire SPI bus. On transmit the path runs in reverse, ending in the power amplifier. The crystal oscillator and PLL that set the carrier frequency are shared by both directions, which matters in Section 6: when Meshtastic computes a frequency from the channel name, this PLL is the hardware that must be programmed to it, and the OLED frequency readout this team treats as ground truth is a report of that programming. The DC-DC converter and low-dropout regulator in the corner of the diagram power the chip, and their efficiency is part of why a node runs for days on a small cell.</p>
+<div class="fig">
+<img src="fig_sx_block.png" style="max-width:92%;">
+<div class="cap">Figure 2. Internal block diagram of the SX1261/2 transceiver, adapted from the datasheet, revision 2.2, figure 4-1 (Semtech, <i>SX1261/2</i>).</div>
+</div>
+<p>Three facts from this datasheet shape the whole design. First, sensitivity is not a single number but a function of the modulation parameters; the -131 dBm figure used in Section 5 belongs specifically to the SF11, 250 kHz operating point, so choosing those parameters is choosing that sensitivity. Second, the bare SX1262 tops out at +22 dBm, and the Heltec board adds amplification to reach the +30 dBm the configuration commands, which happens to be the legal ceiling for this band under 47 C.F.R. &sect; 15.247 (United States). Third, the radio is half duplex, and the datasheet's own operating-mode diagram, reproduced in Figure 3, shows why.</p>
+<h3>3.2 The transceiver state machine</h3>
+<div class="fig">
+<img src="fig_sx_modes.png" style="max-width:50%;">
+<div class="cap">Figure 3. Transceiver circuit modes of the SX1261/2, adapted from the datasheet, revision 2.2, figure 9-1 (Semtech, <i>SX1261/2</i>).</div>
+</div>
+<p>The chip is always in exactly one of the circuit modes in Figure 3. From power-on it passes through startup into standby, where the host configures it; the frequency-synthesis mode locks the PLL onto the carrier; and the Rx and Tx states are where the radio actually listens and speaks. The diagram contains no state in which the chip does both, and the Rx and Tx circles are connected only through explicit commands. That single picture is the physical root of a constraint the protocol layer inherits: while a node spends its 0.56 seconds in Tx transmitting a position packet, it is deaf, so two nodes transmitting at once on one channel simply lose each other's packets. Meshtastic manages this with listen-before-talk and randomized backoff, but no protocol can repeal the state machine, which is why Section 6.3 treats airtime as a budget to be rationed rather than a convenience. The sleep state matters too; Meshtastic parks the radio there between duties, which is where the days-long battery figures come from.</p>
+
+<h2>4. The Physical Layer: LoRa Chirp Spread Spectrum <span style="font-weight:normal; font-style:italic;">(Victor)</span></h2>
+<h3>4.1 How a chirp carries bits</h3>
+<p>LoRa (Long Range) is a chirp spread spectrum modulation. Each symbol is a frequency sweep that crosses the entire channel bandwidth, and the information is carried in the sweep's cyclic starting offset. With spreading factor SF, the sweep is divided into 2<sup>SF</sup> distinguishable offsets, so one symbol carries SF bits. This system uses the Meshtastic LONG_FAST preset: SF = 11, bandwidth BW = 250 kHz, and coding rate 4:5 (Meshtastic Project, "Radio Settings"). A spreading factor of 11 gives 2<sup>11</sup> = 2048 offsets and therefore 11 bits per symbol. The duration of one symbol is the chip count divided by the bandwidth:</p>
+<img class="eqimg" src="eq_tsym.png">
+<p>The receiver demodulates by multiplying the incoming signal with a locally generated inverse chirp, which collapses each sweep into a single frequency bin recoverable by a Fourier transform. Because this de-chirping integrates all 2048 chips coherently, the processing gain allows the SX1262 to demodulate at a signal-to-noise ratio of -17.5 dB at SF11 (Semtech, <i>SX1261/2</i>). The signal is literally quieter than the noise floor, and the receiver still reads it. This is the physical origin of LoRa's range, and its price is time: every symbol lasts 8.19 ms, which makes airtime the scarce resource the rest of the design must budget.</p>
+<h3>4.2 The cost of one packet</h3>
+<p>The number of symbols required to carry a payload follows Semtech's time-on-air formula, in which PL is the payload length in bytes, H is zero when an explicit header is present, DE is the low-data-rate optimization flag, CRC indicates the integrity checksum, and CR = 1 encodes the 4:5 coding rate. The numerator counts the bits to move, the denominator counts the bits each symbol carries, and the factor (CR + 4) prices the forward error correction (Semtech, <i>AN1200.13</i>):</p>
+<img class="eqimg" src="eq_npay.png">
+<p>Evaluating this for a representative 40-byte Meshtastic position packet at SF = 11, BW = 250 kHz, DE = 0, with the CRC enabled and a 16-symbol preamble, gives 48 payload symbols, and adding the preamble and the 4.25 synchronization symbols yields the total transmission time:</p>
+<img class="eqimg" src="eq_tpkt.png">
+<p>One position update costs roughly 0.56 seconds of air. This single number propagates through the entire system: it sets the fastest responsible reporting cadence (Section 6.3), it explains why the protocol cannot update once per second, and it is the unit in which the channel budget of Section 6.3 is denominated.</p>
+
+<h2>5. The Link Budget: From Datasheet Numbers to Street Range <span style="font-weight:normal; font-style:italic;">(Cannon)</span></h2>
+<p>A link budget adds every gain and subtracts every loss between transmitter and receiver, then asks whether what arrives still clears the receiver's sensitivity. The received power is the transmitted power plus both antenna gains minus the free-space path loss, which grows logarithmically with both distance and frequency:</p>
+<img class="eqimg" src="eq_prx.png">
+<p>In this system the transmit power is +30 dBm, the stock quarter-wave antennas contribute approximately 0 dBi each, and the sensitivity at the chosen operating point is -131 dBm, giving a total budget of 161 dB of loss the link can absorb before decoding fails. Evaluating the path loss at the operating frequency of roughly 913 MHz for two reference distances shows how gently it grows:</p>
+<img class="eqimg" src="eq_fsplworked.png">
+<p>Even at 5 km the free-space arrival of -75.7 dBm clears sensitivity by 55 dB. Streets, however, are not free space: terrain, buildings, foliage, and multipath fading consume margin unpredictably, so the design reserves 20 dB for the environment and quotes an honest design range of 3 to 5 km rather than the tens of kilometers the free-space arithmetic would permit. Margin converts to distance through the doubling rule implied by the 20 log term: every 6 dB of spare margin roughly doubles the achievable range. The measured desk-range baseline of roughly 6 dB signal-to-noise ratio sits 23.5 dB above the -17.5 dB demodulation floor, which is the reserve the system spends as the vehicles separate:</p>
+<img class="eqimg" src="eq_margin.png">
+
+<h2>6. The Protocol Layer: Meshtastic and the Channel Contract <span style="font-weight:normal; font-style:italic;">(Deo)</span></h2>
+<h3>6.1 The name is the frequency</h3>
+<p>The radios run Meshtastic, an open-source LoRa mesh networking firmware (Meshtastic Project, <i>Firmware</i>). Its most consequential design choice for this project is that a node stores no frequency at all. The United States band plan spans 902 to 928 MHz, which at 250 kHz per channel divides into 104 slots, and the firmware derives its slot by hashing the primary channel's name (Meshtastic Project, "Radio Settings"):</p>
+<img class="eqimg" src="eq_slot.png">
+<p>The hash is djb2, which starts from the constant 5381 and, for each character, multiplies the running value by 33 and adds the character code. The formula can be checked against a public constant: djb2 of "LongFast," the default channel name, lands on slot 19, which is 906.875 MHz, the documented United States default. Our private channel name "Group9" hashes to slot 43, and substituting into the slot formula gives the frequency both radios must, and verifiably do, display:</p>
+<img class="eqimg" src="eq_slot43.png">
+<p>Two radios holding identical encryption keys but different channel names therefore sit megahertz apart and never exchange a bit. This team learned that lesson experimentally: the single longest outage of the semester was traced to a channel write that silently reverted on one radio, leaving both nodes healthy, both configurations apparently identical, and the pair mutually deaf on different slots. The durable diagnostic that emerged is that the frequency printed on each radio's OLED screen is the ground truth of the agreement, checked before every test.</p>
+<h3>6.2 Privacy on a public frequency</h3>
+<p>Slot 43 is public airspace; anyone may transmit or listen there. Privacy comes from the second term of the contract. All channel traffic is encrypted with AES-256 under a pre-shared key generated at channel creation and distributed between the radios only over USB, inside the provisioning URL; the key never crosses the air (Meshtastic Project, "Encryption"). Directed traffic such as on-demand position requests is additionally encrypted per node with Curve25519 public keys exchanged automatically in node-information broadcasts. An eavesdropper observes that packets exist, their timing, and their signal strength, because headers are cleartext, but recovers neither content nor location. The system's privacy is therefore layered exactly like its connectivity: the obscure frequency provides separation from the public mesh, and the key provides the actual secrecy.</p>
+<h3>6.3 Airtime as a shared budget</h3>
+<p>Because every packet costs 0.56 seconds of a channel only one node can occupy at a time, Meshtastic treats channel utilization as a managed resource and suppresses position broadcasts when utilization exceeds roughly 25 percent (Meshtastic Project, "Mesh Broadcast Algorithm"). The configured cadence must therefore be shown to fit. With both vehicles reporting every 10 seconds while moving, utilization is the node count times the packet time divided by the cadence:</p>
+<img class="eqimg" src="eq_airtime.png">
+<p>The second figure in the equation records a subtlety of running a mesh protocol with exactly two nodes. Meshtastic's default role re-broadcasts every overheard packet to extend multi-hop meshes, but with two nodes every relay is pure waste that doubles the spend to roughly 22 percent, brushing the throttle precisely when both vehicles move. Both radios therefore run the CLIENT_MUTE role, which transmits and receives normally but never relays; the change was measured to halve idle utilization from the 9 to 13 percent range to 5 to 6 percent. The full cadence contract is: positions every 10 seconds and 20 meters while moving, every 60 seconds while parked, device telemetry every 300 seconds, and node information on boot. Each periodic packet exists to prevent a named failure, and the telemetry heartbeat earns the next section.</p>
+<h3>6.4 Liveness is arithmetic</h3>
+<p>No wire connects the vehicles, so nothing can prove a silent partner is alive. Every liveness indicator in the system is a comparison between the current time and a stored last-heard timestamp. The stock firmware's definition of an online node is one inequality, with the constant defined in its node database source (Meshtastic Project, <i>Firmware</i>):</p>
+<img class="eqimg" src="eq_online.png">
+<p>The two-hour window is sized for an ecosystem of solar nodes that legitimately sleep, and it must exceed the longest honest silence or healthy nodes flap offline; its cost is that a dead radio can look alive for two hours. Because this system's cadence contract guarantees a packet at least every 300 seconds, the display layers far stricter thresholds on the same timestamps: a link-fresh tag within 90 seconds, a visibly degraded position estimate past 30 seconds, and a stale-data banner past 120 seconds. Several of the semester's most confusing symptoms, including online counters claiming a partner was last heard 72 days ago while text messages flowed normally, were ultimately stale stored timestamps being re-broadcast by a node without a GNSS fix, and every one of them yielded to the same analysis: the counter is not a connection, it is arithmetic on a timestamp, so find the timestamp that is lying.</p>
+<h3>6.5 The configuration as a written contract</h3>
+<p>Because agreement is the connection, the radio configuration is not a list of preferences but the contract itself, and this team treats it that way: every value is written down with its reason, applied identically to both radios, and verified after every change. Table 1 records the full operating configuration. The companion lesson, earned the hard way and examined in Section 9, is that applying a setting and having a setting are different things. The provisioning tool talks to the radio over a USB serial port, and closing that port toggles a control line that hard resets the processor; a write that arrives just before the reset can be lost before the radio saves it, while the tool happily reports success. The discipline that resulted is mechanical. After any configuration change, read every value back, confirm the OLED frequency screen shows 912.875 MHz, then power cycle the radio and confirm the value survived.</p>
+<table>
+<tr><th>Setting</th><th>Value</th><th>Reason</th></tr>
+<tr><td>Region</td><td>US</td><td>Selects the 902 to 928 MHz band plan the slot arithmetic of Section 6.1 assumes</td></tr>
+<tr><td>Primary channel</td><td>Group9, position precision 32</td><td>Private slot 43; full-resolution positions, since the channel default truncates every fix to a grid of roughly 6 km</td></tr>
+<tr><td>Modem preset</td><td>LONG_FAST (SF11, 250 kHz, 4:5)</td><td>The range-versus-rate compromise derived in Section 4</td></tr>
+<tr><td>Transmit power</td><td>+30 dBm</td><td>The legal ceiling; margin converts directly to range (Section 5)</td></tr>
+<tr><td>Position broadcast, parked</td><td>60 s</td><td>Presence at negligible airtime cost</td></tr>
+<tr><td>Position broadcast, moving</td><td>10 s and 20 m, both required</td><td>Tracking freshness inside the airtime budget of Section 6.3</td></tr>
+<tr><td>GNSS update interval</td><td>10 s</td><td>Must not exceed the broadcast interval, or the radio re-sends stale fixes</td></tr>
+<tr><td>Telemetry heartbeat</td><td>300 s</td><td>Keeps the liveness arithmetic of Section 6.4 honest for about 0.17 percent airtime</td></tr>
+<tr><td>Device role</td><td>CLIENT_MUTE</td><td>Two-node network; relaying is pure airtime waste (Section 6.3)</td></tr>
+<tr><td>Bluetooth mode</td><td>NO_PIN</td><td>Lets the display pair without a keypad; bonded modes stop advertising and strand the display</td></tr>
+<tr><td>Canned messages</td><td>21 full-word presets</td><td>Conversation without typing; the firmware caps the whole set at 200 characters and this set uses 194</td></tr>
+</table>
+<div class="cap" style="margin-top:-6px;">Table 1. Operating configuration applied identically to both radios.</div>
+
+<h2>7. The Display Node: Waveshare ESP32-S3-RLCD-4.2 <span style="font-weight:normal; font-style:italic;">(Josiah)</span></h2>
+<h3>7.1 Hardware</h3>
+<p>The display node is a Waveshare ESP32-S3-RLCD-4.2 driver board: the same ESP32-S3 microcontroller class as the radio, driving a 4.2-inch, 400 by 300 pixel reflective LCD (Waveshare). A reflective panel modulates ambient light rather than emitting its own, which makes it brightest exactly where a dashboard instrument needs it, in direct sunlight, while drawing milliwatts and producing no glare at night. The board exposes the single button and USB-C port the firmware uses, and both units are enclosed in PETG cases printed from a community design, chosen over PLA because dashboard temperatures exceed PLA's glass transition.</p>
+<h3>7.2 What made it possible: the Client API over BLE <span style="font-weight:normal; font-style:italic;">(Deo)</span></h3>
+<p>The decision that made a custom display feasible alongside unmodified radio firmware is that Meshtastic publishes its phone-application interface as a documented Bluetooth Low Energy service, the Client API (Meshtastic Project, "Client API"). The radio exposes one GATT service with three characteristics: a ToRadio characteristic the client writes commands and outbound packets into, a FromRadio characteristic the client reads repeatedly until empty, and a FromNum characteristic that notifies when new data is queued. Every payload is a protocol buffer, a compact binary serialization with published schemas. The display firmware therefore impersonates the phone app: it connects as a BLE central using the NimBLE-Arduino stack (h2zero), writes a configuration request, drains the radio's node database, and then drains every subsequent notification, decoding each FromRadio message with nanopb, a protocol-buffer decoder designed for microcontrollers (Aimonen). The radio cannot tell the difference between this team's 400-line protocol layer and the official application, which is precisely why no modification of the radio firmware, and none of the risk that would carry, was ever required.</p>
+<p>Table 2 lists the complete Bluetooth interface. One service and three characteristics carry everything: configuration, positions, telemetry, node information, and text, all as protocol buffers.</p>
+<table>
+<tr><th>GATT item</th><th>UUID</th><th>Role</th></tr>
+<tr><td>Service</td><td><code>6ba1b218-15a8-461f-9fa8-5dcae273eafd</code></td><td>The Meshtastic Client API service</td></tr>
+<tr><td>ToRadio</td><td><code>f75c76d2-129e-4dad-a1dd-7866124401e7</code></td><td>Written by the client: commands and outbound packets</td></tr>
+<tr><td>FromRadio</td><td><code>2c55e69e-4993-11ed-b878-0242ac120002</code></td><td>Read repeatedly until empty: the configuration dump and all inbound packets</td></tr>
+<tr><td>FromNum</td><td><code>ed9da18c-a800-4f66-a670-aa7547e34453</code></td><td>Notifies the client that new data is queued</td></tr>
+</table>
+<div class="cap" style="margin-top:-6px;">Table 2. The Meshtastic Client API as exposed over Bluetooth Low Energy (Meshtastic Project, "Client API").</div>
+<h3>7.3 Inside the display firmware</h3>
+<p>The decoded stream feeds a deliberately simple architecture: a Bluetooth task writes and a rendering task reads a single mutex-protected state structure containing both vehicles' fixes, names, battery levels, and message history. The one-writer, one-reader discipline eliminates data races by construction, and because the shared structure is pure data with no hardware dependencies, the navigation mathematics compiles and runs on a desktop computer, where twelve unit tests exercise it against known coordinates. The firmware totals roughly 2200 hand-written lines of C and C++ plus the generated protocol-buffer decoding code, organized into a protocol layer (Bluetooth link, decoder, node table), a navigation layer (the mathematics of Section 8), and a rendering layer (three screen pages drawn at two frames per second).</p>
+<p>Two of the firmware's smallest decisions carry the most design weight, and both are about honesty. First, the radio echoes a copy of every message its user sends back over the Bluetooth link, so a naive display would pop up a notification for the driver's own words; the decoder therefore discards any text whose origin is the local node, which guarantees that a banner on the screen is always news from the other vehicle. Second, a radio that has lost its GNSS fix keeps re-broadcasting its last stored position, and a naive display would treat each arrival as fresh; the node table therefore refuses to reset the data age when an identical position arrives again, so a vehicle sitting in a parking garage goes visibly stale instead of invisibly wrong. Between genuine updates the display projects both vehicles forward by dead reckoning for smooth motion, but the same principle holds there: projection never resets the age, and past 30 seconds the direction dart is drawn hollow. The driver can always distinguish what the system knows from what it is guessing.</p>
+<p>The display's single push button completes the interaction model. A short press cycles between the compass, status, and message pages; a long press clears the message history or resets the tracking state; and the board's second button transmits an on-demand position request to the partner, a directed packet that asks the remote radio to answer immediately rather than at its next scheduled broadcast. That request exercises the full protocol stack, including the per-node encryption of Section 6.2, which is how one of the subtler failures of Section 9 was discovered.</p>
+
+<h2>8. Navigation Mathematics <span style="font-weight:normal; font-style:italic;">(Josiah)</span></h2>
+<p>Everything the driver sees is computed on the display from two stored fixes. Latitude &phi; and longitude &lambda; are in radians, &psi; is the vehicle's own course over ground, and R is the Earth's mean radius. The distance between the vehicles is the great-circle distance given by the haversine formula, whose intermediate quantity a measures the separation on the unit sphere:</p>
+<img class="eqimg" src="eq_haversine.png">
+<p>During bench verification the two radios, sitting on one desk, reported fixes that this formula placed 12.5 meters apart, which is not an error in the formula but an honest picture of consumer GNSS scatter between two independent receivers; the figure tightened outdoors. The direction to the partner is the initial great-circle bearing, and subtracting the driver's own course and wrapping to plus or minus 180 degrees gives the angle the on-screen arrow makes with the vehicle's nose:</p>
+<img class="eqimg" src="eq_bearing.png">
+<p>Radio updates arrive at most every ten seconds, but the screen renders twice per second. Between packets each fix is projected forward along its last course and speed, with the cosine of latitude correcting for the convergence of meridians, and with projection capped at 120 seconds:</p>
+<img class="eqimg" src="eq_dr.png">
+<p>The projection is cosmetic, and the design is careful to say so: the displayed data age is never reset by projection, and past 30 seconds the arrow is drawn hollow, so motion stays smooth while the symbology tells the truth about freshness. Finally, the display reports whether the gap is closing or opening through an exponential moving average of the distance derivative, sampled each 500-millisecond render tick; the 0.9 to 0.1 weighting settles in about five seconds, enough smoothing that GNSS jitter does not flap the label:</p>
+<img class="eqimg" src="eq_ema.png">
+
+<h2>9. Failure Modes and Lessons Learned</h2>
+<p>A design report that lists only successes hides most of its engineering. This section documents the five most instructive failures of the semester, each reproduced or root-caused on the bench before being written down. They share a family resemblance: in every case the hardware was healthy, the symptom pointed somewhere misleading, and the explanation was one of the agreements of Section 1 quietly broken. The rules this team now follows before every test were each purchased by one of these.</p>
+<h3>9.1 The silent frequency revert</h3>
+<p>The longest outage of the project presented as total mutual silence with zero channel utilization on both radios, while both configurations read back as identical. The root cause was the configuration write failure described in Section 6.5: a channel write had silently reverted on one radio, leaving the two nodes with the same key on different frequency slots, one on the private slot 43 and one back on the public slot 19, six megahertz away. The diagnostic lesson is that a read-back queries the intended configuration, while the OLED frequency screen reports the frequency the synthesizer is actually programmed to. The screen is the ground truth. The rule adopted is a two-second pre-flight check: both OLED screens must read 912.875 before any session.</p>
+<h3>9.2 Battery death erases configuration</h3>
+<p>Twice in one night, radios whose batteries had been allowed to run completely flat came back with reverted configuration, one losing only its channels and the other losing everything including its name and keys. The symptom is always the same healthy-looking silence as Section 9.1, which is why the same pre-flight check catches it. The operating rule is to never run the radios to empty, and the recovery is the full provisioning recipe of Section 6.5 followed by a power-cycle persistence check.</p>
+<h3>9.3 The half-alive radio</h3>
+<p>A radio recovering from a flat battery once ran for 18 hours with a lit screen and a valid GNSS fix while its transmitter and USB port were both frozen; nothing it displayed suggested a problem, and nothing it transmitted existed. The lesson generalizes beyond this project: a device's own user interface is not evidence of its health. Judge a radio by the other radio's last-heard age, never by its own screen. A full power cycle cleared the condition, and a clean boot announces itself on the channel within a minute.</p>
+<h3>9.4 The stale public key</h3>
+<p>After one radio was factory reset, broadcasts continued to flow in both directions, but directed packets, position requests and direct messages, timed out in exactly one direction with no error. The cause is the key model of Section 6.2: directed traffic is encrypted to the recipient's stored public key, the factory reset had regenerated that key, and the requester was still encrypting to the old one. The recipient dropped what it could not decrypt, silently, exactly as a secure system should. The fix is to clear the requester's node database and let the next node-information broadcast deliver the fresh key. The lesson is that asymmetric encryption fails asymmetrically, so a one-way failure of directed traffic with healthy broadcasts points at keys, not radio.</p>
+<h3>9.5 Counters that lie</h3>
+<p>The most stubborn class of symptom was liveness indicators contradicting reality: a partner showing as last heard 72 days ago in the middle of a working text conversation, and node lists counting long-dead entries as online after a reboot. Section 6.4 explains the mechanism, stale timestamps re-broadcast by fixless radios and stale node records reloaded from flash. The cure was threefold: purge stored positions so a fixless radio goes honestly quiet, synchronize clocks, and add the 300-second telemetry heartbeat so that fresh timestamps always exist. The design lesson echoes through Sections 6.4 and 7.3: every liveness indicator is arithmetic on a timestamp, so when an indicator lies, some timestamp is lying, and the job is to find which one.</p>
+
+<h2>10. Experimental Verification <span style="font-weight:normal; font-style:italic;">(Victor and Cannon)</span></h2>
+<p>Every major claim in this report has been exercised on the real hardware, and several of the system's rules exist only because an experiment in Section 9 failed first.</p>
+<table>
+<tr><th>Claim</th><th>Evidence</th></tr>
+<tr><td>Two-way link on slot 43</td><td>Round-trip traceroutes across multiple sessions, 5.75 to 7.25 dB SNR per direction at +30 dBm</td></tr>
+<tr><td>Frequency-slot derivation</td><td>Both OLEDs display 912.875 MHz on channel Group9; the 2026-09-25 outage reproduced the mismatch case</td></tr>
+<tr><td>Live tracking at vehicle cadence</td><td>A display tracked a real drive on first boot; the 10-second moving cadence held through the Week 4 drive test</td></tr>
+<tr><td>On-demand position request</td><td>Both the command-line request and the display's button returned the partner's live fix within seconds</td></tr>
+<tr><td>Messaging path</td><td>Preset texts delivered in both directions; the popup confirmed receiver-side only</td></tr>
+<tr><td>Airtime management</td><td>Switching both nodes to CLIENT_MUTE halved measured idle utilization, from roughly 9 to 13 percent down to 5 to 6 percent</td></tr>
+<tr><td>Navigation mathematics</td><td>Twelve host-side unit tests pass; bench distances match hand-computed haversine values</td></tr>
+</table>
+<p>The two-vehicle drive tests were run against acceptance metrics declared in advance, summarized in Table 3, with the measured outcomes recorded in Appendix C. Declaring the thresholds before the test, rather than after, is deliberate; it converts the drive from a demonstration into an experiment that can fail, which is the only kind that provides evidence. The range model check passed with margin: full tracking at 5.25 km against a 3 to 5 km design range.</p>
+<table>
+<tr><th>Metric</th><th>Acceptance threshold</th><th>Method</th></tr>
+<tr><td>Partner position freshness</td><td>95th percentile of displayed age no greater than 15 s while both vehicles move</td><td>Log displayed age each render tick during a 30-minute convoy drive</td></tr>
+<tr><td>Reacquisition after separation</td><td>Fresh partner fix within 60 s of returning to range</td><td>Deliberately separate beyond range, return, and time the recovery</td></tr>
+<tr><td>Silent loss</td><td>No interval over 120 s without an update while in convoy range</td><td>Post-drive inspection of both logs</td></tr>
+<tr><td>Range model check</td><td>Measured SNR versus distance tracks the Section 5 prediction within the 20 dB environmental reserve</td><td>Stop at measured distances; record per-packet SNR both directions</td></tr>
+</table>
+<div class="cap" style="margin-top:-6px;">Table 3. Acceptance metrics for the two-vehicle drive test, declared in advance.</div>
+
+<h2>11. Future Work</h2>
+<p>With the system built, bench-verified, and validated on the road, the remaining work is consolidation rather than construction. The first part is continued testing. The drive tests of Section 10 established the range envelope on one route on one day; the plan for the remainder of the semester is to keep the pair in regular service, accumulating uptime, message counts, and staleness events under ordinary driving so that the reliability claims rest on weeks of operation rather than on single outings.</p>
+<p>The second part is documentation for handoff. Two companion documents accompany this report: a Device User Guide, written so that a first-time user can operate both devices without assistance, and a Technical Manual, which records the engineering detail, the provisioning procedures, and the complete failure catalog of Section 9. Both exist in working form today and will be kept current with the firmware through the final demonstration, then delivered with the hardware.</p>
+<p>The third part is range characterization beyond the first route, and the harder half is now measured. A canyon campaign run on October 18 at Ceta Canyon, on the Palo Duro escarpment near Happy, Texas put repeated loss of line of sight between the vehicles: staleness appeared from 1.29 miles behind rock, single packets were still received at 4.28 miles through momentary terrain gaps, and the pair reacquired automatically on return, 54 seconds of age by 2.90 miles and 11 seconds by 1.45 miles (Appendix C). The remaining campaign is a long open-road test in New Mexico, where flat highway and an unobstructed Fresnel zone remove the obstacles that ended the Section 10 test and should reveal the true maximum of the link beyond the 3.75-mile stale point measured locally. Together the two campaigns bracket the best and worst cases a traveling pair will actually meet, and they turn the Section 5 link budget from a design argument into a validated measurement. The larger architectural extensions that the protocol already supports, a third vehicle, a fixed repeater on high ground, and ignition-circuit power, remain available but are deliberately deferred beyond the semester.</p>
+
+<h2>12. Conclusion</h2>
+<p>The system works because each layer keeps one precise promise to the layer above it. Chirp spread spectrum promises that 11-bit symbols survive 17.5 dB below the noise floor, and charges 8.19 milliseconds per symbol for it. The link budget promises 161 dB of absorbable loss, and the design spends 20 dB of it on the real world to quote an honest 3 to 5 km. Meshtastic promises that a channel name, hashed, is a frequency, and that a key shared over a cable is privacy on public airspace. The Client API promises that anything that speaks its protocol buffers over three Bluetooth characteristics is a legitimate client, which is what admitted a custom sunlight-readable display without a line of radio firmware changing. And the display, holding the top of the stack, promises the driver honesty: every number on the glass is either a measurement with its age attached or an estimate drawn hollow. The failures of Section 9 were, without exception, one of these promises quietly broken and then restored, which is its own kind of confirmation that the layering is real. The result is two ordinary vehicles that know where each other are, anywhere on Earth with a view of the sky, with nothing between them but physics and agreement.</p>
+
+<h2 style="page-break-before: always;">References</h2>
+<ol class="refs">
+<li>Aimonen, Petteri. <i>Nanopb: Protocol Buffers with Small Code Size</i>. GitHub, github.com/nanopb/nanopb.</li>
+<li>Espressif Systems. <i>ESP32-S3 Series Datasheet</i>. Version 2.0, Espressif Systems, 2024, www.espressif.com/en/products/socs/esp32-s3.</li>
+<li>h2zero. <i>NimBLE-Arduino: A Fork of the NimBLE Stack for Arduino</i>. GitHub, github.com/h2zero/NimBLE-Arduino.</li>
+<li>Heltec Automation. <i>WiFi LoRa 32 (V4) Product Documentation</i>. Heltec Automation, heltec.org/project/wifi-lora-32-v4.</li>
+<li>Meshtastic Project. "Client API." <i>Meshtastic Documentation</i>, meshtastic.org/docs/development/device/client-api.</li>
+<li>Meshtastic Project. "Encryption." <i>Meshtastic Documentation</i>, meshtastic.org/docs/overview/encryption.</li>
+<li>Meshtastic Project. "Mesh Broadcast Algorithm." <i>Meshtastic Documentation</i>, meshtastic.org/docs/overview/mesh-algo.</li>
+<li>Meshtastic Project. "Radio Settings." <i>Meshtastic Documentation</i>, meshtastic.org/docs/configuration/radio.</li>
+<li>Meshtastic Project. <i>Meshtastic Device Firmware</i>. Version 2.7.26, GitHub, github.com/meshtastic/firmware.</li>
+<li>Semtech Corporation. <i>AN1200.13: LoRa Modem Designer's Guide</i>. Semtech Corporation, 2013, www.semtech.com.</li>
+<li>Semtech Corporation. <i>SX1261/2 Long Range, Low Power, Sub-GHz RF Transceiver Datasheet</i>. Revision 2.2, Semtech Corporation, 2023, www.semtech.com/products/wireless-rf/lora-connect/sx1262.</li>
+<li>United States. <i>Code of Federal Regulations</i>, title 47, section 15.247. Electronic Code of Federal Regulations, www.ecfr.gov/current/title-47/section-15.247.</li>
+<li>Waveshare Electronics. <i>ESP32-S3-RLCD-4.2 Development Board Wiki</i>. Waveshare, www.waveshare.com/wiki/ESP32-S3-RLCD-4.2.</li>
+</ol>
+
+<h2 style="page-break-before: always;">Appendix A: Acronyms and Abbreviations</h2>
+<p>Each term is expanded and then defined in the role it plays in this system.</p>
+<table>
+<tr><th>Term</th><th>Expansion and meaning in this system</th></tr>
+<tr><td>ADC</td><td>Analog-to-digital converter; digitizes the down-converted signal ahead of the LoRa modem in Figure 2</td></tr>
+<tr><td>AES-256</td><td>Advanced Encryption Standard with a 256-bit key; encrypts all channel traffic (Section 6.2)</td></tr>
+<tr><td>BLE</td><td>Bluetooth Low Energy; the short-range in-vehicle link between each display and its radio (Section 7.2)</td></tr>
+<tr><td>BW</td><td>Bandwidth; the RF channel width, 250 kHz in this design</td></tr>
+<tr><td>C.F.R.</td><td>Code of Federal Regulations; title 47, section 15.247 governs this band</td></tr>
+<tr><td>CR</td><td>Coding rate; the forward error correction ratio, 4:5 here</td></tr>
+<tr><td>CRC</td><td>Cyclic redundancy check; the per-packet integrity checksum</td></tr>
+<tr><td>CSS</td><td>Chirp spread spectrum; the LoRa modulation of Section 4</td></tr>
+<tr><td>dB, dBm, dBi</td><td>Decibel ratio; power referenced to one milliwatt; antenna gain referenced to an isotropic radiator</td></tr>
+<tr><td>FS</td><td>Frequency synthesis; the transceiver mode in Figure 3 in which the PLL locks the carrier</td></tr>
+<tr><td>FSK</td><td>Frequency-shift keying; the SX1262's alternative modem, unused in this design</td></tr>
+<tr><td>GATT</td><td>Generic Attribute Profile; the service and characteristic structure of BLE (Table 2)</td></tr>
+<tr><td>GNSS</td><td>Global navigation satellite system; the source of every position fix</td></tr>
+<tr><td>LDO</td><td>Low-dropout regulator; one of the transceiver's two supply options in Figure 2</td></tr>
+<tr><td>LNA</td><td>Low-noise amplifier; the first stage of the receive chain in Figure 2</td></tr>
+<tr><td>LoRa</td><td>Long Range; Semtech's chirp spread spectrum modulation</td></tr>
+<tr><td>NVS</td><td>Non-volatile storage; the flash region holding radio configuration, implicated in Section 9.2</td></tr>
+<tr><td>OLED</td><td>Organic light-emitting diode; the radio's small status screen, the ground truth of Section 9.1</td></tr>
+<tr><td>PA</td><td>Power amplifier; the final transmit stage in Figure 2</td></tr>
+<tr><td>PLL</td><td>Phase-locked loop; the frequency synthesizer the channel-name hash ultimately programs</td></tr>
+<tr><td>RLCD</td><td>Reflective liquid crystal display; the sunlight-readable panel of Section 7.1</td></tr>
+<tr><td>SF</td><td>Spreading factor; bits per LoRa symbol, 11 here (also the callsign of radio 1)</td></tr>
+<tr><td>SNR</td><td>Signal-to-noise ratio; signal strength relative to the noise floor, in dB</td></tr>
+<tr><td>SPI</td><td>Serial Peripheral Interface; the four-wire bus between the ESP32-S3 and the transceiver</td></tr>
+<tr><td>UUID</td><td>Universally unique identifier; names the BLE service and characteristics in Table 2</td></tr>
+</table>
+
+<h2 style="page-break-before: always;">Appendix B: Table of Symbols</h2>
+<p>The symbols below appear in the equations of Sections 4 through 8, listed in order of first use.</p>
+<table>
+<tr><th>Symbol</th><th>Meaning</th><th>Value or units</th></tr>
+<tr><td>f<sub>slot</sub>, f<sub>start</sub>, f<sub>stop</sub></td><td>Slot center frequency; band edges of the US plan</td><td>MHz; 902 and 928 MHz</td></tr>
+<tr><td>N<sub>slots</sub></td><td>Number of frequency slots in the band</td><td>104</td></tr>
+<tr><td>T<sub>sym</sub></td><td>Duration of one LoRa symbol</td><td>8.19 ms at SF11, 250 kHz</td></tr>
+<tr><td>N<sub>payload</sub></td><td>Symbol count of the payload portion of a packet</td><td>48 for the worked 40-byte packet</td></tr>
+<tr><td>PL, H, DE, CRC, CR</td><td>Payload bytes; header flag; low-data-rate flag; checksum flag; coding-rate index</td><td>Dimensionless inputs to the time-on-air formula</td></tr>
+<tr><td>T<sub>pkt</sub></td><td>Total time on air of one packet</td><td>Approximately 0.56 s</td></tr>
+<tr><td>P<sub>tx</sub>, P<sub>rx</sub></td><td>Transmitted and received power</td><td>dBm; +30 dBm transmit</td></tr>
+<tr><td>G<sub>tx</sub>, G<sub>rx</sub></td><td>Antenna gains</td><td>Approximately 0 dBi each</td></tr>
+<tr><td>FSPL</td><td>Free-space path loss</td><td>dB; 91.7 dB at 1 km, 913 MHz</td></tr>
+<tr><td>S</td><td>Receiver sensitivity</td><td>-131 dBm at the operating point</td></tr>
+<tr><td>U</td><td>Channel utilization</td><td>Fraction of time the channel carries packets</td></tr>
+<tr><td>t<sub>now</sub>, t<sub>last heard</sub></td><td>Current time; timestamp of the last packet from a node</td><td>Seconds; the online window is 7200 s</td></tr>
+<tr><td>&phi;, &lambda;</td><td>Latitude and longitude</td><td>Radians in the formulas of Section 8</td></tr>
+<tr><td>a, d, R</td><td>Haversine intermediate; great-circle distance; Earth mean radius</td><td>Dimensionless; meters; 6371 km</td></tr>
+<tr><td>&theta;, &alpha;, &psi;</td><td>Bearing to partner; arrow angle relative to the nose; own course over ground</td><td>Degrees</td></tr>
+<tr><td>v, &Delta;t</td><td>Speed and elapsed time in the dead-reckoning projection</td><td>m/s; seconds, capped at 120 s</td></tr>
+<tr><td>r<sub>k</sub></td><td>Smoothed closing rate at render tick k</td><td>m/s; positive means closing</td></tr>
+</table>
+
+<h2 style="page-break-before: always;">Appendix C: Bench Measurement Record</h2>
+<p>The measurements below are the raw observations behind the evidence table of Section 10, recorded during bench and desk-range sessions across the semester. They are reproduced here so a reader can judge the claims against the data rather than against a summary of it.</p>
+<table>
+<tr><th>Measurement</th><th>Observed values</th><th>Notes</th></tr>
+<tr><td>Round-trip traceroute SNR, desk range</td><td>6.75 dB and 5.75 dB per direction on the verifying session; 5.75 to 7.25 dB across later sessions</td><td>+30 dBm, antennas meters apart; confirms the link and gives the margin baseline of Section 5</td></tr>
+<tr><td>Channel utilization, default client role</td><td>9 to 13 percent at idle</td><td>Two nodes relaying each other's broadcasts</td></tr>
+<tr><td>Channel utilization, CLIENT_MUTE</td><td>5 to 6 percent at idle; below 4 percent typical in later sessions</td><td>Relaying disabled; roughly half the default role's spend</td></tr>
+<tr><td>GNSS scatter between adjacent radios</td><td>13 to 45 ft displayed between two radios on one desk; 41 ft in one logged bench session</td><td>Two independent consumer receivers; tightens outdoors and in motion</td></tr>
+<tr><td>Position-request round trip</td><td>Partner's live fix returned within seconds of the request, at full precision</td><td>Exercised from the command line and from the display's button</td></tr>
+<tr><td>Fix acquisition, open sky</td><td>Five-satellite fixes typically inside one minute from power on</td><td>Both radios, repeated across sessions</td></tr>
+<tr><td>Heartbeat effect on liveness</td><td>With the 300 s telemetry heartbeat, no false offline event observed in subsequent bench sessions</td><td>Before the heartbeat, counters lied within hours on fixless radios (Section 9.5)</td></tr>
+<tr><td>Display link freshness</td><td>Display reconnects to its radio during the radio's first advertising minute; link tag holds through a full session</td><td>Ignition-on power sequencing, both units</td></tr>
+<tr><td>Open-road range, full health</td><td>LINK CONNECTED at 3.26 mi (5.25 km), both coordinate sets live on screen; the displayed distance matches the latitude delta exactly (0.04719 deg = 3.26 mi)</td><td>2026-10-05, N County Road 2000; in-cabin antennas, partner parked; Find My ground truth 4.1 road miles</td></tr>
+<tr><td>Open-road range, stale edge</td><td>DATA STALE at 3.75 mi (6.03 km), age 2 min, and a message send failed; flagged honestly on both devices</td><td>The reliable edge for this configuration, not a physics limit</td></tr>
+<tr><td>In-town stale onset</td><td>Near 0.5 mi with the same hardware</td><td>2026-10-04 night drive; a factor of seven from environment alone</td></tr>
+<tr><td>Reacquisition inbound</td><td>Ages back in the teens by 0.85 mi; dart at 12 o'clock at 37 mph, no operator action</td><td>Return leg of the range test</td></tr>
+<tr><td>Canyon stale onset</td><td>DATA STALE from 1.29 mi with canyon rock between the vehicles; repeated stale events at short range throughout the run</td><td>2026-10-18, Ceta Canyon on the Palo Duro escarpment near Happy, TX; RG at the rim point above Garrison Retreat Lodge, SF down FM 1721 onto the plains; same in-cabin antennas</td></tr>
+<tr><td>Canyon intermittency</td><td>Displayed age reset from 2 min to 1 min at 4.28 mi: a single packet received through a momentary terrain gap while nominally stale</td><td>Line-of-sight, not distance, governs in broken terrain; the link is intermittent rather than binary</td></tr>
+<tr><td>Canyon reacquisition</td><td>Age 54 s by 2.90 mi inbound, 11 s by 1.45 mi with the partner at 12 o'clock, closing 45 mph; no operator action</td><td>Recovery is automatic whenever the geometry reopens; one display ran uptime 1910 to 2789 s across the sequence with no reboot</td></tr>
+<tr><td>Rim elevation effect</td><td>With one radio parked on the Ceta Canyon rim at ~1,100 m, line-of-sight stretches stayed live to roughly 4.7 mi, beyond the 3.75 mi flat-ground edge, in the same session that produced stalls from 1.29 mi behind rock</td><td>One elevated antenna out-ranged two car-height antennas on open road: antenna height, not transmit power, is the dominant range variable, which is the quantitative case for the fixed-repeater extension of Section 11</td></tr>
+</table>
+<div class="cap" style="margin-top:-6px;">Table 4. Bench and road measurement record. Desk-range SNR values are not range claims; they anchor the margin arithmetic of Section 5.</div>
+<p>Two figures tie the record together. The 6 dB desk-range SNR sits 23.5 dB above the -17.5 dB demodulation floor, roughly four distance doublings of reserve by the rule of Section 5, which was the basis for believing the 3 to 5 km design range in advance. The road then agreed: the 2026-10-05 range test measured full health at 5.25 km and the reliable edge by 6.03 km with antennas still inside the vehicles, meeting the top of the design range and exceeding it by about a kilometer. This satisfies the range model check of Table 3, and the three-environment comparison of stale onset on identical hardware, roughly 0.5 mi in town, 1.29 mi behind canyon rock, and 3.75 mi on open road, is the 20 dB environmental reserve made directly visible: distance is not the variable that breaks the link, blocked line of sight is. The canyon session also measured the other side of that coin: with one radio elevated on the rim, line-of-sight range stretched to roughly 4.7 mi, past the flat-ground edge, so the full measured envelope of this hardware now spans 0.5 to 4.7 mi with terrain and antenna height as the controlling variables.</p>
+
+<h2 style="page-break-before: always;">Appendix D: The Canned Message Set</h2>
+<p>Messages are sent from the radio's button interface, so the design problem is conversation without typing. The stock firmware stores the entire set as one string capped at 200 characters, a constraint that forces economy: this set spends 194 of them on 21 full-word messages. The design rule was that every question in the set must have its answer in the set, so the list functions as a closed conversation kit rather than a pile of phrases.</p>
+<table>
+<tr><th>Group</th><th>Messages</th><th>Design intent</th></tr>
+<tr><td>Quick replies</td><td>OK &middot; Yes &middot; No &middot; Hello</td><td>One-press answers to anything</td></tr>
+<tr><td>Checking in</td><td>How are you? &middot; I am good</td><td>A question and its answer, paired</td></tr>
+<tr><td>Safety</td><td>Help! &middot; Are you hurt?</td><td>The two messages that justify the rest of the system</td></tr>
+<tr><td>Position</td><td>Send position</td><td>Backs up the display's request button over the text channel</td></tr>
+<tr><td>Driving</td><td>On my way &middot; Wait there &middot; I am here &middot; Follow me &middot; Slow down &middot; Stop &middot; Turn left &middot; Turn right &middot; Turn back</td><td>Convoy coordination in full words, no abbreviations to misread at a glance</td></tr>
+<tr><td>Social and status</td><td>Beer later? &middot; Low battery &middot; Going home</td><td>Trip-end coordination; the battery warning feeds the rule of Section 9.2</td></tr>
+</table>
+<div class="cap" style="margin-top:-6px;">Table 5. The 21-message preset set carried identically by both radios.</div>
+<p>The set was applied to both radios over USB and verified by read-back, and the delivery path was confirmed end to end: a message selected on one radio appears as a banner on the partner's display within seconds, is stored in the display's history page, and never notifies the sender's own screen, per the honesty rule of Section 7.3.</p>
+</div>
+</body></html>

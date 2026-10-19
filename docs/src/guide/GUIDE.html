@@ -1,0 +1,310 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Device User Guide</title>
+<style>
+ @page { margin: 60px 0 64px 0; }
+ :root { --navy:#000000; --orange:#000000; --ink:#000000; --mut:#333333; --line:#999999; }
+ body { font-family: "Times New Roman", Times, serif; font-size: 12pt; color: var(--ink); margin: 0; line-height: 1.5; }
+ .page { padding: 0 64px; max-width: 7.0in; margin: 0 auto; }
+ .cover { background: white; color: #000; padding: 48px 70px 40px 70px; page-break-after: always; text-align: center; max-width: 7.0in; margin: 0 auto; }
+ .cover .inst { font-size: 12pt; letter-spacing: 1px; line-height: 1.9; }
+ .cover h1 { font-size: 22pt; font-weight: bold; margin: 110px 0 10px 0; line-height: 1.35; }
+ .cover .sub { font-size: 13pt; font-style: italic; margin-bottom: 0; }
+ .cover .auth { margin-top: 260px; font-size: 12pt; line-height: 1.8; }
+ .tocpage { page-break-after: always; }
+ .tocpage h2 { border: none; padding-left: 0; }
+ table.toc { width: 100%; border-collapse: collapse; margin-top: 10px; }
+ table.toc td { border: none; border-bottom: 1px dotted var(--line); padding: 7px 2px; font-size: 12pt; }
+ table.toc td.pg { text-align: right; width: 40px; font-weight: bold; }
+ h2 { font-size: 15pt; font-weight: bold; color: #000; margin: 26px 0 8px 0; page-break-after: avoid; }
+ p { margin: 6px 0; text-align: justify; }
+ .screen { border: 1px solid #000; }
+ .step { display: flex; gap: 18px; margin: 14px auto; page-break-inside: avoid; align-items: center; justify-content: center; }
+ .step img { width: 3.05in; }
+ .step img.wide { width: 3.3in; }
+ .step .txt { flex: 1; }
+ .badge { display: inline-block; font-weight: bold; color: #000; margin-right: 7px; }
+ .badge::after { content: "."; }
+ .duo { display: flex; gap: 16px; margin: 14px auto; page-break-inside: avoid; }
+ .duo figure { margin: 0; flex: 1; }
+ .duo img { width: 100%; }
+ figcaption { font-size: 10pt; color: var(--mut); margin-top: 5px; line-height: 1.45; }
+ figcaption b { color: var(--navy); }
+ .warn { border: 1px solid #000; padding: 9px 13px; margin: 10px 0; font-size: 11pt; page-break-inside: avoid; }
+ .warn b:first-child { color: #000; }
+ .tip { border: 1px solid #999; padding: 9px 13px; margin: 10px 0; font-size: 11pt; page-break-inside: avoid; }
+ .tip b:first-child { color: #000; }
+ table { border-collapse: collapse; width: 100%; margin: 10px 0 14px 0; page-break-inside: avoid; }
+ td, th { border: 1px solid var(--line); padding: 6px 9px; font-size: 10.5pt; vertical-align: top; }
+ th { background: #ECECEC; color: #000; font-weight: bold; text-align: left; font-size: 10.5pt; }
+ .devices { display: flex; gap: 26px; margin: 16px 0; page-break-inside: avoid; }
+ .devices figure { margin: 0; flex: 1; text-align: center; }
+ .foot { color: var(--mut); font-size: 9.5pt; margin-top: 18px; border-top: 1px solid var(--line); padding-top: 8px; }
+ svg text { font-family: "Times New Roman", Times, serif; }
+</style></head><body>
+
+<div class="cover">
+ <div class="inst">TEXAS TECH UNIVERSITY<br>DEPARTMENT OF ELECTRICAL AND COMPUTER ENGINEERING<br>CAPSTONE PROJECT LABORATORY</div>
+ <h1>Off-Grid Vehicle Tracker:<br>Device User Guide</h1>
+ <div class="sub">Every Screen and Every Button, from Power On to Power Off</div>
+ <div class="auth">Group 9<br>Deo Grace Mwala, Josiah Horn, Victor Okwonna, Cannon Thomas<br>Sponsor: Dr. Richard Gale<br>Fall 2026</div>
+</div>
+<div class="page tocpage">
+<h2>Table of Contents</h2>
+<table class="toc">
+<tr><td>1&nbsp;&nbsp;The Devices and Their Buttons</td><td class="pg">@P1</td></tr>
+<tr><td>2&nbsp;&nbsp;Powering On</td><td class="pg">@P2</td></tr>
+<tr><td>3&nbsp;&nbsp;The Two-Second Pre-Flight Check</td><td class="pg">@P3</td></tr>
+<tr><td>4&nbsp;&nbsp;The Radio's Screens</td><td class="pg">@P4</td></tr>
+<tr><td>5&nbsp;&nbsp;Sending a Message</td><td class="pg">@P5</td></tr>
+<tr><td>6&nbsp;&nbsp;The Display While You Drive</td><td class="pg">@P6</td></tr>
+<tr><td>7&nbsp;&nbsp;More Things You Can Do</td><td class="pg">@P7</td></tr>
+<tr><td>8&nbsp;&nbsp;How Far It Reaches</td><td class="pg">@P8</td></tr>
+<tr><td>9&nbsp;&nbsp;Menus to Leave Alone</td><td class="pg">@P9</td></tr>
+<tr><td>10&nbsp;&nbsp;Powering Off and Charging</td><td class="pg">@P10</td></tr>
+<tr><td>11&nbsp;&nbsp;When Something Looks Wrong</td><td class="pg">@P11</td></tr>
+<tr><td>12&nbsp;&nbsp;Quick Reference</td><td class="pg">@P12</td></tr>
+<tr><td>Appendix A&nbsp;&nbsp;Abbreviations and Acronyms</td><td class="pg">@P13</td></tr>
+</table>
+<p style="margin-top:26px; color:var(--mut); font-size:11pt;">Companion documents: the User Manual explains how the system works in plain words, and the Technical Manual holds the engineering detail and every recovery procedure. This guide is only about operating the devices.</p>
+</div>
+
+<div class="page">
+<h2>1&nbsp;&nbsp;The Devices and Their Buttons</h2>
+<p>The <b>radio</b> (green box, antenna) does the talking. The <b>display</b> (dashboard screen) shows where your partner is. Four controls run everything.</p>
+
+<div class="devices">
+<figure>
+<svg width="320" height="268" viewBox="0 0 320 268">
+  <rect x="95" y="46" width="150" height="200" rx="18" fill="#6B7A4C" stroke="#4A5535" stroke-width="2"/>
+  <rect x="122" y="76" width="96" height="52" rx="4" fill="#06181B" stroke="#2E3A22" stroke-width="2"/>
+  <text x="170" y="98" fill="#60E8E8" font-size="9" text-anchor="middle">100%    16:41</text>
+  <text x="170" y="113" fill="#60E8E8" font-size="8" text-anchor="middle">Meshtastic ead4 (SF)</text>
+  <rect x="78" y="22" width="9" height="52" rx="4" fill="#2A2E26" stroke="#111"/>
+  <rect x="88" y="60" width="18" height="12" rx="3" fill="#3A4030" stroke="#111"/>
+  <circle cx="135" cy="200" r="10" fill="#23281C" stroke="#111" stroke-width="1.5"/>
+  <circle cx="200" cy="200" r="10" fill="#23281C" stroke="#111" stroke-width="1.5"/>
+  <rect x="155" y="244" width="30" height="8" rx="3" fill="#222" stroke="#111"/>
+  <line x1="82" y1="24" x2="52" y2="16" stroke="#E58E1A" stroke-width="1.6"/>
+  <text x="2" y="12" fill="#16213D" font-size="11" font-weight="700">ANTENNA</text>
+  <text x="2" y="24" fill="#5E6B85" font-size="8.5">never transmit without it</text>
+  <line x1="130" y1="209" x2="72" y2="236" stroke="#E58E1A" stroke-width="1.6"/>
+  <text x="2" y="238" fill="#16213D" font-size="11" font-weight="700">USER</text>
+  <text x="2" y="250" fill="#5E6B85" font-size="8.5">short: next screen</text>
+  <text x="2" y="261" fill="#5E6B85" font-size="8.5">long: open / confirm</text>
+  <line x1="206" y1="209" x2="258" y2="228" stroke="#E58E1A" stroke-width="1.6"/>
+  <text x="246" y="241" fill="#16213D" font-size="11" font-weight="700">POWER</text>
+  <text x="246" y="253" fill="#5E6B85" font-size="8.5">hold to switch on</text>
+  <line x1="170" y1="250" x2="170" y2="262" stroke="#E58E1A" stroke-width="1.6"/>
+  <text x="140" y="266" fill="#16213D" font-size="10" font-weight="700">USB-C</text>
+</svg>
+<figcaption><b>Radio (Heltec V4).</b> Antenna left, two buttons at the bottom.</figcaption>
+</figure>
+<figure>
+<svg width="320" height="268" viewBox="0 0 320 268">
+  <rect x="24" y="64" width="240" height="180" rx="12" fill="#39414F" stroke="#23293a" stroke-width="2"/>
+  <rect x="38" y="78" width="212" height="152" rx="3" fill="#E2E7E3" stroke="#23293a" stroke-width="2"/>
+  <text x="144" y="100" fill="#1C2430" font-size="10" font-weight="600" text-anchor="middle">SF</text>
+  <circle cx="100" cy="162" r="34" fill="none" stroke="#1C2430" stroke-width="2"/>
+  <polygon points="95,128 105,128 100,136" fill="#1C2430"/>
+  <polygon points="100,136 114,178 100,168 86,178" fill="#1C2430"/>
+  <text x="196" y="140" fill="#1C2430" font-size="15" font-weight="700" text-anchor="middle">0.18 Mi</text>
+  <text x="196" y="160" fill="#1C2430" font-size="9" text-anchor="middle">at 12 o'clock</text>
+  <text x="196" y="175" fill="#1C2430" font-size="9" text-anchor="middle">age 15s</text>
+  <rect x="62" y="52" width="26" height="12" rx="3" fill="#23281C" stroke="#111"/>
+  <rect x="130" y="52" width="26" height="12" rx="3" fill="#5A3030" stroke="#111"/>
+  <rect x="198" y="52" width="26" height="12" rx="3" fill="#222" stroke="#111"/>
+  <rect x="264" y="142" width="10" height="26" rx="3" fill="#222" stroke="#111"/>
+  <line x1="75" y1="52" x2="75" y2="40" stroke="#E58E1A" stroke-width="1.6"/>
+  <text x="52" y="22" fill="#16213D" font-size="11" font-weight="700">MAIN</text>
+  <text x="34" y="35" fill="#5E6B85" font-size="8.5">tap: page / hold: reset</text>
+  <line x1="143" y1="52" x2="143" y2="40" stroke="#E58E1A" stroke-width="1.6"/>
+  <text x="130" y="22" fill="#16213D" font-size="11" font-weight="700">BOOT</text>
+  <text x="118" y="35" fill="#5E6B85" font-size="8.5">partner's position</text>
+  <line x1="211" y1="52" x2="211" y2="40" stroke="#E58E1A" stroke-width="1.6"/>
+  <text x="200" y="22" fill="#16213D" font-size="11" font-weight="700">RESET</text>
+  <text x="196" y="35" fill="#5E6B85" font-size="8.5">restart display</text>
+  <line x1="274" y1="155" x2="288" y2="155" stroke="#E58E1A" stroke-width="1.6"/>
+  <text x="280" y="140" fill="#16213D" font-size="11" font-weight="700">USB-C</text>
+  <text x="286" y="172" fill="#5E6B85" font-size="8.5">power</text>
+</svg>
+<figcaption><b>Display (Waveshare).</b> Three buttons on top, USB-C on the right.</figcaption>
+</figure>
+</div>
+
+<table>
+<tr><th>Control</th><th>Short press / tap</th><th>Long press / hold</th></tr>
+<tr><td>Radio USER</td><td>Next screen or menu line</td><td>Open action menu; confirm selection</td></tr>
+<tr><td>Radio POWER</td><td>&nbsp;</td><td>Switch the radio on</td></tr>
+<tr><td>Display MAIN</td><td>Next page</td><td>Reset tracking; on Messages page, clear history</td></tr>
+<tr><td>Display BOOT</td><td>Request partner's position now</td><td>&nbsp;</td></tr>
+<tr><td>Display RESET</td><td>Restart the display (rarely needed)</td><td>&nbsp;</td></tr>
+</table>
+<div class="tip"><b>THE ONE RULE.</b> Never run the radio's battery flat. A dead battery can erase its settings, and the radios stop understanding each other until a laptop fixes it.</div>
+
+<h2>2&nbsp;&nbsp;Powering On</h2>
+<div class="step">
+<img class="screen" src="mock/r_home.png">
+<div class="txt"><p><span class="badge">1</span><b>Hold the radio's power button</b> until the screen lights. This home screen is normal. Indoors, "0 online" and "No Sats" are not faults: satellites need sky, and your partner may be off.</p></div>
+</div>
+<div class="step">
+<img class="screen wide" src="mock/d_searching.png">
+<div class="txt"><p><span class="badge">2</span><b>Power the display at the same time</b>, like an ignition key. The radio accepts the display only during its first minute, so always switch them on together. Missed it? Power both off and on again.</p></div>
+</div>
+<div class="step">
+<img class="screen wide" src="mock/d_linksearch.png">
+<div class="txt"><p><span class="badge">3</span><b>Watch the page fill in.</b> "waiting for GPS fix" clears under open sky; "PTR not heard yet" clears when your partner's radio is first heard. Normally live within two minutes.</p></div>
+</div>
+
+<h2>3&nbsp;&nbsp;The Two-Second Pre-Flight Check</h2>
+<div class="step">
+<img class="screen" src="mock/r_lora.png">
+<div class="txt"><p>Before every trip, short-press to this <b>LoRa screen</b> on both radios and read one number: <b>Freq: 912.875 MHz</b>. Both right: everything will work. Either one different: that radio lost its settings and needs the Technical Manual's recovery before the trip.</p>
+<p>While you are here, the rest of the screen should read Role: Client Mute and US/LongFast, exactly as shown.</p></div>
+</div>
+
+<h2>4&nbsp;&nbsp;The Radio's Screens</h2>
+<p>Short presses walk a loop of status screens.</p>
+<div class="duo">
+<figure><img class="screen" src="mock/r_position.png"><figcaption><b>Position.</b> Your own GPS. "No Fix" just means indoors.</figcaption></figure>
+<figure><img class="screen" src="mock/r_lastheard.png"><figcaption><b>Last Heard.</b> Who was heard, how long ago. The honesty meter.</figcaption></figure>
+</div>
+<div class="duo">
+<figure><img class="screen" src="mock/r_bearings.png"><figcaption><b>Bearings.</b> Direction to other radios; "?" means no position yet.</figcaption></figure>
+<figure><img class="screen" src="mock/r_system.png"><figcaption><b>System.</b> Firmware version. Needed only when asked.</figcaption></figure>
+</div>
+<div class="step">
+<img class="screen" src="mock/r_clock.png">
+<div class="txt"><p><b>Clock.</b> Set by the GPS satellites; nothing to adjust. A correct clock proves the GPS has spoken to this radio.</p></div>
+</div>
+
+<h2>5&nbsp;&nbsp;Sending a Message</h2>
+<p>Ready-made messages, so nobody types while driving. Short press moves, long press chooses.</p>
+<div class="step">
+<img class="screen" src="mock/r_msgaction.png">
+<div class="txt"><p><span class="badge">1</span>Long-press on the chat screen; choose <b>Reply</b>.</p></div>
+</div>
+<div class="step">
+<img class="screen" src="mock/r_dest.png">
+<div class="txt"><p><span class="badge">2</span>Destination: <b>#Group9</b>, the channel both vehicles hear. Skip Free Text.</p></div>
+</div>
+<div class="step">
+<img class="screen" src="mock/r_presets.png">
+<div class="txt"><p><span class="badge">3</span>Scroll the 21 presets (Help!, Send position, On my way, Turn left, Stop...). Long-press to send.</p></div>
+</div>
+<div class="duo">
+<figure><img class="screen" src="mock/r_sending.png"><figcaption><span class="badge">4</span><b>Sending.</b> Shown as the message goes out.</figcaption></figure>
+<figure><img class="screen" src="mock/r_chat.png"><figcaption><span class="badge">5</span><b>Delivered.</b> It joins the thread and pops up on the partner's display. An X means not yet confirmed.</figcaption></figure>
+</div>
+<div class="step">
+<img class="screen" src="mock/r_reply.png">
+<div class="txt"><p><b>Replying:</b> long-press, <b>Reply to Last Msg, With Preset</b>. Every question in the list has its answer in the list.</p></div>
+</div>
+
+<h2>6&nbsp;&nbsp;The Display While You Drive</h2>
+<p>Hands off: it updates itself twice a second. Tap cycles three pages.</p>
+<div class="duo">
+<figure><img class="screen" src="mock/d_compass.png"><figcaption><b>Compass.</b> The small marker at the top of the ring is your hood. The dart is your partner: steer until the dart sits under the marker and the partner is dead ahead. The letters turn with the car, and directions read as clock positions while driving.</figcaption></figure>
+<figure><img class="screen" src="mock/d_status.png"><figcaption><b>Status.</b> Both positions, data ages, partner battery, distance, direction in words.</figcaption></figure>
+</div>
+<div class="step">
+<img class="screen wide" src="mock/d_messages.png">
+<div class="txt"><p><b>Messages.</b> Received texts, newest first. Hold here to clear the history.</p>
+<p><b>Partner's position now:</b> press BOOT. The age drops to seconds.</p>
+<p>Proven on the road: the screen read 700 ft at 10 o'clock, the driver turned, and the partner's car appeared in the windshield. Trust the clock directions.</p></div>
+</div>
+
+<h2>7&nbsp;&nbsp;More Things You Can Do</h2>
+<p>Every recipe below is the same two moves: short press to reach the line, long press to choose it. All of these are safe.</p>
+<table>
+<tr><th>I want to...</th><th>On which device</th><th>Do this</th></tr>
+<tr><td>Broadcast my position right now</td><td>Radio</td><td>Long press on the home screen, choose Send Position</td></tr>
+<tr><td>Dim the screen to save battery</td><td>Radio</td><td>Long press on home, choose Sleep Screen; any press wakes it</td></tr>
+<tr><td>Read the whole conversation</td><td>Radio</td><td>Long press on the chat screen, choose View Chats</td></tr>
+<tr><td>Silence message pop-ups for a while</td><td>Radio</td><td>Long press on chat, choose Mute Channel; repeat to unmute</td></tr>
+<tr><td>See when the partner was last heard</td><td>Radio</td><td>Short-press to the Last Heard screen</td></tr>
+<tr><td>Check battery and firmware version</td><td>Radio</td><td>Short-press to the System screen</td></tr>
+<tr><td>Switch the clock to 24-hour</td><td>Radio</td><td>Long press on the clock screen, choose Time Format</td></tr>
+<tr><td>Fix the timezone</td><td>Radio</td><td>Long press on the clock screen, choose Timezone</td></tr>
+<tr><td>Flip between display pages</td><td>Display</td><td>Tap the main button: compass, status, messages</td></tr>
+<tr><td>Erase old messages</td><td>Display</td><td>On the Messages page, hold the main button</td></tr>
+<tr><td>Start tracking fresh</td><td>Display</td><td>On any other page, hold the main button; data rebuilds in seconds</td></tr>
+<tr><td>Get the partner's position now</td><td>Display</td><td>Press BOOT; the age drops to seconds</td></tr>
+<tr><td>Restart a confused display</td><td>Display</td><td>Press RESET; it reconnects by itself</td></tr>
+</table>
+
+<h2>8&nbsp;&nbsp;How Far It Reaches</h2>
+<p>Measured on real roads in October 2026, with the antennas inside the cars. The honest rule from all our testing: <b>distance is not what breaks the link, blocked line of sight is.</b></p>
+<table>
+<tr><th>Where you are</th><th>What to expect</th></tr>
+<tr><td>In town, buildings around</td><td>Reliable to about half a mile. Buildings eat radio signal.</td></tr>
+<tr><td>Open road, flat country</td><td>Fully reliable to 3.26 miles in our test. The screens went stale by 3.75 miles.</td></tr>
+<tr><td>Canyon or hill country</td><td>The STALE banner comes and goes at any distance, even close together, whenever rock sits between the cars. In our canyon test it appeared inside 1.3 miles, yet updates still slipped through past 4 miles when the land opened up.</td></tr>
+<tr><td>Whenever the data is stale</td><td>The display shows DATA STALE and the age counts up. Nothing is broken, and no radio can beat rock. Keep driving toward the last known direction; the moment the two cars can "see" each other again it heals by itself, no buttons needed.</td></tr>
+</table>
+<div class="tip"><b>WANT MORE RANGE?</b> Mounting the antenna on the roof instead of inside the car can roughly double the distance. Ask the team before changing hardware.</div>
+
+<h2>9&nbsp;&nbsp;Menus to Leave Alone</h2>
+<div class="duo">
+<figure><img class="screen" src="mock/r_nodeaction.png"><figcaption><b>Troubleshooting only: Node Action.</b> Reset NodeDB wipes known radios. Use only when the Technical Manual says so.</figcaption></figure>
+<figure><img class="screen" src="mock/r_loraactions.png"><figcaption><b>Never change: LoRa Actions.</b> See the warning below.</figcaption></figure>
+</div>
+<div class="warn"><b>DO NOT TOUCH LORA ACTIONS.</b> Device Role, Radio Preset, Frequency Slot and LoRa Region are the exact settings that let the two radios hear each other. Changing any of them silences the pair with no error shown. Same for Bluetooth Toggle under System Action: switching it off strands your display.</div>
+
+<h2>10&nbsp;&nbsp;Powering Off and Charging</h2>
+<div class="duo">
+<figure><img class="screen" src="mock/r_sysaction.png"><figcaption><span class="badge">1</span>Long-press on home, open <b>System Action</b>, scroll to Reboot/Shutdown.</figcaption></figure>
+<figure><img class="screen" src="mock/r_shutdown.png"><figcaption><span class="badge">2</span>Choose Shutdown. A clean shutdown always preserves the settings.</figcaption></figure>
+</div>
+<p>Charge over USB-C after every trip. Switched off, the radio holds charge for months. Never store it empty.</p>
+
+<h2>11&nbsp;&nbsp;When Something Looks Wrong</h2>
+<div class="step">
+<img class="screen" src="mock/r_failed.png">
+<div class="txt"><p><b>"Message failed"</b>: nobody confirmed it; partner off, out of range, or booting. Send again once Last Heard shows them recently.</p></div>
+</div>
+<table>
+<tr><th>What you see</th><th>Meaning</th><th>Do</th></tr>
+<tr><td>0 online, No Sats indoors</td><td>Normal</td><td>Nothing; go outside, partner on.</td></tr>
+<tr><td>Frequency is not 912.875</td><td>Settings lost (dead battery)</td><td>Technical Manual recovery, five minutes.</td></tr>
+<tr><td>Display stuck "SEARCHING"</td><td>Missed the pairing window</td><td>Power both off, then on together.</td></tr>
+<tr><td>DATA STALE while far apart</td><td>Out of radio reach</td><td>Normal past the ranges in Section 8; heals as you get closer.</td></tr>
+<tr><td>Anything else odd</td><td>Electronics</td><td>Power-cycle both together.</td></tr>
+</table>
+
+<h2>12&nbsp;&nbsp;Quick Reference</h2>
+<table>
+<tr><th>I want to...</th><th>Do this</th></tr>
+<tr><td>Start up</td><td>Antennas on, power radio and display together.</td></tr>
+<tr><td>Pre-flight</td><td>LoRa screen on both radios reads 912.875.</td></tr>
+<tr><td>Send a preset</td><td>Long press on chat, #Group9, pick, long press.</td></tr>
+<tr><td>Reply fast</td><td>Long press, Reply to Last Msg, With Preset.</td></tr>
+<tr><td>My position, now</td><td>Long press on home, Send Position.</td></tr>
+<tr><td>Partner's position, now</td><td>BOOT on the display.</td></tr>
+<tr><td>Shut down</td><td>Long press on home, System Action, Shutdown.</td></tr>
+<tr><td>Fix almost anything</td><td>Power-cycle both; check 912.875.</td></tr>
+</table>
+
+<h2>Appendix A&nbsp;&nbsp;Abbreviations and Acronyms</h2>
+<table>
+<tr><th>Term</th><th>Meaning</th></tr>
+<tr><td>BLE</td><td>Bluetooth Low Energy; the display-to-radio link. "BLE: ead4" names the paired radio.</td></tr>
+<tr><td>BOOT</td><td>Display button that requests the partner's position immediately.</td></tr>
+<tr><td>CDT</td><td>Central Daylight Time, the display's timezone.</td></tr>
+<tr><td>ChUtil</td><td>Channel utilization; how busy the shared channel is. Single digits is healthy.</td></tr>
+<tr><td>Client Mute</td><td>The radios' role: talk and listen, never relay. Correct for two vehicles.</td></tr>
+<tr><td>Flash / Heap / PSRAM</td><td>Radio memory types on the System screen. Never need action.</td></tr>
+<tr><td>GPS</td><td>Global Positioning System; the satellites all positions come from.</td></tr>
+<tr><td>#Group9</td><td>The team's private, encrypted channel.</td></tr>
+<tr><td>LoRa</td><td>Long Range; the radio technique carrying signals for miles on little power.</td></tr>
+<tr><td>LongFast</td><td>The shared radio speed setting ("US/LongFast").</td></tr>
+<tr><td>ME / PTR</td><td>Your vehicle / the partner vehicle, on the display's status page.</td></tr>
+<tr><td>MHz</td><td>Megahertz; a spot on the radio dial. Both radios must show 912.875.</td></tr>
+<tr><td>NodeDB</td><td>The radio's list of radios it has heard. Reset only for troubleshooting.</td></tr>
+<tr><td>OLED</td><td>The radio's small glowing screen.</td></tr>
+<tr><td>RLCD</td><td>Reflective LCD, the dashboard screen; brightest in sunlight.</td></tr>
+<tr><td>SF / RG</td><td>The two radios' callsigns. Your display shows your partner's.</td></tr>
+<tr><td>USB-C</td><td>The charging and power plug.</td></tr>
+<tr><td>Ver</td><td>Firmware version; the radios run Meshtastic 2.7.26.</td></tr>
+</table>
+<div class="foot">Off-Grid Vehicle Tracker &middot; Group 9, Texas Tech University ECE Capstone &middot; Screens are exact recreations of the device screens, firmware Meshtastic 2.7.26. Range figures measured on road, October 2026.</div>
+</div>
+</body></html>
