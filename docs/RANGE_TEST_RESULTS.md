@@ -60,10 +60,10 @@ ran about a kilometer past it.
 
 # Test 2: Canyon terrain (Palo Duro), 2026-10-18
 
-Pre-dawn two-vehicle run in caprock canyon terrain near Canyon, TX (RG kit's
-GPS placed the rim staging point at 34.9098, -101.9176, altitude 1102 m,
-read from the node database after the test). Same hardware, same in-cabin
-antennas. All data points read from video of the live screens; clock times
+Pre-dawn two-vehicle run at Ceta Canyon Camp and Retreat Center, on the Palo
+Duro escarpment southeast of Happy, TX. RG parked at the rim point above
+Garrison Retreat Lodge (~1,100 m); SF drove down FM 1721 through the canyon
+folds and west onto the caprock plains. Same hardware, same in-cabin antennas. All data points read from video of the live screens; clock times
 and display uptime counters on the screens give the timeline.
 
 ## Result in one line
@@ -109,7 +109,7 @@ with no reboot.
   stale banner often; it is reporting blocked line of sight, not a fault, and
   it clears itself as the road opens.
 - **The rim elevation finding: antenna height beat the flat-ground range.** RG
-  sat parked at the rim staging point (~1102 m), giving the pair one elevated
+  sat parked at the Ceta Canyon rim point (~1,100 m), giving the pair one elevated
   antenna. On stretches where the rim had line of sight to the moving vehicle,
   the SF display stayed live out to roughly 4.7 miles before its first
   staleness, beyond the 3.75-mile edge measured car-to-car on flat open road,

@@ -52,7 +52,7 @@ Then verify, in this order (the scar catalog's rules apply to repeaters too):
 
 ## Deployment notes
 
-- Height beats everything else. The 2026-10-18 measurement: ~1102 m rim
+- Height beats everything else. The 2026-10-18 measurement: ~1,100 m Ceta Canyon rim
   elevation held line-of-sight stretches to ~4.7 mi while flat car-to-car
   died by 3.75 mi. Park the repeater where it can see the road you will
   drive, not where it is convenient to park.
