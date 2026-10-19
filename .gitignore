@@ -13,3 +13,4 @@ firmware-display/.pio/
 .vscode/
 Thumbs.db
 .DS_Store
+node_modules/
