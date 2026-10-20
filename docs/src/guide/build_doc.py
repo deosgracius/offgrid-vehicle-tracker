@@ -113,4 +113,4 @@ if __name__ == "__main__":
                    ("@TB", "Appendix B: repository guide", 20),
                    ("@TR", "References", 20)]
         build(os.path.join(base, "TECH_MANUAL.html"), os.path.join(base, "TECHNICAL_MANUAL.pdf"),
-              anchors, "Operator-facing functions", skip_toc=False, min_images=17)
+              anchors, "Operator-facing functions", skip_toc=False, min_images=24)
