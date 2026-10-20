@@ -63,7 +63,7 @@ def build(html_path, pdf_path, anchors, sentinel, skip_toc=True, min_images=0):
         p = d[i]
         w = p.rect.width
         p.insert_text((w/2 - 8, p.rect.height - 22), str(i + 1),
-                      fontname="tiro", fontsize=10, color=(0.25, 0.3, 0.4))
+                      fontname="tiro", fontsize=12, color=(0.25, 0.3, 0.4))
     d.saveIncr()
     n = len(d)
     n_img = sum(len(pg.get_images()) for pg in d)
