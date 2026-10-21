@@ -31,6 +31,7 @@
  li { font-size: 12pt; margin: 3px 0; }
  .toc td { border: none; border-bottom: 1px dotted #C9D2E0; font-size: 12pt; }
  .toc td.pg { text-align: right; width: 40px; font-weight: bold; }
+ .url { display: block; margin-top: 3px; } .url a { color: #0a3069; text-decoration: none; font-size: 12pt; word-break: break-all; }
  sup { font-size: 8.5pt; color: #000; }
 </style></head><body>
 
@@ -701,15 +702,15 @@ esptool --port COMx write_flash 0x0 firmware-heltec-v4-2.7.26.factory.bin</pre>
 
 <h2>References</h2>
 <ol>
-<li>Semtech Corporation, "SX1261/2 Long Range, Low Power, sub-GHz RF Transceiver," datasheet rev 2.2. Sensitivity, SNR demodulation floors, PA ratings. semtech.com</li>
-<li>Meshtastic Project, documentation: "Radio Settings" (frequency slot calculation), "Mesh Broadcast Algorithm" (flooding, CSMA, hop limit, utilization throttle), "Device Roles," "Telemetry," "Encryption," "Client API." meshtastic.org/docs</li>
-<li>Meshtastic Project, firmware source, <code>src/mesh/NodeDB.cpp</code>, <code>NUM_ONLINE_SECS</code>. github.com/meshtastic/firmware</li>
-<li>Semtech Corporation, application note AN1200.13, "LoRa Modem Designer's Guide": time-on-air computation. semtech.com</li>
-<li>47 CFR &sect; 15.247, operation in the 902-928 MHz band. law.cornell.edu/cfr/text/47/15.247</li>
-<li>AWSW, "Symmetrical case for WaveShare ESP32-S3 4.2inch RLCD," Printables model 1610004, license CC BY-NC 4.0. printables.com/model/1610004</li>
-<li>Group 9 project repository: <code>hardware/README.md</code> (provisioning recipe and gotcha log), <code>docs/ARCHITECTURE.md</code>, <code>docs/RADIO_PHY_DEEP_DIVE.md</code>, <code>firmware-display/README.md</code> (fleet table and bring-up checklist). github.com/deosgracius/offgrid-vehicle-tracker</li>
-<li>R. W. Sinnott, "Virtues of the Haversine," Sky and Telescope, vol. 68, no. 2, 1984: the numerically stable small-angle distance formula used in <code>nav_compute</code>.</li>
-<li>Semtech Corporation, application note AN1200.22, "LoRa Modulation Basics": co-channel rejection and the capture effect. semtech.com</li>
+<li>Semtech Corporation, "SX1261/2 Long Range, Low Power, sub-GHz RF Transceiver," datasheet rev 2.2. Sensitivity, SNR demodulation floors, PA ratings.<span class="url"><a href="https://www.semtech.com/products/wireless-rf/lora-connect/sx1262">https://www.semtech.com/products/wireless-rf/lora-connect/sx1262</a></span></li>
+<li>Meshtastic Project, documentation: "Radio Settings" (frequency slot calculation), "Mesh Broadcast Algorithm" (flooding, CSMA, hop limit, utilization throttle), "Device Roles," "Telemetry," "Encryption," "Client API."<span class="url"><a href="https://meshtastic.org/docs/">https://meshtastic.org/docs/</a></span><span class="url"><a href="https://meshtastic.org/docs/overview/mesh-algo/">https://meshtastic.org/docs/overview/mesh-algo/</a></span><span class="url"><a href="https://meshtastic.org/docs/development/device/client-api/">https://meshtastic.org/docs/development/device/client-api/</a></span></li>
+<li>Meshtastic Project, firmware source, <code>src/mesh/NodeDB.cpp</code>, <code>NUM_ONLINE_SECS</code>.<span class="url"><a href="https://github.com/meshtastic/firmware/blob/master/src/mesh/NodeDB.cpp">https://github.com/meshtastic/firmware/blob/master/src/mesh/NodeDB.cpp</a></span></li>
+<li>Semtech Corporation, application note AN1200.13, "LoRa Modem Designer's Guide": time-on-air computation.<span class="url"><a href="https://www.mouser.com/pdfdocs/semtech-lora-modem-design.pdf">https://www.mouser.com/pdfdocs/semtech-lora-modem-design.pdf</a></span></li>
+<li>47 CFR &sect; 15.247, operation in the 902-928 MHz band.<span class="url"><a href="https://www.law.cornell.edu/cfr/text/47/15.247">https://www.law.cornell.edu/cfr/text/47/15.247</a></span></li>
+<li>AWSW, "Symmetrical case for WaveShare ESP32-S3 4.2inch RLCD," Printables model 1610004, license CC BY-NC 4.0.<span class="url"><a href="https://www.printables.com/model/1610004">https://www.printables.com/model/1610004</a></span></li>
+<li>Group 9 project repository: <code>hardware/README.md</code> (provisioning recipe and gotcha log), <code>docs/ARCHITECTURE.md</code>, <code>docs/RADIO_PHY_DEEP_DIVE.md</code>, <code>firmware-display/README.md</code> (fleet table and bring-up checklist).<span class="url"><a href="https://github.com/deosgracius/offgrid-vehicle-tracker">https://github.com/deosgracius/offgrid-vehicle-tracker</a></span></li>
+<li>R. W. Sinnott, "Virtues of the Haversine," Sky and Telescope, vol. 68, no. 2, 1984: the numerically stable small-angle distance formula used in <code>nav_compute</code>. Print publication; indexed at<span class="url"><a href="https://ui.adsabs.harvard.edu/abs/1984S%26T....68..158S">ui.adsabs.harvard.edu/abs/1984S&amp;T....68..158S</a></span></li>
+<li>Semtech Corporation, application note AN1200.22, "LoRa Modulation Basics": co-channel rejection and the capture effect. Catalogued in the Semtech developer library; archived PDF below.<span class="url"><a href="https://lora-developers.semtech.com/library/technical-documents">https://lora-developers.semtech.com/library/technical-documents</a></span><span class="url"><a href="https://www.stderr.nl/static/files/Hardware/Electronics/LoRa/AN1200.22.pdf">https://www.stderr.nl/static/files/Hardware/Electronics/LoRa/AN1200.22.pdf</a></span></li>
 </ol>
 <p style="color:#333333; font-size:12px; margin-top:18px;">Off-Grid Vehicle Tracker &middot; Group 9, Texas Tech University ECE Capstone &middot; Companion documents: User Manual (concepts) and Device User Guide (screen-by-screen operation).</p>
 </div>
