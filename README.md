@@ -28,7 +28,6 @@ Ground rules:
 
 ```
 DESIGN.md            System design, architecture decision, risks, schedule
-planning/            Gantt chart (tasks.json → build_gantt.py → Group9_Gantt.html)
 firmware-display/    Waveshare RLCD firmware (Deo: protocol/, Josiah: ui/ + nav/)
 hardware/            Victor — radio configs, antenna notes, range-test logs
 testing/             Cannon — power, mounting, integration & drive-test logs
