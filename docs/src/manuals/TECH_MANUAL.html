@@ -223,6 +223,8 @@ SX1262: CAD (listen) &gt; FS (PLL lock) &gt; TX
 <h3>4.4 The four modulation knobs and the time on air (Ideas 3 and 5)</h3>
 <p>LoRa is a chirp spread spectrum modulation: each symbol is a frequency sweep across the full channel, and the information is carried in the sweep's starting offset. A spreading factor of 11 provides 2<sup>11</sup> = 2048 possible offsets, so each symbol carries 11 bits. The duration of one symbol is the number of chips divided by the bandwidth:</p>
 <img class="eqimg" src="eq_tsym.png">
+<div class="fig"><img src="fig_chirp.png" style="max-width:88%;">
+<div class="cap">The chirp, seen two ways. Top: the transmitted wave itself, a tone sweeping smoothly from low to high frequency; in this system one sweep spans the full 250 kHz channel in 8.19 ms. Bottom: frequency against time, where a chirp is a rising ramp that wraps at the band edge; the symbol's value is the height at which the sweep starts, and SF11 provides 2,048 distinct start positions, 11 bits per chirp. De-chirping collapses each known sweep into a single spike while noise stays spread, which is the processing gain that decodes 17.5 dB below the noise floor.</div></div>
 <p><code>SetModulationParams()</code> takes exactly four parameters, and the LONG_FAST preset fixes all four:</p>
 <table>
 <tr><th>Knob</th><th>Value here</th><th>What it does</th><th>Datasheet</th></tr>
