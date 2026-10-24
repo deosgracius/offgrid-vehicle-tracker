@@ -17,7 +17,7 @@ HF, BF, MONO = "Cambria", "Cambria", "Courier New"
 
 prs = Presentation(); prs.slide_width = Inches(13.333); prs.slide_height = Inches(7.5)
 blank = prs.slide_layouts[6]; W, H = 13.333, 7.5
-TOTAL = 16; sheet_no = [0]
+TOTAL = 18; sheet_no = [0]
 
 def set_spc(r, v): r._r.get_or_add_rPr().set('spc', str(v))
 def txt(s, x, y, w, h, text, size, bold=False, color=BODY, align=PP_ALIGN.LEFT, font=BF, spc=0, italic=False):
@@ -242,7 +242,32 @@ s.shapes.add_picture("deck/g_timeline.png", Inches(0.55), Inches(1.3), width=Inc
 card(s, 8.8, 1.3, 4.0, 3.6, "What it proved", "Behind rock the link is intermittent at any distance: stale from 1.29 mi, yet a packet landed at 4.28 mi through a gap. The longest silence ran seven minutes and was healed by one packet with no operator action. Both radios audited clean afterward: terrain, not hardware. The rim antenna held 4.7 mi - the quantitative case for the repeater.", INK, 13.5, 11.5)
 notes(s, "Red stale, green live. The 7:30 age reset is the finding: intermittent, not binary.")
 
-# ============ 15 NEW MEXICO PLACEHOLDER ============
+# ============ 15 PRE-DRIVE DIAGNOSTIC: DISPLAYS ============
+s = slide(); frame(s, "part ii - the tests", "DEO")
+head(s, "Pre-drive diagnostic, Oct 24: the displays")
+s.shapes.add_picture("deck/g_lcddiag.png", Inches(0.55), Inches(1.25), width=Inches(8.3))
+card(s, 9.05, 1.25, 3.75, 3.1, "What the serial logs proved", "Both displays booted clean, paired in under 8 s (encrypted=1 bonded=0, every config write status 0), completed the config dump, built the correct node table (SF/RG), and held the link at heartbeat state 3 with zero rescans. Display 1 again needed a USB-C plug flip before it enumerated.", GREEN, 13, 11)
+card(s, 0.55, 4.55, 12.25, 1.75, "The observation: 0.21 mi between two radios on one desk", "The displays were right and the GPS fixes were wrong. Indoors, SF's fix scattered 100 to 400 m between packets with 1.4 m/s of phantom speed; RG later reported a coherent 50 mph eastbound drive for a minute before snapping home. A marginal fix produces fake velocity, not just jitter, and dead reckoning faithfully projects it. Fixes shipped the same hour: the closing/apart line reads \"holding\" when both cars are parked; the distance stays honest. Rule: judge a bench distance only with sky view.", RED, 13, 11.5)
+notes(s, "This is the display track's own verification record: the links and the firmware were fine; the data they rendered was bad because the radios' GPS receivers were indoors. The graph is parsed straight from the archived serial logs.")
+
+# ============ 16 PRE-DRIVE DIAGNOSTIC: RADIOS ============
+s = slide(); frame(s, "part ii - the tests", "DEO")
+head(s, "Pre-drive diagnostic, Oct 24: the radios")
+rows = [["Check", "SF (EA:D4)", "RG (BB:5C)"],
+        ["Channel 0", "Group9, 32-byte key, precision 32", "Group9, 32-byte key, precision 32"],
+        ["Role / Bluetooth", "CLIENT_MUTE / No PIN", "CLIENT_MUTE / No PIN"],
+        ["Position cadence", "60 s, smart 10 s / 20 m, GPS 10 s", "60 s, smart 10 s / 20 m, GPS 10 s"],
+        ["Telemetry heartbeat", "was OFF (leftover of the morning revert): set to 300 s", "300 s"],
+        ["Owner", "SF / SF", "was \"Meshtastic bb5c\": set to RG / RG"],
+        ["Battery", "96 % (4.15 V)", "69 % (3.88 V): charge before the drive"],
+        ["Own GPS, indoors", "fix at 14:27, alt 1398 m", "no fix: the radio that showed the phantom drive"],
+        ["Heard the partner", "RG 1.1 min ago, 6.25 dB", "SF 0.6 min ago, 6.5 dB"],
+        ["OLED LoRa screen", "912.875 MHz", "912.875 MHz"]]
+table(s, 0.55, 1.3, 12.2, rows, [2.6, 4.8, 4.8], fs=11, rh=0.46)
+card(s, 0.55, 6.0, 12.2, 0.72, "Result", "Both radios fully provisioned and in agreement; link at the September figure (~6.5 dB); config snapshots re-exported. Both displays showed the link on the first power-cycle after unplugging.", GREEN, 12, 11)
+notes(s, "Same diagnostic as the morning's, run on both radios at 14:27 before the New Mexico drive. Two leftovers corrected and read back.")
+
+# ============ 17 NEW MEXICO PLACEHOLDER ============
 s = slide(); frame(s, "part ii - the tests", "VICTOR")
 head(s, "New Mexico maximum-range test - results pending")
 rect(s, 0.55, 1.35, 12.2, 5.1, CARD, RULE, 1.25)
