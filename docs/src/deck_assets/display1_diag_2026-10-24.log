@@ -1,0 +1,294 @@
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x15 (USB_UART_CHIP_RESET),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037f88a
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2810,len:0x1078
+load:0x403c8700,len:0x4
+load:0x403c8704,len:0xaf0
+load:0x403cb700,len:0x2e54
+entry 0x403c889c
+
+Group 9 tracker display — TrackerState v5 — BLE mode
+[ui] RLCD init OK
+I NimBLEDevice: NimBLE Started!
+I NimBLEDevice: NimBle host synced.
+[ble] remembered radio: 8c:fd:49:b5:ea:d5
+[ble] init done
+[ui] waiting for fix   ble=0
+
+I NimBLEClient: mtu update: mtu=255
+[ui] waiting for fix   ble=0
+[ble] auth complete: encrypted=1 bonded=0
+[ble] service has 4 characteristics:
+[ble]   f75c76d2-129e-4dad-a1dd-7866124401e7
+[ble]   2c55e69e-4993-11ed-b878-0242ac120002
+[ble]   ed9da18c-a800-4f66-a670-aa7547e34453
+[ble]   5a3d6e49-06e6-4423-9944-e9de8cdf9547
+I NimBLERemoteValueAttribute: Write complete; status=0
+[ui] waiting for fix   ble=0
+I NimBLERemoteValueAttribute: Write complete; status=0
+[ble] want_config sent (nonce a23e9241), draining...
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+[node] my node num: 0x49b5ead4
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+[proto] node_info 0x49b5ead4 'SF'
+[node] name 0x49b5ead4 = 'SF'
+[node] pos 0x49b5ead4: 33.599701, -105.483745  spd 0.0  trk 0.0
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+[ui] waiting for fix   ble=0
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+[ui] waiting for fix   ble=0
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+[ui] waiting for fix   ble=0
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+[ui] waiting for fix   ble=0
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+[proto] node_info 0x49b5bb5c 'Meshtastic bb5c'
+[node] name 0x49b5bb5c = 'RG'
+[node] partner node: 0x49b5bb5c
+[node] pos 0x49b5bb5c: 33.602379, -105.473559  spd 0.0  trk 0.0
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+[ui] waiting for fix   ble=0
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+[proto] config dump complete
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+[node] pos 0x49b5bb5c: 33.602379, -105.473559  spd 23.9  trk 75.2
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLEClient: Connection parameters updated.
+[node] pos 0x49b5bb5c: 33.602932, -105.471085  spd 23.6  trk 75.1
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+[ble] heartbeat: state=3 scans=0
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+[ui] pg0 arrow   +73.0 deg dist    1226 m age    0s ble=1
+[ui] pg0 arrow   +73.0 deg dist    1250 m age    1s ble=1
+[ui] pg0 arrow   +73.0 deg dist    1274 m age    2s ble=1
+[ui] pg0 arrow   +73.1 deg dist    1297 m age    3s ble=1
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+[node] pos 0x49b5ead4: 33.599704, -105.483779  spd 0.0  trk 85.6
+[ui] pg0 arrow   +73.1 deg dist    1297 m age    3s ble=1
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+[ui] pg0 arrow   +73.2 deg dist    1324 m age    4s ble=1
+[ui] pg0 arrow   +73.2 deg dist    1347 m age    5s ble=1
+[ui] pg0 arrow   +73.2 deg dist    1371 m age    6s ble=1
+[ble] heartbeat: state=3 scans=0
+[ui] pg0 arrow   +73.3 deg dist    1394 m age    7s ble=1
+[ui] pg0 arrow   +73.3 deg dist    1418 m age    8s ble=1
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+[node] pos 0x49b5bb5c: 33.603484, -105.468741  spd 22.8  trk 74.4
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+[ui] pg0 arrow   +73.3 deg dist    1441 m age    9s ble=1
+[ui] pg0 arrow   +73.2 deg dist    1455 m age    0s ble=1
+[ui] pg0 arrow   +73.2 deg dist    1478 m age    1s ble=1
+[ui] pg0 arrow   +73.2 deg dist    1500 m age    2s ble=1
+[ui] pg0 arrow   +73.3 deg dist    1523 m age    3s ble=1
+[ui] pg0 arrow   +73.3 deg dist    1546 m age    4s ble=1
+[ble] heartbeat: state=3 scans=0
+[ui] pg0 arrow   +73.3 deg dist    1569 m age    5s ble=1
+[ui] pg0 arrow   +73.3 deg dist    1591 m age    6s ble=1
+[ui] pg0 arrow   +73.3 deg dist    1614 m age    7s ble=1
+[ui] pg0 arrow   +73.3 deg dist    1637 m age    8s ble=1
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+[node] pos 0x49b5bb5c: 33.603947, -105.466956  spd 21.4  trk 74.2
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+[ui] pg0 arrow   +73.4 deg dist    1660 m age    9s ble=1
+I NimBLERemoteValueAttribute: Read complete; status=14
+[node] pos 0x49b5ead4: 33.599920, -105.483711  spd 0.0  trk 85.6
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+[ui] pg0 arrow   +73.9 deg dist    1636 m age    1s ble=1
+[ui] pg0 arrow   +73.9 deg dist    1658 m age    2s ble=1
+[ui] pg0 arrow   +73.9 deg dist    1679 m age    3s ble=1
+[ble] heartbeat: state=3 scans=0
+[ui] pg0 arrow   +73.9 deg dist    1700 m age    4s ble=1
+[ui] pg0 arrow   +73.9 deg dist    1722 m age    5s ble=1
+[ui] pg0 arrow   +73.9 deg dist    1743 m age    6s ble=1
+[ui] pg0 arrow   +73.9 deg dist    1765 m age    7s ble=1
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+[ui] pg0 arrow   +73.9 deg dist    1786 m age    8s ble=1
+[ui] pg0 arrow   +73.9 deg dist    1807 m age    9s ble=1
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+[node] pos 0x49b5bb5c: 33.604356, -105.465678  spd 18.9  trk 71.3
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+[ui] pg0 arrow   +73.5 deg dist    1741 m age    0s ble=1
+[ui] pg0 arrow   +73.5 deg dist    1760 m age    1s ble=1
+[ble] heartbeat: state=3 scans=0
+[ui] pg0 arrow   +73.5 deg dist    1779 m age    2s ble=1
+[ui] pg0 arrow   +73.5 deg dist    1798 m age    3s ble=1
+[ui] pg0 arrow   +73.4 deg dist    1817 m age    4s ble=1
+[ui] pg0 arrow   +73.4 deg dist    1836 m age    5s ble=1
+[ui] pg0 arrow   +73.4 deg dist    1855 m age    6s ble=1
+[ui] pg0 arrow   +73.4 deg dist    1873 m age    7s ble=1
+[ui] pg0 arrow   +73.4 deg dist    1892 m age    8s ble=1
+[ui] pg0 arrow   +73.3 deg dist    1911 m age    9s ble=1
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+[node] pos 0x49b5bb5c: 33.604711, -105.465115  spd 14.7  trk 66.8
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+[ble] heartbeat: state=3 scans=0
+[ui] pg0 arrow   +72.8 deg dist    1803 m age    0s ble=1
+[ui] pg0 arrow   +72.8 deg dist    1817 m age    1s ble=1
+[ui] pg0 arrow   +72.7 deg dist    1832 m age    2s ble=1
+[ui] pg0 arrow   +72.7 deg dist    1847 m age    3s ble=1
+[ui] pg0 arrow   +72.6 deg dist    1861 m age    4s ble=1
+[ui] pg0 arrow   +72.6 deg dist    1876 m age    5s ble=1
+[ui] pg0 arrow   +72.5 deg dist    1891 m age    6s ble=1
+[ui] pg0 arrow   +72.5 deg dist    1905 m age    7s ble=1
+[ble] heartbeat: state=3 scans=0
+[ui] pg0 arrow   +72.4 deg dist    1920 m age    8s ble=1
+[ui] pg0 arrow   +72.4 deg dist    1934 m age    9s ble=1
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+[node] pos 0x49b5bb5c: 33.599941, -105.483972  spd 0.0  trk 257.9
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+[ui] pg0 arrow  +275.5 deg dist      24 m age    0s ble=1
+[ui] pg0 arrow  +275.5 deg dist      24 m age    1s ble=1
+[ui] pg0 arrow  +275.5 deg dist      24 m age    2s ble=1
+[ui] pg0 arrow  +275.5 deg dist      24 m age    3s ble=1
+[ui] pg0 arrow  +275.5 deg dist      24 m age    4s ble=1
+[ui] pg0 arrow  +275.5 deg dist      24 m age    5s ble=1
+[ble] heartbeat: state=3 scans=0
+[ui] pg0 arrow  +275.5 deg dist      24 m age    6s ble=1
+[ui] pg0 arrow  +275.5 deg dist      24 m age    7s ble=1
+[ui] pg0 arrow  +275.5 deg dist      24 m age    8s ble=1
+[ui] pg0 arrow  +275.5 deg dist      24 m age    9s ble=1
+[ui] pg0 arrow  +275.5 deg dist      24 m age   10s ble=1
+[ui] pg0 arrow  +275.5 deg dist      24 m age   11s ble=1
+[ui] pg0 arrow  +275.5 deg dist      24 m age   12s ble=1
+[ui] pg0 arrow  +275.5 deg dist      24 m age   13s ble=1
+[ble] heartbeat: state=3 scans=0
+[ui] pg0 arrow  +275.5 deg dist      24 m age   14s ble=1
+[ui] pg0 arrow  +275.5 deg dist      24 m age   15s ble=1
+[ui] pg0 arrow  +275.5 deg dist      24 m age   16s ble=1
+[ui] pg0 arrow  +275.5 deg dist      24 m age   17s ble=1
+[ui] pg0 arrow  +275.5 deg dist      24 m age   18s ble=1
+[ui] pg0 arrow  +275.5 deg dist      24 m age   19s ble=1
+[ui] pg0 arrow  +275.5 deg dist      24 m age   20s ble=1
+[ui] pg0 arrow  +275.5 deg dist      24 m age   21s ble=1
+[ble] heartbeat: state=3 scans=0
+[ui] pg0 arrow  +275.5 deg dist      24 m age   22s ble=1
+[ui] pg0 arrow  +275.5 deg dist      24 m age   23s ble=1
+[ui] pg0 arrow  +275.5 deg dist      24 m age   24s ble=1
+[ui] pg0 arrow  +275.5 deg dist      24 m age   25s ble=1
+[ui] pg0 arrow  +275.5 deg dist      24 m age   26s ble=1
+[ui] pg0 arrow  +275.5 deg dist      24 m age   27s ble=1
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+[node] pos 0x49b5ead4: 33.599970, -105.483503  spd 0.0  trk 85.6
+I NimBLERemoteValueAttribute: Read complete; status=0
+I NimBLERemoteValueAttribute: Read complete; status=14
+[ui] pg0 arrow  +265.8 deg dist      44 m age   28s ble=1
+[ui] pg0 arrow  +265.8 deg dist      44 m age   29s ble=1
+[ble] heartbeat: state=3 scans=0
