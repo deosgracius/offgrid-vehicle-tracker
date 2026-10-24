@@ -273,8 +273,10 @@
 <tr><td>Frequency is not 912.875, or the radio's name is "Meshtastic_xxxx"</td><td>Settings lost (battery ran flat)</td><td>Section 12: five minutes with a phone, ninety seconds with the laptop.</td></tr>
 <tr><td>Display stuck "SEARCHING" or "CONNECTING"</td><td>Missed the pairing window; if it persists, the radio lost its settings</td><td>Power both off, then on together. Still stuck after two minutes: Section 12.</td></tr>
 <tr><td>DATA STALE while far apart</td><td>Out of radio reach</td><td>Normal past the ranges in Section 8; heals as you get closer.</td></tr>
+<tr><td>Radios side by side, yet the display shows 0.2 mi or more, a distance that creeps, or a partner "moving" at road speed</td><td>GPS fixes are poor indoors or under a roof edge; a weak fix invents position and speed, and the display shows what the radios report</td><td>Nothing is broken. Take both radios where they can see the sky and wait two minutes; the distance settles to a few meters. Both parked reads "holding".</td></tr>
 <tr><td>Anything else odd</td><td>Electronics</td><td>Power-cycle both together.</td></tr>
 </table>
+<div class="tip"><b>Seen on the bench, 24 October:</b> two radios on one desk indoors showed 0.21 mi apart, then one of them appeared to drive east at 50 mph for a minute before snapping back to 80 ft. The displays and the link were checked and were fine; the radios' GPS receivers, without a clear view of the sky, were reporting positions and speeds that did not exist. Judge distances only outdoors, and read the satellite count on the radio's Position screen (Section 4) if a number looks wrong.</div>
 
 <h2>12&nbsp;&nbsp;Restoring a Radio That Forgot Its Settings</h2>
 <p>A radio that runs its battery completely flat can lose part of its configuration when it next starts. Nothing is broken and nothing needs re-flashing; the settings only have to be put back. You will know it has happened when one or more of these appear:</p>
@@ -325,6 +327,7 @@
 <tr><td>Shut down</td><td>Long press on home, System Action, Shutdown.</td></tr>
 <tr><td>Fix almost anything</td><td>Power-cycle both; check 912.875.</td></tr>
 <tr><td>Radio forgot its settings</td><td>Section 12: scan the Group9 QR, set No PIN; or <code>--configure</code> the saved snapshot.</td></tr>
+<tr><td>Distance looks wrong while parked together</td><td>Indoor GPS; take both radios outside for two minutes before judging.</td></tr>
 </table>
 
 <h2>Appendix A&nbsp;&nbsp;Abbreviations and Acronyms</h2>
