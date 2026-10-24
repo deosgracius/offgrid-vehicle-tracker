@@ -11,8 +11,8 @@
 #include <math.h>
 
 // Driver display — two pages, toggled by TAPPING the KEY button (leftmost):
-//   Page 0  NAV: heading-up compass (cardinals rotate with the vehicle like a
-//           real car compass), partner arrow relative to the nose, distance in
+//   Page 0  NAV: heading-up ring labelled as a clock face (12 = hood, 3 =
+//           passenger side), partner arrow relative to the nose, distance in
 //           miles, blinker chevrons when the partner is off-axis, and a
 //           CHANGE COURSE warning if off-axis persists ~5 s (clears on course).
 //   Page 1  STATUS ("OVERALL TRACKER"): centered ME/PTR fixes, distance in
@@ -133,10 +133,10 @@ static void fmt_age(uint32_t s, char *out, size_t olen) {
     else               snprintf(out, olen, "%luh", (unsigned long)(s / 3600));
 }
 
-static const char *cardinal8(float deg) {
-    static const char *pts[8] = {"N", "NE", "E", "SE", "S", "SW", "W", "NW"};
-    int i = (int)floorf(nav_wrap360(deg + 22.5f) / 45.0f) % 8;
-    return pts[i];
+// Relative angle -> clock hour, 12 = dead ahead, 3 = passenger side.
+static int clock_hour(float arrow_deg) {
+    int hour = (int)roundf(nav_wrap360(arrow_deg) / 30.0f) % 12;
+    return hour == 0 ? 12 : hour;
 }
 
 static void banner(int y, const char *txt) {
@@ -206,34 +206,29 @@ static void render_nav(const TrackerState &st, const NavOutput &nav,
 
     // Compass, left side. COURSE-UP while driving: the top of the ring is
     // always straight ahead, so the dart reads like a windshield pointer
-    // (dart up = partner dead ahead) and the cardinal letters rotate around
-    // the ring -- heading south puts S at the top, exactly like a car's
-    // navigation display. The driver never has to rotate the unit or do the
-    // mental N-up transform. While stopped there is no nose to be relative
-    // to, so the ring falls back to north-up with the dart at absolute
-    // bearing (matching the "SE of you" wording used when parked).
+    // (dart up = partner dead ahead). The ring is labelled as a clock face,
+    // 12 / 3 / 6 / 9, fixed to the unit: 12 is always the hood, 3 is always
+    // the passenger door. That matches the "at 2 o'clock" wording and the
+    // radio messages, and never asks the driver for a north-up transform.
+    // While stopped the nose is the last course seen at speed (nav holds
+    // it), so the clock positions keep meaning what they meant a moment
+    // ago; before the first drive of the session, 12 stands in for north.
     const int cx = 100, cy = 172, RING = 68;
     rlcd_draw_circle(cx, cy, RING, 2, false);
     {
-        static const char *card[4] = {"N", "E", "S", "W"};
-        float rot = nav.heading_valid ? st.self.course_deg : 0.0f;
+        static const char *clock[4] = {"12", "3", "6", "9"};
         for (int i = 0; i < 4; i++) {
-            float a = ((float)i * 90.0f - rot) * (float)M_PI / 180.0f;
-            int lx = cx + (int)lroundf(sinf(a) * (RING + 17)) - 7;
+            float a = (float)i * 90.0f * (float)M_PI / 180.0f;
+            int lx = cx + (int)lroundf(sinf(a) * (RING + 17)) - (int)strlen(clock[i]) * 6;
             int ly = cy - (int)lroundf(cosf(a) * (RING + 17)) - 8;
-            rlcd_draw_text(lx, ly, card[i], 2, false);
+            rlcd_draw_text(lx, ly, clock[i], 2, false);
         }
     }
-    if (nav.heading_valid) {
-        draw_arrow(cx, cy, RING - 14, nav.arrow_deg,         // partner vs nose
-                   !partner_aging(st));                      // hollow = stale-ish
-        // fixed index mark at 12 o'clock = your hood
-        fill_triangle(cx - 6, cy - RING + 1, cx + 6, cy - RING + 1,
-                      cx, cy - RING + 12, false);
-    } else {
-        draw_arrow(cx, cy, RING - 14, nav.bearing_deg,       // absolute bearing
-                   !partner_aging(st));
-    }
+    draw_arrow(cx, cy, RING - 14, nav.arrow_deg,             // partner vs nose
+               !partner_aging(st));                          // hollow = stale-ish
+    // fixed index mark at 12 o'clock = your hood
+    fill_triangle(cx - 6, cy - RING + 1, cx + 6, cy - RING + 1,
+                  cx, cy - RING + 12, false);
 
     // blinkers from the RELATIVE angle (driving only)
     if (nav.heading_valid && fabsf(nav.arrow_deg) > BLINK_DEG) {
@@ -246,15 +241,9 @@ static void render_nav(const TrackerState &st, const NavOutput &nav,
     int w = (int)strlen(dist) * 8 * 4;
     rlcd_draw_text(RLCD_W - w - 10, 92, dist, 4, false);  // below blinker zone
 
-    // "where" in words: clock position while driving (relative to the nose),
-    // compass cardinal while stopped (no heading to be relative to).
-    if (nav.heading_valid) {
-        int hour = (int)roundf(nav_wrap360(nav.arrow_deg) / 30.0f) % 12;
-        if (hour == 0) hour = 12;
-        snprintf(buf, sizeof(buf), "at %d o'clock", hour);
-    } else {
-        snprintf(buf, sizeof(buf), "%s of you", cardinal8(nav.bearing_deg));
-    }
+    // "where" in words: always a clock position relative to the nose (the
+    // held course while stopped), matching the ring and the radio messages.
+    snprintf(buf, sizeof(buf), "at %d o'clock", clock_hour(nav.arrow_deg));
     rlcd_draw_text(RLCD_W - (int)strlen(buf) * 16 - 10, 128, buf, 2, false);
 
     // data age — inverted (white-on-black) as an early staleness cue, with a
@@ -274,9 +263,13 @@ static void render_nav(const TrackerState &st, const NavOutput &nav,
         rlcd_draw_text(RLCD_W - (int)strlen(buf) * 16 - 10, 186, buf, 2, false);
     }
 
-    // closing/separating trend — the number a convoy driver actually watches
+    // closing/separating trend — the number a convoy driver actually watches.
+    // Two parked cars cannot close or separate: GNSS scatter between them
+    // (hundreds of feet indoors) would otherwise read as phantom mph.
     if (trend_ok) {
-        if (trend_mph > 2.0f)       snprintf(buf, sizeof(buf), "closing %.0f mph", trend_mph);
+        bool both_parked = st.self.speed_mps < 0.1f && st.partner.speed_mps < 0.1f;
+        if (both_parked)            snprintf(buf, sizeof(buf), "holding");
+        else if (trend_mph > 2.0f)  snprintf(buf, sizeof(buf), "closing %.0f mph", trend_mph);
         else if (trend_mph < -2.0f) snprintf(buf, sizeof(buf), "apart %.0f mph", -trend_mph);
         else                        snprintf(buf, sizeof(buf), "holding");
         rlcd_draw_text(RLCD_W - (int)strlen(buf) * 16 - 10, 210, buf, 2, false);
@@ -304,13 +297,7 @@ static void render_nav(const TrackerState &st, const NavOutput &nav,
             banner(28, buf);
         } else {
             fmt_miles(nav.distance_m, dist, sizeof(dist));
-            if (nav.heading_valid) {
-                int hour = (int)roundf(nav_wrap360(nav.arrow_deg) / 30.0f) % 12;
-                if (hour == 0) hour = 12;
-                snprintf(buf, sizeof(buf), "LAST %s at %d:00", dist, hour);
-            } else {
-                snprintf(buf, sizeof(buf), "LAST %s %s", dist, cardinal8(nav.bearing_deg));
-            }
+            snprintf(buf, sizeof(buf), "LAST %s at %d:00", dist, clock_hour(nav.arrow_deg));
             banner_inv(28, buf);
         }
     } else if (st.partner.age_s > STALE_AGE_S) {
@@ -382,7 +369,7 @@ static void render_status(const TrackerState &st, const NavOutput &nav) {
     if (nav.valid) {
         fmt_miles(nav.distance_m, dist, sizeof(dist));
         ctext(200, dist, 5, false);
-        snprintf(buf, sizeof(buf), "%s IS %s OF %s", ptr, cardinal8(nav.bearing_deg), me);
+        snprintf(buf, sizeof(buf), "%s AT %d O'CLOCK FROM %s", ptr, clock_hour(nav.arrow_deg), me);
         ctext(250, buf, 2, false);
     }
     rlcd_draw_text(8, 282, "tap:messages hold:reset", 1, false);
@@ -436,7 +423,7 @@ void ui_render_task(void *arg) {
         if (digitalRead(TRACK_RESET_PIN) == LOW) {
             if (++held == 2) {
                 if (s_page == 2) { node_table_clear_messages(); flash_msg = "MESSAGES CLEARED"; }
-                else             { node_table_reset();          flash_msg = "TRACKING RESET"; }
+                else             { node_table_reset(); nav_reset_heading(); flash_msg = "TRACKING RESET"; }
                 flash_ticks = 4;
             }
         } else {

@@ -3,7 +3,7 @@
 #include "../../src/nav/nav.h"
 #include "../../src/nav/dead_reckon.h"
 
-void setUp(void) {}
+void setUp(void) { nav_reset_heading(); }
 void tearDown(void) {}
 
 static TrackerState make_state(double slat, double slon, float course, float speed,
@@ -55,11 +55,29 @@ void test_arrow_is_bearing_minus_course(void) {
 }
 
 void test_slow_speed_falls_back_to_compass(void) {
+    // Never moved this session: no live heading, no held heading, so the
+    // nose is north and the arrow equals the absolute bearing.
     TrackerState st = make_state(0, 0, 123.0f, 1.0f /* < 2.2 m/s */, 1, 0);
     NavOutput nav = nav_compute(&st);
     TEST_ASSERT_TRUE(nav.valid);
     TEST_ASSERT_FALSE(nav.heading_valid);
+    TEST_ASSERT_FALSE(nav.heading_held);
     TEST_ASSERT_FLOAT_WITHIN(0.1f, 0.0f, nav.bearing_deg); // partner due north
+    TEST_ASSERT_FLOAT_WITHIN(0.1f, 0.0f, nav.arrow_deg);   // 12 o'clock = north
+}
+
+void test_stopped_holds_last_course(void) {
+    // Drive course 350 with the partner due east (arrow +100), then stop:
+    // the nose stays at 350 so the clock position does not jump.
+    TrackerState st = make_state(0, 0, 350.0f, 20.0f, 0, 0.5);
+    NavOutput moving = nav_compute(&st);
+    TEST_ASSERT_TRUE(moving.heading_valid);
+    st.self.speed_mps = 0.0f;
+    st.self.course_deg = 77.0f;   // GPS course is noise when parked; must be ignored
+    NavOutput parked = nav_compute(&st);
+    TEST_ASSERT_FALSE(parked.heading_valid);
+    TEST_ASSERT_TRUE(parked.heading_held);
+    TEST_ASSERT_FLOAT_WITHIN(0.2f, 100.0f, parked.arrow_deg);
 }
 
 void test_invalid_fix_gives_invalid_output(void) {
@@ -124,6 +142,7 @@ int main(int, char **) {
     RUN_TEST(test_wrap);
     RUN_TEST(test_arrow_is_bearing_minus_course);
     RUN_TEST(test_slow_speed_falls_back_to_compass);
+    RUN_TEST(test_stopped_holds_last_course);
     RUN_TEST(test_invalid_fix_gives_invalid_output);
     return UNITY_END();
 }

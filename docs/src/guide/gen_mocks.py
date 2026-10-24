@@ -107,9 +107,8 @@ img, d = dsp_base()
 dsp_chrome(d, up="up 2789s", clock="7:42a CDT")
 cx, cy, R = 330, 480, 210
 d.ellipse([cx-R, cy-R, cx+R, cy+R], outline=INK, width=6)
-course = 135.0  # heading SE -> cardinals rotate
-for i, card in enumerate(["N", "E", "S", "W"]):
-    a = math.radians(i * 90 - course)
+for i, card in enumerate(["12", "3", "6", "9"]):  # clock face fixed to the unit: 12 = hood
+    a = math.radians(i * 90)
     lx = cx + math.sin(a) * (R + 46); ly = cy - math.cos(a) * (R + 46)
     f = FB(44)
     d.text((lx - d.textlength(card, font=f)/2, ly - 24), card, font=f, fill=INK)

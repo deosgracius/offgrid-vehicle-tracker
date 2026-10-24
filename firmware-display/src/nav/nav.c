@@ -34,6 +34,14 @@ float nav_initial_bearing_deg(double lat1_deg, double lon1_deg, double lat2_deg,
     return nav_wrap360((float)RAD2DEG(atan2(y, x)));
 }
 
+static float s_held_course_deg = 0.0f;
+static bool  s_has_held = false;
+
+void nav_reset_heading(void) {
+    s_has_held = false;
+    s_held_course_deg = 0.0f;
+}
+
 NavOutput nav_compute(const TrackerState *st) {
     NavOutput out = {0};
     if (!st->self.valid || !st->partner.valid) {
@@ -45,8 +53,12 @@ NavOutput nav_compute(const TrackerState *st) {
     out.bearing_deg = nav_initial_bearing_deg(st->self.lat_deg, st->self.lon_deg,
                                               st->partner.lat_deg, st->partner.lon_deg);
     out.heading_valid = st->self.speed_mps >= NAV_MIN_HEADING_SPEED_MPS;
-    out.arrow_deg = out.heading_valid
-                        ? nav_wrap180(out.bearing_deg - st->self.course_deg)
-                        : 0.0f;
+    if (out.heading_valid) {
+        s_held_course_deg = st->self.course_deg;
+        s_has_held = true;
+    }
+    out.heading_held = !out.heading_valid && s_has_held;
+    float nose = s_has_held ? s_held_course_deg : 0.0f;  // never moved: north = 12
+    out.arrow_deg = nav_wrap180(out.bearing_deg - nose);
     return out;
 }
