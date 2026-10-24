@@ -87,8 +87,9 @@ if __name__ == "__main__":
                    ("@P9", "9  Menus to Leave Alone"),
                    ("@P10", "10  Powering Off and Charging"),
                    ("@P11", "11  When Something Looks Wrong"),
-                   ("@P12", "12  Quick Reference"),
-                   ("@P13", "Appendix A  Abbreviations and Acronyms")]
+                   ("@P12", "12  Restoring a Radio That Forgot Its Settings"),
+                   ("@P13", "13  Quick Reference"),
+                   ("@P14", "Appendix A  Abbreviations and Acronyms")]
         build(os.path.join(base, "GUIDE.html"), os.path.join(base, "DEVICE_USER_GUIDE.pdf"),
               anchors, "How Far It Reaches", min_images=23)
     elif which == "manual":

@@ -15,6 +15,11 @@
  table.toc td { border: none; border-bottom: 1px dotted var(--line); padding: 7px 2px; font-size: 12pt; }
  table.toc td.pg { text-align: right; width: 40px; font-weight: bold; }
  h2 { font-size: 15pt; font-weight: bold; color: #000; margin: 26px 0 8px 0; page-break-after: avoid; }
+ h3 { font-size: 12pt; font-weight: bold; color: #000; margin: 18px 0 6px 0; page-break-after: avoid; }
+ pre { font-family: Consolas, "Courier New", monospace; font-size: 12pt; background: #f6f8fa; border: 1px solid #d0d7de; padding: 8px 12px; margin: 8px 0; white-space: pre-wrap; page-break-inside: avoid; }
+ code { font-family: Consolas, "Courier New", monospace; font-size: 12pt; }
+ ol.steps { margin: 6px 0 6px 22px; padding: 0; }
+ ol.steps li { margin: 5px 0; text-align: justify; }
  p { margin: 6px 0; text-align: justify; }
  .screen { border: 1px solid #000; }
  .step { display: flex; gap: 18px; margin: 14px auto; page-break-inside: avoid; align-items: center; justify-content: center; }
@@ -61,8 +66,9 @@
 <tr><td>9&nbsp;&nbsp;Menus to Leave Alone</td><td class="pg">@P9</td></tr>
 <tr><td>10&nbsp;&nbsp;Powering Off and Charging</td><td class="pg">@P10</td></tr>
 <tr><td>11&nbsp;&nbsp;When Something Looks Wrong</td><td class="pg">@P11</td></tr>
-<tr><td>12&nbsp;&nbsp;Quick Reference</td><td class="pg">@P12</td></tr>
-<tr><td>Appendix A&nbsp;&nbsp;Abbreviations and Acronyms</td><td class="pg">@P13</td></tr>
+<tr><td>12&nbsp;&nbsp;Restoring a Radio That Forgot Its Settings</td><td class="pg">@P12</td></tr>
+<tr><td>13&nbsp;&nbsp;Quick Reference</td><td class="pg">@P13</td></tr>
+<tr><td>Appendix A&nbsp;&nbsp;Abbreviations and Acronyms</td><td class="pg">@P14</td></tr>
 </table>
 <p style="margin-top:26px; color:var(--mut); font-size:12pt;">Companion document: the Technical Manual holds the engineering detail, how the system works, and every recovery procedure. This guide is only about operating the devices.</p>
 </div>
@@ -264,13 +270,50 @@
 <table>
 <tr><th>What you see</th><th>Meaning</th><th>Do</th></tr>
 <tr><td>0 online, No Sats indoors</td><td>Normal</td><td>Nothing; go outside, partner on.</td></tr>
-<tr><td>Frequency is not 912.875</td><td>Settings lost (dead battery)</td><td>Technical Manual recovery, five minutes.</td></tr>
-<tr><td>Display stuck "SEARCHING"</td><td>Missed the pairing window</td><td>Power both off, then on together.</td></tr>
+<tr><td>Frequency is not 912.875, or the radio's name is "Meshtastic_xxxx"</td><td>Settings lost (battery ran flat)</td><td>Section 12: five minutes with a phone, ninety seconds with the laptop.</td></tr>
+<tr><td>Display stuck "SEARCHING" or "CONNECTING"</td><td>Missed the pairing window; if it persists, the radio lost its settings</td><td>Power both off, then on together. Still stuck after two minutes: Section 12.</td></tr>
 <tr><td>DATA STALE while far apart</td><td>Out of radio reach</td><td>Normal past the ranges in Section 8; heals as you get closer.</td></tr>
 <tr><td>Anything else odd</td><td>Electronics</td><td>Power-cycle both together.</td></tr>
 </table>
 
-<h2>12&nbsp;&nbsp;Quick Reference</h2>
+<h2>12&nbsp;&nbsp;Restoring a Radio That Forgot Its Settings</h2>
+<p>A radio that runs its battery completely flat can lose part of its configuration when it next starts. Nothing is broken and nothing needs re-flashing; the settings only have to be put back. You will know it has happened when one or more of these appear:</p>
+<table>
+<tr><th>Sign</th><th>What was lost</th></tr>
+<tr><td>LoRa screen reads 906.875 instead of 912.875</td><td>The Group9 channel (name and key), so the radio is on the public frequency and cannot hear the partner.</td></tr>
+<tr><td>Home screen shows "Meshtastic_ead4" or "Meshtastic_bb5c" instead of SF or RG</td><td>The owner name.</td></tr>
+<tr><td>Display stays on SEARCHING or CONNECTING for minutes</td><td>Bluetooth pairing mode went back to "Random PIN", which the display cannot use.</td></tr>
+<tr><td>Partner position updates only every few minutes, or jumps on a coarse grid</td><td>Position timing and precision.</td></tr>
+<tr><td>The preset message list is the factory one</td><td>The canned messages (Section 5).</td></tr>
+</table>
+<p>The losses come in batches, so always restore everything, not just the one thing you noticed. There are two ways to do it. The phone way needs no laptop and works at the roadside; the laptop way is faster and restores every setting at once.</p>
+
+<h3>12.1 With a phone, no laptop: about five minutes</h3>
+<p><b>You need:</b> the Meshtastic app (free, Android or iOS) and the Group9 channel QR code. Every team member keeps the QR code in their phone's photos; it is also in the team's private hardware notes. The QR code contains the channel key: never post it, print it, or send it outside the team.</p>
+<ol class="steps">
+<li>Switch on the radio by itself. Leave the display off until the end.</li>
+<li>In the app, open the connection screen (Bluetooth) and tap the radio. It appears as <b>Meshtastic_ead4</b> (the SF radio) or <b>Meshtastic_bb5c</b> (the RG radio), or as SF or RG if the name survived. If the phone asks for a PIN, read the six digits from the radio's own screen and type them in.</li>
+<li><b>Restore the channel first.</b> Open the Channels screen, choose the scan-QR option, and scan the Group9 QR code. Accept it. The radio reboots. Check the radio's LoRa screen: it must now read <b>912.875</b>. This one step brings back the channel name, the key, the frequency, and full-precision positions.</li>
+<li><b>Bluetooth pairing mode.</b> Reconnect if the app dropped the radio, then open Radio configuration, Bluetooth, and set Pairing mode to <b>No PIN</b>. Save; the radio reboots again. Until this is done the display cannot pair.</li>
+<li><b>Name.</b> Radio configuration, User: long name and short name both <b>SF</b> (or both <b>RG</b>).</li>
+<li><b>Role.</b> Radio configuration, Device: Role <b>Client Mute</b>.</li>
+<li><b>Position timing.</b> Radio configuration, Position: GPS update interval <b>10 s</b>; position broadcast interval <b>60 s</b>; smart position on, minimum interval <b>10 s</b>, minimum distance <b>20 m</b>.</li>
+<li><b>Presets, optional.</b> Module configuration, Canned message: enabled, with the preset list from Section 5. Typed messages work without this step; only the preset list is missing.</li>
+<li>Disconnect the phone from the radio in the app (the radio accepts one Bluetooth connection at a time). Now power the display: it should show the link within a minute.</li>
+</ol>
+<div class="tip"><b>In a hurry:</b> steps 3 and 4 are what the partner radio and the display need. Everything else can wait until you are parked.</div>
+
+<h3>12.2 With the laptop: about ninety seconds</h3>
+<p>Each radio has a saved snapshot of its complete, correct configuration: <code>sf-config.yaml</code> for the SF radio and <code>rg-config.yaml</code> for the RG radio, kept with the team's private hardware notes because they contain the channel key. Plug in the radio alone by USB, with the display unplugged so the radio's port is the only one, and run:</p>
+<pre>python -m meshtastic --configure sf-config.yaml</pre>
+<p>Use <code>rg-config.yaml</code> for the RG radio. The radio reboots once or twice while the settings are written. Then check the radio's own screens: the LoRa screen reads <b>912.875</b> and the home screen shows <b>SF</b> (or <b>RG</b>). If anything still reads wrong, run the same command once more; a setting that makes the radio reboot occasionally misses the first pass. If the laptop has more than one serial device attached, add <code>--port COMx</code> with the radio's port.</p>
+<p>After any deliberate settings change, take a fresh snapshot so the saved file stays correct:</p>
+<pre>python -m meshtastic --export-config &gt; sf-config.yaml</pre>
+
+<h3>12.3 Afterwards</h3>
+<p>Switch both radios on outdoors. Within a minute, each radio's Last Heard screen should show the other, and the display should show the link. Then do the pre-flight check of Section 3 before driving. To make this section unnecessary: charge after every trip and never store a radio empty (Section 10).</p>
+
+<h2>13&nbsp;&nbsp;Quick Reference</h2>
 <table>
 <tr><th>I want to...</th><th>Do this</th></tr>
 <tr><td>Start up</td><td>Antennas on, power radio and display together.</td></tr>
@@ -281,6 +324,7 @@
 <tr><td>Partner's position, now</td><td>BOOT on the display.</td></tr>
 <tr><td>Shut down</td><td>Long press on home, System Action, Shutdown.</td></tr>
 <tr><td>Fix almost anything</td><td>Power-cycle both; check 912.875.</td></tr>
+<tr><td>Radio forgot its settings</td><td>Section 12: scan the Group9 QR, set No PIN; or <code>--configure</code> the saved snapshot.</td></tr>
 </table>
 
 <h2>Appendix A&nbsp;&nbsp;Abbreviations and Acronyms</h2>
