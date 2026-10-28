@@ -26,7 +26,7 @@ TESTS = [
     (date(2026, 10, 5), "Open road\n3.26 / 3.75 mi", 2),
     (date(2026, 10, 18), "Canyon\n1.29 mi .. 4.7 mi", 1),
 ]
-PENDING = (date(2026, 10, 26), "New Mexico\n(pending)")
+PENDING = (date(2026, 10, 26), "New Mexico\n(rained out)")
 
 fig, ax = plt.subplots(figsize=(13.2, 5.6), dpi=200)
 ax.axhline(0, color=NAVY, lw=2.2, zorder=1)
@@ -36,12 +36,12 @@ for d, lab, t in FAILS:
     y = TIER_UP[t]
     ax.plot([d, d], [0, y - 0.12], color=RED, lw=1.3, zorder=2)
     ax.plot(d, 0, "o", color=RED, ms=8, zorder=3)
-    ax.text(d, y, lab, ha="center", va="bottom", fontsize=9.5, color=RED, linespacing=1.15)
+    ax.text(d, y, lab, ha="center", va="bottom", fontsize=9.5, color=RED, linespacing=1.15, zorder=4, bbox=dict(boxstyle="square,pad=0.12", fc="white", ec="none"))
 for d, lab, t in TESTS:
     y = TIER_DN[t]
     ax.plot([d, d], [0, y + 0.12], color=GREEN, lw=1.3, zorder=2)
     ax.plot(d, 0, "^", color=GREEN, ms=10, zorder=3)
-    ax.text(d, y, lab, ha="center", va="top", fontsize=9.5, color=GREEN, linespacing=1.15)
+    ax.text(d, y, lab, ha="center", va="top", fontsize=9.5, color=GREEN, linespacing=1.15, zorder=4, bbox=dict(boxstyle="square,pad=0.12", fc="white", ec="none"))
 d, lab = PENDING
 ax.plot(d, 0, "^", mfc="white", mec=GREEN, mew=1.8, ms=12, zorder=3)
 ax.text(d, -0.55, lab, ha="center", va="top", fontsize=9.5, color=GREEN, style="italic", linespacing=1.15)
@@ -59,5 +59,5 @@ for s in ["left", "right", "top"]:
 ax.spines["bottom"].set_color(NAVY)
 ax.spines["bottom"].set_position(("data", -3.7))
 plt.tight_layout()
-fig.savefig("deck/g_failtimeline.png", dpi=200)
+fig.savefig("deck_assets/g_failtimeline.png", dpi=200)
 print("ok")
