@@ -53,7 +53,8 @@ cards = [("Display firmware", ["Headings as clock positions (12, 3, 6, 9), partn
 x = 0.55
 for t, items, c in cards:
     card(s, x, 1.4, 4.0, 3.0, t, items, c, 13.5, 11.5); x += 4.1
-txt(s, 0.55, 4.65, 12.2, 0.9, "Everything above is committed and pushed. The private repository holds the channel key, the config snapshots and the fix-1 firmware images; nothing with the key is public.", 12, False, MUT, PP_ALIGN.LEFT, BF, italic=True)
+pic(s, "g_lcddiag.png", 0.55, 4.6, 5.5)
+card(s, 6.25, 4.6, 6.55, 2.03, "The bench record behind the 0.21 mi", "Parsed from both displays' serial logs on 24 October: clean boots, pairing in under 8 s, correct node tables, and SF's indoor GPS fix wandering 100 to 400 m between packets with phantom speed. The displays were right; the fixes were wrong. Everything on this sheet is committed and pushed; nothing with the channel key is public.", MUT, 12.5, 11)
 notes(s, "One sheet for the rest of the team's output. The display changes were validated on the bench; the next drive validates them on the road.")
 
 # 6 next
