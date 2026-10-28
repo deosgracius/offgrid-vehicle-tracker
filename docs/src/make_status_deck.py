@@ -14,12 +14,14 @@ notes(s, "Five minutes. One cancelled test, one investigation, one fix, one plan
 
 # 2 NM cancelled
 s = slide(); frame(s, "status update", "CANNON")
-head(s, "The New Mexico test: cancelled by weather", "Planned for 25 October: maximum range on open highway, the one geometry we have not measured")
-pic(s, "g_onset4.png", 0.55, 1.4, 6.6)
-card(s, 7.4, 1.4, 5.4, 2.1, "What it would have measured", ["Flat open road with no terrain: the true maximum of the radios", "Range so far: 0.5 mi in town, 3.26 to 3.75 mi on a farm road, 1.29 to 4.7 mi at the canyon", "Expectation from the two-ray model: beyond 4.7 mi with both antennas on the roof"], INK, 13, 11.5)
-card(s, 7.4, 3.7, 5.4, 1.6, "Why it did not happen", "Rain and low visibility on the 25th; a range drive needs a clear day and two cars for about two hours. Pre-flight was done (both OLEDs 912.875) before the call to cancel.", RED, 13, 11.5)
-card(s, 0.55, 5.0, 12.25, 1.5, "Reschedule", "Next clear weekend, same plan: two cars, one radio each on the roof, drive apart on US-84 or US-62 until the display shows LINK LOST, log the last packet distance, drive back. Both radios now carry the fix described on sheet 4, so a flat battery on the way cannot cost the test.", GREEN, 13, 11.5)
-notes(s, "Say plainly that the test is rescheduled, not dropped, and that the radios are in better shape for it than they were on the 25th.")
+head(s, "New Mexico: on site, then cancelled by weather", "25 October, below the Capitan Mountains: the maximum-range geometry we have not measured")
+pic(s, "g_nm_cancel.png", 0.55, 1.35, 8.4)
+pic(s, "g_nm_alert.jpg", 9.15, 1.55, 3.65)
+txt(s, 9.15, 2.95, 3.65, 1.3, "NATIONAL WEATHER SERVICE, 25 OCTOBER: FLASH FLOOD WARNING FOR THE AREA UNTIL 9:15 PM MDT. \"DO NOT ATTEMPT TO TRAVEL.\"", 9.5, True, RED, PP_ALIGN.LEFT, MONO)
+card(s, 0.55, 4.65, 3.95, 1.95, "What it would have measured", ["Open country with no terrain in the path: the true maximum of the radios", "Measured so far: 0.5 mi in town, 3.75 mi on a farm road, 4.7 mi from the canyon rim"], INK, 12.5, 11)
+card(s, 4.675, 4.65, 3.95, 1.95, "What happened on site", ["Flash flood warning from the National Weather Service for the area, 'do not attempt to travel'", "Low cloud on the peaks, rain moving in; the pre-flight (both OLEDs 912.875) was done, the drive was not started"], RED, 12.5, 11)
+card(s, 8.8, 4.65, 3.95, 1.95, "Reschedule", ["Next clear weekend, same site and plan: two cars, radios on the roofs, drive apart until LINK LOST, log the last packet", "Both radios now carry fix 1 (sheet 4), so a flat battery on the way cannot cost the test"], GREEN, 12.5, 11)
+notes(s, "The team was on site. Say that first: the test was not skipped, it was stopped by a flash flood warning, which is a travel ban, not a judgment call. Rescheduled, not dropped, and the radios are in better shape for it than they were on the 25th.")
 
 # 3 what the weekend went into
 s = slide(); frame(s, "status update", "DEO")

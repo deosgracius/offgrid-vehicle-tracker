@@ -146,7 +146,7 @@ notes(s, "Set expectations: this is not a list of embarrassments, it is the veri
 s = slide(); frame(s, "part i - the failures")
 head(s, "The semester on one line")
 pic(s, "g_failtimeline.png", 0.55, 1.3, 12.2)
-txt(s, 0.55, 6.45, 12.2, 0.35, "RED: FAILURES, ROOT-CAUSED.  GREEN: TESTS.  THE HOLLOW TRIANGLE IS NEW MEXICO, RAINED OUT; THAT WEEKEND WENT INTO THE RADIOS INSTEAD.", 10.5, True, MUT, PP_ALIGN.CENTER, MONO)
+txt(s, 0.55, 6.45, 12.2, 0.35, "RED: FAILURES, ROOT-CAUSED.  GREEN: TESTS.  THE HOLLOW TRIANGLE IS NEW MEXICO: ON SITE, STOPPED BY A FLASH FLOOD WARNING; THE WEEKEND WENT INTO THE RADIOS.", 10.5, True, MUT, PP_ALIGN.CENTER, MONO)
 notes(s, "Walk it left to right. Failures cluster right before tests, and the same villain, battery death, returns three times. The last weekend's drive was rained out, which is why Part II exists.")
 
 # ============ 4 FAILURES 1-3 ============
@@ -202,7 +202,7 @@ rows = [["Date", "Campaign", "Environment", "Key result"],
         ["Oct 4", "Night convoy drive", "Town", "Stale onset ~0.5 mi; course-up and cadence-aware cue born"],
         ["Oct 5", "Open-road range", "Flat farm road", "Full tracking to 3.26 mi; stale edge 3.75 mi"],
         ["Oct 18", "Canyon range", "Ceta Canyon", "Stale from 1.29 mi; packet at 4.28; 7-min outage healed; rim antenna 4.7 mi"],
-        ["Oct 25", "New Mexico maximum range", "Open highway", "Rained out; the radios were diagnosed instead (Part II)"]]
+        ["Oct 25", "New Mexico maximum range", "Capitan Mountains, NM", "On site; flash flood warning, cancelled; the radios were diagnosed instead (Part II)"]]
 table(s, 0.55, 1.3, 5.9, rows, [0.75, 1.55, 1.2, 2.4], fs=9.5, rh=0.52)
 pic(s, "g_onset4.png", 6.6, 1.3, 6.2)
 txt(s, 6.6, 5.0, 6.2, 0.8, "Same radios, four geometries: 0.5 to 4.7 mi. Terrain and antenna height set the range, not the hardware.", 12, False, BODY)
