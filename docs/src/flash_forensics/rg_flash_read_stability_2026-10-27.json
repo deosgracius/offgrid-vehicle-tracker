@@ -1,0 +1,17 @@
+{
+ "radio": "RG 8C:FD:49:B5:BB:5C",
+ "date": "2026-10-27",
+ "method": "esptool stub, one connection, 3 reads of 0xC90000+0x360000 at 460800; app0 1 MB x2",
+ "differing_bytes": {
+  "read1_vs_read2": 0,
+  "read2_vs_read3": 0
+ },
+ "unstable_sectors": {},
+ "sectors_with_data": 112,
+ "app0_1MB_two_reads_identical": true,
+ "sha256": [
+  "3d6ae479e34a603e4e269a2ab5b0e2c50d3b7efc0769e839d9e232ad1829ee40",
+  "3d6ae479e34a603e4e269a2ab5b0e2c50d3b7efc0769e839d9e232ad1829ee40",
+  "3d6ae479e34a603e4e269a2ab5b0e2c50d3b7efc0769e839d9e232ad1829ee40"
+ ]
+}
