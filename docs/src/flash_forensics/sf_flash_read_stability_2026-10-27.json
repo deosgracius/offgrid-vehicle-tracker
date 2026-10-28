@@ -271,5 +271,6 @@
   "nodes.proto": 470
  },
  "littlefs": "mounts clean (littlefs-python 0.19); all six /prefs files decode; configuration correct (Group9, 32-byte key, precision 32, CLIENT_MUTE, NO_PIN, 60/10/20/10)",
- "pending": "erase/program/re-read test of sectors 57 and 31 (control 200) not executed: awaiting sign-off; same read-stability test on RG"
+ "pending": "RG baseline map still to be measured; clean erase + re-provision of SF's settings partition not yet done",
+ "decisive_test": "EXECUTED 2026-10-27 (authorised): sectors 57 and 31 erased, programmed (0x00, A5/5A, random) and re-read x5 each: 0 mismatches, 0 varying bytes; control sector 200 identical. Outcome A: cells healthy; the instability was residue of writes completed under low supply. See decisive_test_2026-10-27.json"
 }

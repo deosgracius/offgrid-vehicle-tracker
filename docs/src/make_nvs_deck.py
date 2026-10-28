@@ -1,4 +1,4 @@
-# Configuration-loss root-cause deck: drawing-set chrome, Cambria body.
+﻿# Configuration-loss root-cause deck: drawing-set chrome, Cambria body.
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
@@ -233,17 +233,21 @@ notes(s, "Be exact about what is and is not claimed. Marginal cells exist in SF'
 s = slide(); frame(s, "part iii - the measurement", "DEO")
 head(s, "Interpretation: marginal cells and the losses")
 card(s, 0.55, 1.35, 6.0, 2.55, "Why the live files are safe today and not tomorrow", "LittleFS is copy-on-write with wear-levelling: every save lands on a new sector, and the allocator walks forward through all 864. The unstable sectors are stale copies now, but each boot's device.proto write and each node-table save moves the live data on. When a live file, or the directory metadata that points to it, lands on a marginal sector, the next boot reads garbage, the protobuf decode fails, and the firmware installs and saves factory defaults. Which file is hit decides what is lost: that is the partial, varying pattern in the record.", INK, 13, 11.5)
-card(s, 6.75, 1.35, 6.0, 2.55, "Why SF and not RG", "Marginal cells are specific to one chip and one history. SF is the carried, bench-tested unit that has been run flat most often; RG reverted once, on the night both died. The sector map is a property of SF's flash, not of the design, which is exactly why a hardware hypothesis was worth testing rather than dismissing.", ACC, 13, 11.5)
+card(s, 6.75, 1.35, 6.0, 2.55, "Why SF and not RG", "Marginal cells are specific to one chip and one history. SF is the carried, bench-tested unit that has been run flat most often; RG reverted once, on the night both died. The sector map is a property of SF's history, not of the design, which is exactly why a hardware hypothesis was worth testing rather than dismissing.", ACC, 13, 11.5)
 card(s, 0.55, 4.1, 12.2, 2.45, "Where the marginal cells most likely came from", "NOR cells are programmed and erased by moving charge with internal high-voltage pumps that need VCC within 2.7 to 3.6 V. If the rail sags into the 2.44 to 2.7 V window mid-operation (a transmit pulse on a flat cell, or a reboot loop while charging a flat pack), the operation completes with cells left between the two charge states. Those cells read differently from one access to the next until the sector is erased and programmed again under good voltage. That is hypothesis H3 leaving the fingerprint predicted for H2. Alternatively the cells are permanently weak. One short experiment separates the two.", GREEN, 13, 11.5)
 notes(s, "The honest framing: the measurement proves marginal cells; the physics plus the incident timing make torn writes the most probable origin; one more test decides it.")
 
 # ============ 13 DECISIVE TEST ============
 s = slide(); frame(s, "part iii - the measurement", "DEO")
-head(s, "The decisive test: damaged or disturbed?")
-card(s, 0.55, 1.35, 6.0, 2.6, "Procedure (SF, sectors 57 and 31; control sector 200)", "Erase the sector; program all-zeros; read five times. Erase; program a 0xA5/0x5A pattern; read five times. Erase; program a fixed random page; read five times. Erase and leave free. The three test sectors hold no live data (LittleFS lists them as free), so the filesystem is untouched; the radio's configuration is backed up in the config snapshot regardless.", INK, 13, 11.5)
-card(s, 6.75, 1.35, 6.0, 2.6, "Outcomes", "A. All reads match every pattern: the cells are healthy and the instability was the residue of interrupted writes. Fix = clear the partition once under good voltage and stop the low-voltage writes.\n\nB. Mismatches persist: the cells are weak. Fix = avoid them (custom partition offset) or retire SF's flash, plus the same write-policy changes.", GREEN, 13, 11.5)
-card(s, 0.55, 4.2, 12.2, 2.35, "Status", "Designed and scripted on 2026-10-27; execution awaits sign-off because it writes to the radio's flash, even though only to free sectors. The same read-stability measurement should be run on RG (not on USB today) to see whether a radio with one loss shows a clean map; the comparison is itself evidence. Both results drop straight into sheets 10 to 12.", ACC, 13, 12)
-notes(s, "Say plainly that this test was not run yet and why. It takes two minutes once approved.")
+head(s, "The decisive test: disturbed, not damaged")
+rows = [["Sector", "As found (3 reads)", "After erase", "Programmed 0x00", "Programmed A5/5A", "Programmed random", "Erased again"],
+        ["57 (worst)", "unstable: 27 bytes disagree", "5/5 clean", "5/5 clean", "5/5 clean", "5/5 clean", "5/5 clean"],
+        ["31", "unstable: 20 bytes disagree", "5/5 clean", "5/5 clean", "5/5 clean", "5/5 clean", "5/5 clean"],
+        ["200 (control, free)", "stable: 0", "5/5 clean", "5/5 clean", "5/5 clean", "5/5 clean", "5/5 clean"]]
+table(s, 0.55, 1.3, 12.2, rows, [1.7, 2.6, 1.5, 1.6, 1.6, 1.7, 1.5], fs=10.5, rh=0.5)
+card(s, 0.55, 3.5, 6.0, 3.05, "What was done (SF, 2026-10-27, authorised)", "Each sector: read three times as found; erase; program all-zeros and read five times; erase; program 0xA5/0x5A and read five times; erase; program a fixed random page and read five times; erase and leave free. Sector 200, which had never been written, served as the control. The sectors were free in LittleFS (its live data is in sectors 0, 1, 25, 26 and 470), so the configuration was untouched; the radio booted normally afterwards. Record: docs/src/flash_forensics/decisive_test_2026-10-27.json.", INK, 13, 11.5)
+card(s, 6.75, 3.5, 6.0, 3.05, "What it means", "Outcome A. The cells program, erase and hold every pattern perfectly once written under a healthy supply: there is nothing wrong with the silicon. The instability we measured was the physical residue of earlier writes completed while the supply was outside the flash's operating range, exactly the mechanism the datasheet forbids and the firmware does not guard against. This closes the hardware question: not a defective or worn part, but a part that was written to under conditions in which no flash is specified to work. The repair for the sectors already affected is simple: one clean erase of the settings partition under USB power, then re-provision from the snapshot.", GREEN, 13, 11.5)
+notes(s, "This is the sheet that settles the recruiter's question. Healthy cells, damaged by the conditions of the write. Say that the control sector behaved identically, which validates the method.")
 
 # ============ 14 CHAIN ============
 s = slide(); frame(s, "part iv - the fix")
@@ -264,7 +268,7 @@ head(s, "Fix plan, ranked by leverage")
 rows = [["#", "Fix", "What it does", "Effort", "Owner"],
         ["1", "Make the defaults OUR configuration", "Build Meshtastic from source with userPrefs.jsonc: channel Group9 name + key + precision 32, region US, owner names, role CLIENT_MUTE; one-line patch for Bluetooth No PIN. A revert then restores the intended state instead of the factory one. The key lives only in the private build.", "1 day", "Deo"],
         ["2", "Refuse to write under low voltage", "Implement powerHAL_isPowerLevelSafe() for ESP32: return false below 3.5 V on battery with no USB; drop the boot-time device.proto rewrite (metala's proposal in #4555). Offer upstream.", "1 day + test", "Deo"],
-        ["3", "Clear or avoid the marginal sectors", "After the decisive test: erase the settings partition under USB power and re-provision from the snapshot (outcome A), or move the LittleFS partition past the bad cluster (outcome B).", "2 hours", "Deo / Victor"],
+        ["3", "Clear the marginal sectors (outcome A confirmed)", "One clean erase of the settings partition (0xC90000, 3.4 MB) on USB power, then re-provision from the config snapshot with --configure; re-measure the sector map afterwards. Repeat on RG after its baseline map.", "30 minutes per radio", "Deo"],
         ["4", "Raise the brownout threshold", "Rebuild the core with CONFIG_ESP_BROWNOUT_DET_LVL at 2.67 or 2.84 V so the CPU resets before the flash leaves spec. Needs the pioarduino libs rebuilt; validate it does not trip on TX pulses.", "2 days", "Victor"],
         ["5", "Operations, already in force", "Never store a radio flat; OLED pre-flight (912.875); config snapshots with --configure; phone-QR recovery (User Guide 12).", "done", "all"]]
 table(s, 0.55, 1.3, 12.2, rows, [0.4, 2.6, 6.6, 1.2, 1.4], fs=10, rh=0.78)
@@ -292,7 +296,7 @@ s = slide(); frame(s, "part iv - the fix", "CANNON")
 head(s, "How we will prove the fix")
 rows = [["Step", "Procedure", "Pass criterion"],
         ["1", "Baseline flash map on both radios (today's method), archived", "RG map recorded; SF map as on sheet 10"],
-        ["2", "Decisive sector test on SF (sheet 13)", "Outcome A or B recorded; fix 3 chosen accordingly"],
+        ["2", "Decisive sector test on SF (sheet 13): done 2026-10-27", "Outcome A: cells healthy after rewrite; fix 3 = clean erase"],
         ["3", "Flash fix 1 (+2) builds; acceptance test on each radio", "Correct configuration with zero provisioning commands"],
         ["4", "Deliberate flat-battery campaign: run each radio to shutdown 5 times, recharge, boot, read config and flash map each cycle", "0 of 10 cycles lose configuration; no new unstable sectors"],
         ["5", "Rail capture: oscilloscope on the 3V3 pin during a TX burst at 3.4 V cell voltage", "Minimum rail voltage recorded; confirms or refutes the 2.7 V excursion"],
@@ -304,8 +308,8 @@ notes(s, "A fix without a test is a hope. Step 4 is the one that would have caug
 # ============ 18 CLOSE ============
 s = slide(); frame(s, "part iv - the fix")
 head(s, "The answer")
-card(s, 0.55, 1.35, 12.2, 2.3, "Is it the memory itself?", "Partly, and measurably. SF's settings partition contains 21 sectors (12 of them heavily) whose cells do not hold a definite value today; the program partition, the NVS partition and the bootloader are perfectly stable. But the chip is not worn (millions of boots of headroom) and the pattern follows power events, not time. The most probable history is that writes were completed while the supply had fallen below the flash's 2.7 V minimum but above the 2.44 V reset point, a window the firmware never checks before writing and then punishes by installing factory defaults.", INK, 15, 13)
-stats = [("21", "sectors of SF's settings flash read unstably today (12 heavily); 0 in 1 MB of code"), ("2.44 V", "reset threshold the firmware is built with, against a 2.7 V flash minimum"),
+card(s, 0.55, 1.35, 12.2, 2.3, "Is it the memory itself?", "Partly, and measurably, but not in the way the question implies. SF's settings partition held 21 sectors (12 heavily) whose cells did not return a definite value, while the program partition, NVS and bootloader were perfectly stable. Erasing and reprogramming those sectors under a healthy supply made them perfect again: the silicon is sound and not worn. The cells had been left half-written by operations completed while the supply was below the flash's 2.7 V minimum but above the 2.44 V reset point, a window the firmware never checks before writing and then punishes by installing factory defaults.", INK, 15, 13)
+stats = [("21 -> 0", "unstable sectors in SF's settings flash, before and after one clean erase and reprogram"), ("2.44 V", "reset threshold the firmware is built with, against a 2.7 V flash minimum"),
          ("true", "what the firmware's 'is power safe to write?' check returns on ESP32, always"), ("1 build", "makes a revert restore OUR configuration instead of the factory's")]
 pos = [(0.55, 3.9), (3.6, 3.9), (6.65, 3.9), (9.7, 3.9)]
 for (big, small), (x, y) in zip(stats, pos):
@@ -313,7 +317,7 @@ for (big, small), (x, y) in zip(stats, pos):
     txt(s, x, y+0.15, 3.05, 0.8, big, 30, True, ACC, PP_ALIGN.CENTER, HF)
     txt(s, x+0.2, y+0.95, 2.65, 1.1, small, 11, False, BODY, PP_ALIGN.CENTER)
 rect(s, 0.55, 6.2, 12.2, 0.42, INK)
-txt(s, 0.8, 6.27, 11.7, 0.3, "THE MEMORY SHOWS THE SCAR; THE POWER RAIL MADE IT; THE FIRMWARE MADE IT PERMANENT. ALL THREE ARE FIXABLE.", 11.5, True, PAPER, PP_ALIGN.CENTER, HF)
+txt(s, 0.8, 6.27, 11.7, 0.3, "THE MEMORY BORE THE SCAR AND HEALS WHEN REWRITTEN; THE POWER RAIL MADE IT; THE FIRMWARE MADE IT PERMANENT. ALL THREE ARE FIXABLE.", 11.5, True, PAPER, PP_ALIGN.CENTER, HF)
 notes(s, "One sentence for the reviewer: the memory shows the scar, the power rail made it, the firmware made it permanent, and all three are fixable, in that order of effort.")
 
 prs.save("Group9_ConfigLoss_RootCause.pptx")

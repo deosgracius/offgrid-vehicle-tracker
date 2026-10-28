@@ -1,0 +1,95 @@
+{
+ "57": {
+  "as_found_stable": false,
+  "as_found_disagreeing_bytes": 27,
+  "steps": [
+   {
+    "pattern": "erase",
+    "mismatched_bytes_vs_written": 0,
+    "bytes_varying_between_reads": 0
+   },
+   {
+    "pattern": "0x00",
+    "mismatched_bytes_vs_written": 0,
+    "bytes_varying_between_reads": 0
+   },
+   {
+    "pattern": "A5/5A",
+    "mismatched_bytes_vs_written": 0,
+    "bytes_varying_between_reads": 0
+   },
+   {
+    "pattern": "random",
+    "mismatched_bytes_vs_written": 0,
+    "bytes_varying_between_reads": 0
+   },
+   {
+    "pattern": "erase",
+    "mismatched_bytes_vs_written": 0,
+    "bytes_varying_between_reads": 0
+   }
+  ]
+ },
+ "31": {
+  "as_found_stable": false,
+  "as_found_disagreeing_bytes": 20,
+  "steps": [
+   {
+    "pattern": "erase",
+    "mismatched_bytes_vs_written": 0,
+    "bytes_varying_between_reads": 0
+   },
+   {
+    "pattern": "0x00",
+    "mismatched_bytes_vs_written": 0,
+    "bytes_varying_between_reads": 0
+   },
+   {
+    "pattern": "A5/5A",
+    "mismatched_bytes_vs_written": 0,
+    "bytes_varying_between_reads": 0
+   },
+   {
+    "pattern": "random",
+    "mismatched_bytes_vs_written": 0,
+    "bytes_varying_between_reads": 0
+   },
+   {
+    "pattern": "erase",
+    "mismatched_bytes_vs_written": 0,
+    "bytes_varying_between_reads": 0
+   }
+  ]
+ },
+ "200": {
+  "as_found_stable": true,
+  "as_found_disagreeing_bytes": 0,
+  "steps": [
+   {
+    "pattern": "erase",
+    "mismatched_bytes_vs_written": 0,
+    "bytes_varying_between_reads": 0
+   },
+   {
+    "pattern": "0x00",
+    "mismatched_bytes_vs_written": 0,
+    "bytes_varying_between_reads": 0
+   },
+   {
+    "pattern": "A5/5A",
+    "mismatched_bytes_vs_written": 0,
+    "bytes_varying_between_reads": 0
+   },
+   {
+    "pattern": "random",
+    "mismatched_bytes_vs_written": 0,
+    "bytes_varying_between_reads": 0
+   },
+   {
+    "pattern": "erase",
+    "mismatched_bytes_vs_written": 0,
+    "bytes_varying_between_reads": 0
+   }
+  ]
+ }
+}
