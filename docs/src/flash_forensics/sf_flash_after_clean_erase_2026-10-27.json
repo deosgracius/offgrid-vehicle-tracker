@@ -1,0 +1,11 @@
+{
+ "radio": "SF",
+ "date": "2026-10-27",
+ "after": "clean erase of 0xC90000..0xFF0000 on USB power, firmware re-formatted LittleFS, re-provisioned with --configure hardware/sf-config.yaml",
+ "differing_bytes": {
+  "read1_vs_read2": 0,
+  "read2_vs_read3": 0
+ },
+ "unstable_sectors": [],
+ "sectors_with_data": 5
+}
