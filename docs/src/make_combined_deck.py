@@ -17,7 +17,7 @@ PINK = RGBColor(0xFF,0x9A,0xA8)
 M = {"DEO": RGBColor(0x11,0x99,0xBD), "JOSIAH": RGBColor(0x6D,0x4B,0xDB),
      "VICTOR": RGBColor(0xE5,0x8E,0x1A), "CANNON": RGBColor(0xD9,0x48,0x8C)}
 HF, BF, MONO = "Cambria", "Cambria", "Courier New"
-DATE = "2026-10-28"; REV = "REV D"; A = "deck_assets/"
+DATE = "2026-11-04"; REV = "REV D"; A = "deck_assets/"
 
 prs = Presentation(); prs.slide_width = Inches(13.333); prs.slide_height = Inches(7.5)
 blank = prs.slide_layouts[6]
@@ -120,7 +120,7 @@ s = slide(); gridpaper(s); frame(s, "tests, failures, root cause")
 txt(s, 0.7, 1.0, 11.9, 0.9, "WHAT BROKE, AND WHAT IT TAUGHT US", 34, True, INK, PP_ALIGN.LEFT, HF, spc=300)
 txt(s, 0.72, 1.92, 11.9, 0.45, "THE TEST AND FAILURE RECORD, AND THE ONE FAILURE WE CHASED TO THE SILICON", 16, True, ACC, PP_ALIGN.LEFT, HF, spc=100)
 txt(s, 0.72, 2.55, 8.0, 1.3, "Part I: ten root-caused failures and seven test campaigns, each with the rule or feature it left behind. Part II: the battery-death configuration loss, investigated to the flash cells with measurements on both radios, repaired, and fixed at the root.", 13, False, BODY)
-txt(s, 8.3, 4.0, 4.3, 2.6, "Deo Grace Mwala\nJosiah Horn\nVictor Okwonna\nCannon Thomas\n\nSponsor: Dr. Richard Gale\nOctober 2026", 13, False, BODY, PP_ALIGN.LEFT, MONO)
+txt(s, 8.3, 4.0, 4.3, 2.6, "Deo Grace Mwala\nJosiah Horn\nVictor Okwonna\nCannon Thomas\n\nSponsor: Dr. Richard Gale\n4 November 2026", 13, False, BODY, PP_ALIGN.LEFT, MONO)
 notes(s, "Two parts, one arc: the record of what broke, then the deepest dive we made into the failure that kept returning.")
 
 # ============ 2 WHY FAILURES + THE CATALOG ============
