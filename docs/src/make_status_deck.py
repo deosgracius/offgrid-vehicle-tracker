@@ -1,75 +1,109 @@
-# Short status deck for 28 October 2026: New Mexico rained out; what the weekend went into instead.
-# Reuses the drawing helpers of make_combined_deck.py. Run from docs/src.
+# Status deck for 28 October 2026, nine sheets, written to be presented by a teammate without the author.
+# One idea per sheet, short text, and a spoken script in every sheet's notes. Run from docs/src.
 src = open("make_combined_deck.py", encoding="utf-8").read()
 exec(src[:src.index("# ============ 1 TITLE")])
-DATE = "2026-10-28"; REV = "STATUS"; TOTAL = 6
+DATE = "2026-10-28"; REV = "STATUS"; TOTAL = 9
 
 # 1 title
 s = slide(); gridpaper(s); frame(s, "status update")
 txt(s, 0.7, 1.0, 11.9, 0.9, "STATUS, 28 OCTOBER", 34, True, INK, PP_ALIGN.LEFT, HF, spc=300)
-txt(s, 0.72, 1.92, 11.9, 0.45, "NEW MEXICO RAINED OUT; THE WEEKEND WENT INTO THE RADIOS INSTEAD", 16, True, ACC, PP_ALIGN.LEFT, HF, spc=100)
-txt(s, 0.72, 2.55, 8.0, 1.3, "The maximum-range drive was cancelled by weather. In its place: the battery-death configuration loss was traced to the flash cells and measured on both radios, SF was repaired, and a firmware build that makes the failure harmless is now on both radios. Full root-cause presentation on 4 November.", 13, False, BODY)
+txt(s, 0.72, 1.92, 11.9, 0.45, "THE ROOF-TOP ANTENNA DRIVE, THE WEATHER, AND WHAT WE DID INSTEAD", 16, True, ACC, PP_ALIGN.LEFT, HF, spc=100)
+txt(s, 0.72, 2.55, 8.0, 1.5, "We went to New Mexico to measure the radios' maximum range with the antenna on the roof of the car. A flash flood warning stopped the drive. The weekend went into the radios instead: the settings-loss problem was traced to its cause, and a fix is now on both radios.", 14, False, BODY)
 txt(s, 8.3, 4.0, 4.3, 2.6, "Deo Grace Mwala\nJosiah Horn\nVictor Okwonna\nCannon Thomas\n\nSponsor: Dr. Richard Gale\n28 October 2026", 13, False, BODY, PP_ALIGN.LEFT, MONO)
-notes(s, "Five minutes. One cancelled test, one investigation, one fix, one plan.")
+notes(s, "SAY: This is a short status update. Three things: the range test we planned in New Mexico, why it did not run, and what the team did with the weekend instead. About five minutes.")
 
-# 2 NM cancelled
-s = slide(); frame(s, "status update", "CANNON")
-head(s, "New Mexico: on site, then cancelled by weather", "25 October, below the Capitan Mountains: the maximum-range geometry we have not measured")
+# 2 the plan
+s = slide(); frame(s, "status update")
+head(s, "The plan: a roof-top antenna range drive", "The one range number we still do not have")
+pic(s, "g_onset4.png", 0.55, 1.4, 6.6)
+card(s, 7.4, 1.4, 5.4, 2.45, "The idea", ["Put the radio's antenna on the roof of the car instead of inside it", "Drive two cars apart on open road with no hills in between", "Record the distance where the display says LINK LOST"], INK, 14, 13)
+card(s, 7.4, 4.05, 5.4, 2.45, "Why it matters", ["Every range we have so far was limited by terrain or buildings: 0.5 mi in town, 3.75 mi on a farm road, 4.7 mi from a canyon rim", "Open country with a roof antenna gives the true maximum of the hardware"], ACC, 14, 13)
+notes(s, "SAY: The chart shows the range we have measured so far, in four kinds of terrain. All of them were limited by what was in the way: buildings, hills, canyon walls. The plan for New Mexico was to remove those limits: antenna on the roof, open flat country, drive apart until the link drops. That gives the true maximum of the radios, which we still do not have.")
+
+# 3 on site
+s = slide(); frame(s, "status update")
+head(s, "On site, 25 October: cancelled by weather", "Below the Capitan Mountains, north of Capitan, New Mexico")
 pic(s, "g_nm_cancel.png", 0.55, 1.35, 8.4)
 pic(s, "g_nm_alert.jpg", 9.15, 1.55, 3.65)
-txt(s, 9.15, 2.95, 3.65, 1.3, "NATIONAL WEATHER SERVICE, 25 OCTOBER: FLASH FLOOD WARNING FOR THE AREA UNTIL 9:15 PM MDT. \"DO NOT ATTEMPT TO TRAVEL.\"", 9.5, True, RED, PP_ALIGN.LEFT, MONO)
-card(s, 0.55, 4.65, 3.95, 1.95, "What it would have measured", ["Open country with no terrain in the path: the true maximum of the radios", "Measured so far: 0.5 mi in town, 3.75 mi on a farm road, 4.7 mi from the canyon rim"], INK, 12.5, 11)
-card(s, 4.675, 4.65, 3.95, 1.95, "What happened on site", ["Flash flood warning from the National Weather Service for the area, 'do not attempt to travel'", "Low cloud on the peaks, rain moving in; the pre-flight (both OLEDs 912.875) was done, the drive was not started"], RED, 12.5, 11)
-card(s, 8.8, 4.65, 3.95, 1.95, "Reschedule", ["Next clear weekend, same site and plan: two cars, radios on the roofs, drive apart until LINK LOST, log the last packet", "Both radios now carry fix 1 (sheet 4), so a flat battery on the way cannot cost the test"], GREEN, 12.5, 11)
-notes(s, "The team was on site. Say that first: the test was not skipped, it was stopped by a flash flood warning, which is a travel ban, not a judgment call. Rescheduled, not dropped, and the radios are in better shape for it than they were on the 25th.")
+txt(s, 9.15, 2.95, 3.65, 1.4, "NATIONAL WEATHER SERVICE: FLASH FLOOD WARNING FOR THE AREA UNTIL 9:15 PM MDT. \"DO NOT ATTEMPT TO TRAVEL.\"", 10, True, RED, PP_ALIGN.LEFT, MONO)
+card(s, 0.55, 4.65, 12.25, 1.95, "What happened", ["The team was on site with both radios checked and ready (both screens read 912.875 MHz)", "Low cloud sat on the peaks and rain was moving in", "A National Weather Service flash flood warning covered the area: a travel ban, not a judgment call. The drive was not started"], RED, 14, 13)
+notes(s, "SAY: We were there. The map shows where, just below the Capitan Mountains. The photos show the cloud on the peaks and the road we were on. Then the phone alert on the right: a flash flood warning, do not attempt to travel. That is a travel ban, so the drive was not started. The test is rescheduled, not dropped. Next sheet.")
 
-# 3 what the weekend went into
-s = slide(); frame(s, "status update", "DEO")
-head(s, "The weekend instead: why the radios forget", "A Qualcomm engineer asked whether the memory itself was at fault. We measured it.")
+# 4 reschedule
+s = slide(); frame(s, "status update")
+head(s, "Rescheduled: same test, next clear weekend")
+steps = [("1", "Pick a clear day", "Check the forecast the day before; no warnings, no rain"),
+         ("2", "Pre-flight", "Both radio screens must read 912.875 MHz; both displays show the link"),
+         ("3", "Antennas on the roofs", "One radio per car, antenna mounted on the roof, display on the dash"),
+         ("4", "Drive apart", "Open road, no hills between the cars, until the display says LINK LOST"),
+         ("5", "Record", "Note the distance of the last packet and the distance where the link came back")]
+y = 1.4
+for n, t, d in steps:
+    rect(s, 0.55, y, 0.7, 0.85, INK); txt(s, 0.55, y+0.18, 0.7, 0.5, n, 22, True, PAPER, PP_ALIGN.CENTER, HF)
+    rect(s, 1.25, y, 11.5, 0.85, CARD, RULE, 1.0)
+    txt(s, 1.45, y+0.1, 3.2, 0.4, t.upper(), 13, True, INK, PP_ALIGN.LEFT, HF, spc=100)
+    txt(s, 4.7, y+0.22, 7.9, 0.5, d, 13, False, BODY)
+    y += 1.0
+txt(s, 0.55, 6.45, 12.2, 0.4, "Both radios now carry the fix on sheet 6, so a flat battery on the drive out cannot cost the test.", 12, False, MUT, PP_ALIGN.LEFT, BF, italic=True)
+notes(s, "SAY: Same site, same plan, five steps. Nothing new has to be built for it. The one change since the 25th is that both radios now have a firmware fix, which I will get to, so even a dead battery on the way cannot lose the radio settings and cost us the day.")
+
+# 5 the problem
+s = slide(); frame(s, "status update")
+head(s, "Meanwhile: why the radios forget", "A Qualcomm engineer asked whether the memory itself was at fault. We measured it.")
 pic(s, "g_maps_compare.png", 0.55, 1.4, 8.6)
-card(s, 9.35, 1.4, 3.45, 2.5, "The measurement", ["Settings area of the flash read three times with the firmware stopped, on both radios", "SF: 21 sectors gave different bytes on every pass", "RG: zero", "Program code, read the same way: zero differences"], ACC, 12.5, 10.5)
-card(s, 9.35, 4.05, 3.45, 2.45, "The answer", ["The cells are healthy: erased and rewritten on a good supply they held every pattern", "They were left half-written when the firmware wrote to flash while the battery sagged below the chip's 2.7 V minimum", "The firmware then overwrites any unreadable file with factory settings"], GREEN, 12.5, 10.5)
-txt(s, 0.55, 4.05, 8.6, 0.9, "Each square is one 4 KB sector. Red: read differently every time with nothing running. Green: the live settings files. SF was repaired the same day (21 to 0 unstable sectors). The full chain of evidence, the firmware source, the datasheets and the upstream reports are the 4 November presentation.", 11.5, False, BODY)
-stat(s, 0.55, 5.1, 2.7, 1.35, "21 -> 0", "unstable sectors on SF, before and after repair", RED, 22)
-stat(s, 3.5, 5.1, 2.7, 1.35, "0", "unstable sectors on RG", GREEN, 22)
-stat(s, 6.45, 5.1, 2.7, 1.35, "260 mV", "gap between CPU reset (2.44 V) and flash minimum (2.70 V)", ACC, 22)
-notes(s, "Keep this to the headline. The hypothesis came from a Qualcomm engineer; the experiment design and scripts were drafted with an AI assistant; every measurement was run by us on our radios, with the records in the repository. Details next week.")
+card(s, 9.35, 1.4, 3.45, 4.95, "In plain words", ["Three times this semester a radio came back from a flat battery with its settings gone", "We read the settings area of the memory chip three times in a row, with nothing running", "SF: 21 spots gave different answers each time (red). RG: none", "Rewriting those spots on a good power supply made them perfect. The chip is healthy", "The cause: the radio writes to memory while the battery is sagging below what the chip needs"], ACC, 14, 12.5)
+txt(s, 0.55, 4.15, 8.6, 1.1, "Each square is a 4 KB block of the settings area. Red blocks read differently on every pass. Green blocks held the live settings that day. SF was repaired the same day: 21 red blocks to 0. The full evidence is a separate 20-sheet presentation, ready in the repository.", 12.5, False, BODY)
+stat(s, 0.55, 5.55, 4.15, 1.05, "21 -> 0", "bad blocks on SF, before and after the repair", RED, 20)
+stat(s, 5.0, 5.55, 4.15, 1.05, "0", "bad blocks on RG", GREEN, 20)
+notes(s, "SAY: While the weather stopped the drive, the weekend went into a problem that has hit us three times: a radio runs its battery flat and comes back with its settings gone. An engineer at Qualcomm suggested the memory chip itself might be bad, so we measured it. Left picture is radio SF: the red blocks gave a different answer every time we read them. Right is radio RG: clean. Rewriting the red blocks fixed them, so the chip is fine; it was written while the battery was too low. That is the cause. The full evidence is a separate presentation.")
 
-# 4 fix 1 deployed
-s = slide(); frame(s, "status update", "DEO")
-head(s, "Fix 1 is on both radios", "Built 27 October, flashed and accepted 28 October")
-card(s, 0.55, 1.4, 6.0, 2.6, "What it is", "Meshtastic rebuilt from source so that its factory settings are our settings: Group9 at 912.875 MHz, No PIN, CLIENT_MUTE, named SF or RG, our GPS cadence. When the firmware falls back to defaults after a bad write, the defaults are now right. The key is compiled into a binary that never leaves the private repository.", GREEN, 13.5, 12)
-card(s, 6.75, 1.4, 6.05, 2.6, "Acceptance test, both radios", ["Flash, then send a factory reset, then read back with zero provisioning", "SF came back as SF and RG as RG: Group9 with the 32-byte key, precision 32, No PIN, CLIENT_MUTE, US LONG_FAST", "The snapshot then restored the 21 presets, the smart-broadcast minimums and the original key pair", "Both OLEDs read 912.875 before they were unplugged"], INK, 13.5, 11.5)
-stat(s, 0.55, 4.25, 3.95, 1.3, "2 / 2", "radios flashed and accepted", GREEN, 26)
-stat(s, 4.675, 4.25, 3.95, 1.3, "0", "commands needed after a future revert", GREEN, 26)
-stat(s, 8.8, 4.25, 3.95, 1.3, "90 s", "to restore presets and minimums from the snapshot", ACC, 26)
-card(s, 0.55, 5.75, 12.25, 0.8, "Also in force", "Pre-flight: both OLEDs read 912.875. Config snapshot per radio. Phone-app QR recovery when no laptop is at hand (User Guide 12). Never store a radio flat.", MUT, 12.5, 11.5)
-notes(s, "This is the deliverable of the week: a configuration loss is now invisible to the driver.")
+# 6 the fix
+s = slide(); frame(s, "status update")
+head(s, "The fix is on both radios", "Built 27 October, flashed and tested 28 October")
+card(s, 0.55, 1.4, 6.0, 2.7, "What it is", "The radio firmware was rebuilt so that its factory settings ARE our settings: our channel, our frequency, no PIN, our names. If the radio ever loses its settings again, it falls back to the right ones by itself.", GREEN, 14, 13.5)
+card(s, 6.75, 1.4, 6.05, 2.7, "How it was tested", ["Flash the radio, then order a factory reset", "The radio came back on Group9 at 912.875 MHz with the right name and no PIN, with nobody touching it", "Done on both SF and RG; both screens read 912.875 before they were unplugged"], INK, 14, 13)
+stat(s, 0.55, 4.35, 3.95, 1.35, "2 / 2", "radios flashed and tested", GREEN, 28)
+stat(s, 4.675, 4.35, 3.95, 1.35, "0", "commands needed if a radio forgets again", GREEN, 28)
+stat(s, 8.8, 4.35, 3.95, 1.35, "912.875", "MHz on both screens, the pre-flight check", ACC, 28)
+txt(s, 0.55, 5.95, 12.2, 0.6, "Still in force: check both screens read 912.875 before any drive; never store a radio with a flat battery.", 12, False, MUT, PP_ALIGN.LEFT, BF, italic=True)
+notes(s, "SAY: The fix is simple to explain. The radio software was rebuilt so that its factory settings are our settings. If it ever forgets again, it forgets back to the right values. We tested it by forcing a factory reset on both radios: each came back on our channel with the right name, with nobody touching it.")
 
-# 5 other deliverables
-s = slide(); frame(s, "status update", "JOSIAH")
-head(s, "Since the canyon: display and documents")
-cards = [("Display firmware", ["Headings as clock positions (12, 3, 6, 9), partner arrow kept", "Heading held while stopped; 'holding' when both cars are parked", "LINK LOST alarm when the radio drops", "Flashed to both displays; 13 of 13 native tests pass"], M["JOSIAH"]),
-         ("Bench observations", ["Two radios on one desk showed 0.21 mi apart: indoor GPS scatter of 100 to 400 m, not a link fault", "Both displays paired in under 8 s with every config write accepted", "Rule: judge a bench distance only with sky view"], ACC),
-         ("Documents", ["User Guide 12: restoring a radio that forgot its settings, phone and laptop paths", "Technical Manual 15 and 16: verification record and failure catalog updated through 28 October", "Presentation for 4 November: 20 sheets, built and in the repository"], INK)]
+# 7 display
+s = slide(); frame(s, "status update")
+head(s, "The display: what changed since the canyon")
+cards = [("Clock-face headings", "Directions are given as clock positions: 12 is straight ahead, 3 is to the right, 6 behind, 9 to the left. The partner arrow stays.", M["JOSIAH"]),
+         ("Holding", "When the car stops, the heading is held instead of spinning. When both cars are parked the screen says 'holding' instead of inventing a distance.", ACC),
+         ("LINK LOST", "If the display loses the radio, it says so in large letters. No silent failure.", RED)]
 x = 0.55
-for t, items, c in cards:
-    card(s, x, 1.4, 4.0, 3.0, t, items, c, 13.5, 11.5); x += 4.1
-pic(s, "g_lcddiag.png", 0.55, 4.6, 5.5)
-card(s, 6.25, 4.6, 6.55, 2.03, "The bench record behind the 0.21 mi", "Parsed from both displays' serial logs on 24 October: clean boots, pairing in under 8 s, correct node tables, and SF's indoor GPS fix wandering 100 to 400 m between packets with phantom speed. The displays were right; the fixes were wrong. Everything on this sheet is committed and pushed; nothing with the channel key is public.", MUT, 12.5, 11)
-notes(s, "One sheet for the rest of the team's output. The display changes were validated on the bench; the next drive validates them on the road.")
+for t, d, c in cards:
+    card(s, x, 1.4, 4.0, 2.2, t, d, c, 14, 13); x += 4.1
+card(s, 0.55, 3.85, 12.25, 1.5, "Bench finding", "Two radios on one desk once showed 0.21 miles apart. The displays were right; the GPS fixes were wrong, because indoors the receivers scatter by 100 to 400 m. Rule for anyone testing: judge a distance only with a clear view of the sky.", INK, 14, 13)
+txt(s, 0.55, 5.6, 12.2, 0.6, "Both displays were flashed on 24 October; 13 of 13 firmware tests pass. The bench record behind the 0.21 mi observation is in the Technical Manual, Section 15.", 12, False, MUT, PP_ALIGN.LEFT, BF, italic=True)
+notes(s, "SAY: Three changes on the display, all from the night drive and the canyon. Directions are clock positions, the screen says holding when both cars are parked, and it says LINK LOST if the radio drops. One bench lesson: indoors the GPS can be hundreds of metres off, so only trust distances outside.")
 
-# 6 next
+# 8 documents
+s = slide(); frame(s, "status update")
+head(s, "Documents and repository")
+rows = [["Document", "What is new", "Where"],
+        ["Device User Guide", "Section 12: restoring a radio that forgot its settings, with a phone and with a laptop", "docs/manuals/DEVICE_USER_GUIDE.pdf, 16 pages"],
+        ["Technical Manual", "Sections 15 and 16: the verification record and the failure catalog, updated through 28 October", "docs/manuals/TECHNICAL_MANUAL.pdf, 62 pages"],
+        ["Root-cause presentation", "Tests, failures and the memory investigation, 20 sheets", "docs/presentations/Group9_Presentation.pptx"],
+        ["Measurement records", "Every flash read and test from 27 October, reproducible", "docs/src/flash_forensics"]]
+table(s, 0.55, 1.4, 12.2, rows, [2.3, 5.5, 4.4], fs=12.5, rh=0.8)
+card(s, 0.55, 5.6, 12.2, 0.95, "Private", "The channel key, the radio configuration snapshots and the fixed firmware images stay in the private repository only.", MUT, 13, 12.5)
+notes(s, "SAY: Everything is written down and in the repository: how to recover a radio with a phone or a laptop, the full failure catalog, the measurement records, and the long presentation. The channel key never leaves the private repo.")
+
+# 9 next
 s = slide(); frame(s, "status update")
 head(s, "Next")
-rows = [["When", "What", "Pass criterion", "Owner"],
-        ["Next clear weekend", "New Mexico maximum-range drive, rescheduled", "Last packet distance logged; LINK LOST behaviour on the road", "Cannon, Victor"],
-        ["This week", "Flat-battery campaign: five full discharges per radio, config and flash map read after each", "0 of 10 cycles lose configuration; no new unstable sectors", "Deo"],
-        ["This week", "Oscilloscope on the 3V3 pin during a transmit burst at a 3.4 V cell", "Minimum rail voltage recorded", "Victor"],
-        ["4 November", "Full presentation: tests, failures, root cause", "20 sheets, 25 minutes", "All"]]
-table(s, 0.55, 1.4, 12.2, rows, [1.8, 5.0, 3.6, 1.8], fs=11.5, rh=0.7)
-card(s, 0.55, 5.1, 12.2, 1.4, "The ask", "Approve the flat-battery campaign before the next field test. It reproduces the exact conditions of all three battery incidents, with the flash read after every cycle, and it is the test that proves the fix rather than hoping for it.", GREEN, 13.5, 12.5)
-notes(s, "End on the ask.")
+rows = [["When", "What", "Done when", "Owner"],
+        ["Next clear weekend", "Roof-top antenna range drive, rescheduled (sheet 4)", "Last-packet distance recorded", "Cannon, Victor"],
+        ["This week", "Flat-battery test: run each radio flat five times, check settings and memory after each", "0 of 10 runs lose settings", "Deo"],
+        ["Next week", "Enclosure for the Waveshare LCD display", "Waterproof", "Josiah"],
+        ["This week", "Oscilloscope on the radio's 3.3 V supply during a transmit burst on a low battery", "Lowest voltage recorded", "Victor"]]
+table(s, 0.55, 1.4, 12.2, rows, [1.9, 5.5, 2.8, 2.0], fs=12.5, rh=0.8)
+card(s, 0.55, 5.6, 12.2, 1.0, "The ask", "Approve the flat-battery test before the next field drive. It repeats the exact conditions of all three failures and proves the fix instead of hoping for it.", GREEN, 13.5, 12.5)
+notes(s, "SAY: Four items. The range drive, rescheduled for the next clear weekend. The flat-battery test that proves the fix. Josiah's waterproof enclosure for the display, due next week. And a scope measurement on the radio's supply. The ask is to approve the flat-battery test before the next drive.")
 
 assert sheet_no[0] == TOTAL
 prs.save("../presentations/Group9_Status_2026-10-28.pptx")
