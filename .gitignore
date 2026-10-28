@@ -14,3 +14,7 @@ firmware-display/.pio/
 Thumbs.db
 .DS_Store
 node_modules/
+
+# private: channel key inside (fix 1 build inputs/outputs and config snapshots)
+hardware/fix1/
+hardware/*-config.yaml
