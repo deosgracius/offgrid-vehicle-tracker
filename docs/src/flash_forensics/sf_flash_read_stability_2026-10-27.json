@@ -1,0 +1,275 @@
+{
+ "radio": "SF 8C:FD:49:B5:EA:D4",
+ "date": "2026-10-27",
+ "flash": "Boya BY25Q128AS (JEDEC 68 40 18), 16 MB",
+ "partition": "spiffs/LittleFS 0xC90000 size 0x360000 (864 x 4 KB)",
+ "method": "esptool stub, single connection, three consecutive read_flash of the partition; controls: app0 first 1 MB x2, nvs x2, bootloader x2; 16 KB window x4 at 115200 and at 921600",
+ "sha256": [
+  "7e62687090cbcfd3c6e95a4abe427f0de87f11033d2ee3407a5844c8182d3a98",
+  "07befde7197a23cf0662d159ddc1da8840c67caf3536468b6a9ac625a5146261",
+  "7d51a8fbf27dc9b0f9b9cdce8d0f07ee29384ed7d6de3014015a029849c5ede6"
+ ],
+ "differing_bytes": {
+  "read1_vs_read2": 117,
+  "read2_vs_read3": 107
+ },
+ "unstable_sectors_read1_vs_read2": {
+  "30": 5,
+  "31": 10,
+  "35": 5,
+  "36": 11,
+  "51": 8,
+  "55": 2,
+  "56": 10,
+  "57": 24,
+  "65": 8,
+  "70": 7,
+  "71": 16,
+  "85": 3,
+  "424": 1,
+  "626": 1,
+  "674": 2,
+  "847": 4
+ },
+ "unstable_sectors_read2_vs_read3": {
+  "30": 4,
+  "31": 13,
+  "35": 7,
+  "36": 8,
+  "51": 5,
+  "55": 5,
+  "56": 10,
+  "57": 22,
+  "65": 2,
+  "70": 6,
+  "71": 11,
+  "85": 1,
+  "237": 1,
+  "418": 1,
+  "424": 2,
+  "674": 2,
+  "770": 1,
+  "834": 1,
+  "846": 2,
+  "847": 3
+ },
+ "sample_differences_read1_vs_read2": [
+  {
+   "offset": "0x1e087",
+   "read1": "0xcd",
+   "read2": "0xcf"
+  },
+  {
+   "offset": "0x1e11f",
+   "read1": "0x2",
+   "read2": "0x0"
+  },
+  {
+   "offset": "0x1e1b7",
+   "read1": "0x10",
+   "read2": "0x0"
+  },
+  {
+   "offset": "0x1e225",
+   "read1": "0x0",
+   "read2": "0x10"
+  },
+  {
+   "offset": "0x1e2c4",
+   "read1": "0x32",
+   "read2": "0x12"
+  },
+  {
+   "offset": "0x1f096",
+   "read1": "0x0",
+   "read2": "0x20"
+  },
+  {
+   "offset": "0x1f1b7",
+   "read1": "0x2",
+   "read2": "0x0"
+  },
+  {
+   "offset": "0x1f26f",
+   "read1": "0x0",
+   "read2": "0x8"
+  },
+  {
+   "offset": "0x1f354",
+   "read1": "0x80",
+   "read2": "0x0"
+  },
+  {
+   "offset": "0x1f409",
+   "read1": "0x1",
+   "read2": "0x0"
+  },
+  {
+   "offset": "0x1f43a",
+   "read1": "0x0",
+   "read2": "0x40"
+  },
+  {
+   "offset": "0x1f442",
+   "read1": "0x0",
+   "read2": "0x4"
+  },
+  {
+   "offset": "0x1f451",
+   "read1": "0x40",
+   "read2": "0x0"
+  },
+  {
+   "offset": "0x1f464",
+   "read1": "0x40",
+   "read2": "0x0"
+  },
+  {
+   "offset": "0x1f4c6",
+   "read1": "0x20",
+   "read2": "0x0"
+  },
+  {
+   "offset": "0x23115",
+   "read1": "0x0",
+   "read2": "0x1"
+  },
+  {
+   "offset": "0x23165",
+   "read1": "0x0",
+   "read2": "0x20"
+  },
+  {
+   "offset": "0x23180",
+   "read1": "0x12",
+   "read2": "0x1a"
+  },
+  {
+   "offset": "0x23198",
+   "read1": "0x12",
+   "read2": "0x92"
+  },
+  {
+   "offset": "0x231fe",
+   "read1": "0x12",
+   "read2": "0x13"
+  },
+  {
+   "offset": "0x24036",
+   "read1": "0x0",
+   "read2": "0x10"
+  },
+  {
+   "offset": "0x240ca",
+   "read1": "0x0",
+   "read2": "0x2"
+  },
+  {
+   "offset": "0x240ec",
+   "read1": "0x40",
+   "read2": "0x0"
+  },
+  {
+   "offset": "0x24286",
+   "read1": "0x0",
+   "read2": "0x10"
+  },
+  {
+   "offset": "0x24350",
+   "read1": "0x20",
+   "read2": "0x0"
+  },
+  {
+   "offset": "0x2441d",
+   "read1": "0x0",
+   "read2": "0x8"
+  },
+  {
+   "offset": "0x24439",
+   "read1": "0x40",
+   "read2": "0x0"
+  },
+  {
+   "offset": "0x24443",
+   "read1": "0x4",
+   "read2": "0x6"
+  },
+  {
+   "offset": "0x24469",
+   "read1": "0x80",
+   "read2": "0x0"
+  },
+  {
+   "offset": "0x24513",
+   "read1": "0x10",
+   "read2": "0x0"
+  },
+  {
+   "offset": "0x2457b",
+   "read1": "0x0",
+   "read2": "0x10"
+  },
+  {
+   "offset": "0x3311a",
+   "read1": "0x40",
+   "read2": "0x0"
+  },
+  {
+   "offset": "0x3311e",
+   "read1": "0x1",
+   "read2": "0x0"
+  },
+  {
+   "offset": "0x3316c",
+   "read1": "0x0",
+   "read2": "0x10"
+  },
+  {
+   "offset": "0x33176",
+   "read1": "0x0",
+   "read2": "0x80"
+  },
+  {
+   "offset": "0x3318a",
+   "read1": "0x84",
+   "read2": "0x80"
+  },
+  {
+   "offset": "0x3320a",
+   "read1": "0x10",
+   "read2": "0x0"
+  },
+  {
+   "offset": "0x3323e",
+   "read1": "0x80",
+   "read2": "0x0"
+  },
+  {
+   "offset": "0x3326b",
+   "read1": "0x32",
+   "read2": "0x12"
+  },
+  {
+   "offset": "0x37075",
+   "read1": "0x74",
+   "read2": "0x7c"
+  }
+ ],
+ "controls": {
+  "app0_first_1MB_two_reads_identical": true,
+  "nvs_two_reads_identical": true,
+  "bootloader_two_reads_identical": true,
+  "16KB_window_x4_at_115200_identical": false,
+  "16KB_window_x4_at_921600_identical": false
+ },
+ "live_file_sectors": {
+  "config.proto": 25,
+  "channels.proto": 25,
+  "module.proto": 25,
+  "cannedConf.proto": 25,
+  "device.proto": 26,
+  "nodes.proto": 470
+ },
+ "littlefs": "mounts clean (littlefs-python 0.19); all six /prefs files decode; configuration correct (Group9, 32-byte key, precision 32, CLIENT_MUTE, NO_PIN, 60/10/20/10)",
+ "pending": "erase/program/re-read test of sectors 57 and 31 (control 200) not executed: awaiting sign-off; same read-stability test on RG"
+}
