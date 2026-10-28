@@ -329,17 +329,17 @@ notes(s, "Read the chain left to right in plain words: the battery goes flat; on
 
 # ============ 18 THE FIX ============
 s = slide(); frame(s, "part ii - root cause", "DEO")
-head(s, "The fix: plan and proof", "Ranked by leverage; fix 1 is built, flashed and proven on SF")
+head(s, "The fix: plan and proof", "Ranked by leverage; fix 1 is built, flashed and proven on both radios")
 rows = [["#", "Fix", "Effect", "Status"],
-        ["1", "Rebuild Meshtastic with our configuration compiled in as its factory defaults (userPrefs.jsonc + one-line NO_PIN patch)", "A revert now restores OUR settings; the failure becomes invisible to the driver", "SF flashed and accepted Oct 28; RG next"],
+        ["1", "Rebuild Meshtastic with our configuration compiled in as its factory defaults (userPrefs.jsonc + one-line NO_PIN patch)", "A revert now restores OUR settings; the failure becomes invisible to the driver", "Both radios flashed and accepted Oct 28"],
         ["2", "ESP32 power gate: refuse saves below 3.5 V on battery; drop the boot-time rewrite", "Removes the write that happens at the worst moment", "Next: ten-line patch, to offer upstream"],
         ["3", "Clean erase and re-provision of a scarred settings area", "Removes residue already present", "Done on SF; RG clean"],
         ["4", "Raise the brownout reset to 2.67 or 2.84 V (core rebuild)", "The CPU resets before the flash leaves spec", "Planned"],
         ["5", "Operations: never store flat; OLED pre-flight; snapshots; phone-QR recovery", "Detection in 2 s, recovery in 90 s", "In force"]]
 table(s, 0.55, 1.35, 12.2, rows, [0.4, 5.5, 3.9, 2.4], fs=10.5, rh=0.52)
 card(s, 0.55, 4.6, 6.0, 2.05, "Fix 1 in plain words", "Meshtastic ships with factory settings: public channel, random PIN, no name. We rebuilt it from source so that ITS factory settings are OUR settings: Group9 at 912.875 MHz, No PIN, CLIENT_MUTE, named SF or RG, our GPS cadence. The firmware's failure path still 'resets to defaults', but the defaults are now right. The key is compiled into a binary that never leaves the private repository.", GREEN, 12.5, 11)
-card(s, 6.75, 4.6, 6.05, 2.05, "Proven on SF, 28 October", ["Flashed the fix-1 image, sent meshtastic --factory-reset: the radio came back as SF, Group9 with its 32-byte key, precision 32, No PIN, CLIENT_MUTE, US LONG_FAST, with zero provisioning", "Only the smart-broadcast minimums and the 21 canned presets need the snapshot, which also restores the node key pair", "Next proof: five flat-battery cycles per radio with the flash map read after each; a scope on the 3V3 rail during a transmit burst"], INK, 12.5, 10.5)
-notes(s, "Fix 1 is the community's own answer to #4555 and costs one build per radio: build Meshtastic from source with a userPrefs.jsonc that names our channel, key, region, role, owner names, cadence, plus a one-line patch so the default Bluetooth mode is No PIN. Acceptance on SF, 28 October: after a factory reset the radio was already configured; the snapshot then restored the smart-broadcast minimums (10 s / 20 m), the 21 presets and the original key pair. The ask: approve the flat-battery campaign before the next field test. Fix 2 removes the cause; fix 3 cleans up the past; fix 4 is the hardware-correct answer and the most work.")
+card(s, 6.75, 4.6, 6.05, 2.05, "Proven on both radios, 28 October", ["Flashed each radio's fix-1 image, sent meshtastic --factory-reset: SF came back as SF and RG as RG, Group9 with the 32-byte key, precision 32, No PIN, CLIENT_MUTE, US LONG_FAST, with zero provisioning", "Only the smart-broadcast minimums and the 21 canned presets need the snapshot, which also restores the node key pair", "Next proof: five flat-battery cycles per radio with the flash map read after each; a scope on the 3V3 rail during a transmit burst"], INK, 12.5, 10.5)
+notes(s, "Fix 1 is the community's own answer to #4555 and costs one build per radio: build Meshtastic from source with a userPrefs.jsonc that names our channel, key, region, role, owner names, cadence, plus a one-line patch so the default Bluetooth mode is No PIN. Acceptance on SF and RG, 28 October: after a factory reset each radio was already configured; the snapshot then restored the smart-broadcast minimums (10 s / 20 m), the 21 presets and the original key pair. The ask: approve the flat-battery campaign before the next field test. Fix 2 removes the cause; fix 3 cleans up the past; fix 4 is the hardware-correct answer and the most work.")
 
 # ============ 19 REFERENCES AND ATTRIBUTION ============
 s = slide(); frame(s, "part ii - root cause")
@@ -362,13 +362,13 @@ head(s, "The answer, and what the failures bought")
 card(s, 0.55, 1.45, 12.2, 1.55, "Is it the memory itself?", "Partly, and measurably, but not as the question implies. SF's settings flash carried 21 sectors that would not hold a value; rewritten under a healthy supply they became perfect. The cells had been left half-written below the flash's 2.7 V minimum but above the 2.44 V reset point, a window the firmware never checks and then punishes with factory defaults.", INK, 15, 13)
 stats = [("10", "root-caused failures, each with a written signature and recovery"), ("21 -> 0", "unstable flash sectors on SF; RG clean at 0"),
          ("0", "reflashes ever needed for a configuration failure"), ("90 s", "to recover a reverted radio; 2 s to detect one"),
-         ("4.7 mi", "measured reach; honest envelope 0.5 to 4.7 mi by terrain"), ("1 build", "makes a future revert restore OUR configuration: proven on SF")]
+         ("4.7 mi", "measured reach; honest envelope 0.5 to 4.7 mi by terrain"), ("1 build", "makes a future revert restore OUR configuration: proven on both radios")]
 pos = [(0.55, 3.25), (4.65, 3.25), (8.75, 3.25), (0.55, 4.75), (4.65, 4.75), (8.75, 4.75)]
 for (big, small), (x, y) in zip(stats, pos):
     stat(s, x, y, 4.0, 1.35, big, small, ACC, 24)
 rect(s, 0.55, 6.25, 12.2, 0.42, INK)
 txt(s, 0.8, 6.31, 11.7, 0.3, "EVERY FAILURE BECAME A RULE; THE WORST ONE BECAME A MEASUREMENT, A REPAIR, AND A FIX.", 11.5, True, PAPER, PP_ALIGN.CENTER, HF)
-notes(s, "Close on the bar. Then the ask: fix 1 is proven on SF; approve the flat-battery campaign that proves it on both radios before the next field test.")
+notes(s, "Close on the bar. Then the ask: fix 1 is proven on both radios; approve the flat-battery campaign before the next field test.")
 
 assert sheet_no[0] == TOTAL, sheet_no[0]
 prs.save("../presentations/Group9_Presentation.pptx")
