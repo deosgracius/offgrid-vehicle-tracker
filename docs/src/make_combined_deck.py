@@ -21,7 +21,7 @@ DATE = "2026-11-04"; REV = "REV D"; A = "deck_assets/"
 
 prs = Presentation(); prs.slide_width = Inches(13.333); prs.slide_height = Inches(7.5)
 blank = prs.slide_layouts[6]
-TOTAL = 20; sheet_no = [0]
+TOTAL = 21; sheet_no = [0]
 
 def set_spc(r, v): r._r.get_or_add_rPr().set('spc', str(v))
 def txt(s, x, y, w, h, text, size, bold=False, color=BODY, align=PP_ALIGN.LEFT, font=BF, spc=0, italic=False):
@@ -283,7 +283,7 @@ codebox(s, 0.55, 1.35, 7.4, 2.45, "ESPTOOL STUB, ONE CONNECTION, NO RESET BETWEE
 card(s, 8.15, 1.35, 4.65, 2.45, "Controls", ["Program partition, 1 MB, twice", "NVS partition and bootloader, twice", "16 KB window, four reads, at 115200 and at 921600 baud", "LittleFS image mounted and every file decoded on the laptop"], GREEN, 13, 11.5)
 card(s, 0.55, 3.95, 12.25, 1.15, "In plain words", "Stop the firmware, read the whole settings area three times in a row through one open USB connection, and compare. A healthy chip returns the same bytes every time. Reading a megabyte of program code the same way is the control: if that had changed too, the method, not the chip, would be at fault.", ACC, 12.5, 11.5)
 card(s, 0.55, 5.25, 7.4, 1.4, "The pitfall that cost two attempts", ["This board resets whenever the USB serial port closes, so separate esptool commands hide a boot, and a boot-time flash write, between 'back-to-back' reads", "Only reads inside one open connection count; the pitfall is itself evidence that the radio writes flash every time it starts"], MUT, 12, 10.5)
-card(s, 8.15, 5.25, 4.65, 1.4, "How this was done", "Hypothesis: a Qualcomm engineer, October 2026. Experiment design, scripts and analysis drafted with Claude (Anthropic) as an AI assistant; every measurement run by Deo on the team's radios, each step authorised and checked against the raw records (sheet 19).", INK, 12, 10.5)
+card(s, 8.15, 5.25, 4.65, 1.4, "How this was done", "Hypothesis: a Qualcomm engineer, October 2026. Experiment design, scripts and analysis drafted with Claude (Anthropic) as an AI assistant; every measurement run by Deo on the team's radios, each step authorised and checked against the raw records (sheet 20).", INK, 12, 10.5)
 notes(s, "Reproducible by anyone with the repository: scripts under docs/src, records under docs/src/flash_forensics. The LittleFS image also proved the configuration in flash on measurement day was correct: Group9, 32-byte key, precision 32, CLIENT_MUTE, No PIN, 60/10/20/10 s. If asked about the AI: the recruiter supplied the hypothesis, the AI supplied the experimental design and the code, the team supplied the hardware, the authorisation of each destructive step, and the checking; the records are in the repo and the measurements can be repeated without the AI.")
 
 # ============ 15 RESULT MAPS ============
@@ -314,6 +314,14 @@ card(s, 0.55, 4.9, 7.4, 1.75, "The repair, same day", ["Erase the settings area 
 card(s, 8.15, 4.9, 4.65, 1.75, "In plain words", "Rewriting the bad spots on a good supply made them perfect. Worn-out or defective memory would have failed again. The memory was disturbed by how it was written, not broken.", ACC, 12.5, 11)
 notes(s, "Numbers: fixed sectors, both bit directions, speed-independent, code partition stable: cells whose stored charge sits at the read threshold. Not a serial artifact (chunks are verified), not wear (the pattern would be diffuse), not a filesystem bug (the image mounts and decodes). Decisive test run on 27 October with authorisation on sectors 57 and 31, free in LittleFS (live data in 0, 1, 25, 26, 470), so nothing was lost. Record: docs/src/flash_forensics/decisive_test_2026-10-27.json. Repair: thirty minutes end to end; the two-pass --configure behaviour is the Sep 3 reset-during-write race seen from the other side. RG needs no repair; its baseline is clean.")
 
+# ============ 17 NOW ============
+s = slide(); frame(s, "part ii - root cause", "DEO")
+head(s, "Now: two days later, both radios clean", "Measured again on 29 October, after SF sat two days at 0 percent battery")
+pic(s, "g_now.png", 0.55, 1.35, 12.2)                                       # 12.2 x 3.35
+card(s, 0.55, 4.85, 6.0, 1.8, "What was checked on 29 October", ["Configuration read back with zero provisioning on both radios: name, role, No PIN, Group9 with key, precision 32, cadence, presets: all intact", "Flash settings area read three times each: 0 differing bytes, 0 unstable sectors on SF and on RG"], GREEN, 12.5, 11)
+card(s, 6.75, 4.85, 6.05, 1.8, "Read it honestly", ["SF's flat-battery episode is the exact condition that wiped it three times before; this time nothing was lost and the flash stayed clean", "One cycle is evidence, not proof: the radio was stored flat, not transmitting while it died. The campaign of five running-flat cycles per radio is what closes it"], ACC, 12.5, 11)
+notes(s, "SAY: This is the state today. The red bar is SF as we found it on the 27th; everything after it is zero, including SF after two days at zero percent battery on the new firmware. Be honest about what one cycle proves: the radio was stored flat, not transmitting while it died, so the dangerous write may simply not have happened this time. The five-cycle campaign is what proves the fix.")
+
 # ============ 17 CHAIN ============
 s = slide(); frame(s, "part ii - root cause")
 head(s, "The chain of causation", "Every link tagged with its class of evidence")
@@ -331,7 +339,7 @@ notes(s, "Read the chain left to right in plain words: the battery goes flat; on
 s = slide(); frame(s, "part ii - root cause", "DEO")
 head(s, "The fix: plan and proof", "Ranked by leverage; fix 1 is built, flashed and proven on both radios")
 rows = [["#", "Fix", "Effect", "Status"],
-        ["1", "Rebuild Meshtastic with our configuration compiled in as its factory defaults (userPrefs.jsonc + one-line NO_PIN patch)", "A revert now restores OUR settings; the failure becomes invisible to the driver", "Both radios flashed and accepted Oct 28"],
+        ["1", "Rebuild Meshtastic with our configuration compiled in as its factory defaults (userPrefs.jsonc + one-line NO_PIN patch)", "A revert now restores OUR settings; the failure becomes invisible to the driver", "Both radios flashed and accepted Oct 28; SF clean after 2 days at 0 percent, Oct 29"],
         ["2", "ESP32 power gate: refuse saves below 3.5 V on battery; drop the boot-time rewrite", "Removes the write that happens at the worst moment", "Next: ten-line patch, to offer upstream"],
         ["3", "Clean erase and re-provision of a scarred settings area", "Removes residue already present", "Done on SF; RG clean"],
         ["4", "Raise the brownout reset to 2.67 or 2.84 V (core rebuild)", "The CPU resets before the flash leaves spec", "Planned"],
@@ -353,7 +361,7 @@ rows = [["Source", "Used for"],
         ["Espressif esptool 4.11; python-pptx; matplotlib", "Reading flash with the firmware halted; this deck and its figures"],
         ["This repository: docs/src/flash_forensics (records), docs/src/*.py (scripts), Technical Manual 15-16, Device User Guide 12", "Every number in Part II, reproducible"]]
 table(s, 0.55, 1.35, 7.9, rows, [5.3, 2.6], fs=9.5, rh=0.62, firstbold=False)
-card(s, 8.65, 1.35, 4.15, 4.95, "How this work was done", ["The hypothesis that the memory itself might be at fault came from a Qualcomm engineer during a recruiting conversation in October 2026.", "The investigation (sheets 13 to 17) was designed and run by the team with Claude (Anthropic) as an AI assistant: the AI drafted the experiment design, the flash-reading scripts and the analysis.", "Deo Grace Mwala ran every measurement on the team's radios, authorised each erase or write, and checked each result against the raw records.", "Every script and record is in the repository, so the measurements can be repeated without the AI."], INK, 12.5, 10.5)
+card(s, 8.65, 1.35, 4.15, 4.95, "How this work was done", ["The hypothesis that the memory itself might be at fault came from a Qualcomm engineer during a recruiting conversation in October 2026.", "The investigation (sheets 13 to 18) was designed and run by the team with Claude (Anthropic) as an AI assistant: the AI drafted the experiment design, the flash-reading scripts and the analysis.", "Deo Grace Mwala ran every measurement on the team's radios, authorised each erase or write, and checked each result against the raw records.", "Every script and record is in the repository, so the measurements can be repeated without the AI."], INK, 12.5, 10.5)
 notes(s, "Attribution policy: say exactly who supplied what. Hypothesis: the recruiter. Experimental design, code and analysis: the AI assistant, under the team's direction. Hardware, authorisation and checking: the team. Reproducibility: the repository. If the audience wants proof, open docs/src/flash_forensics and re-run the sector map on either radio; it takes four minutes.")
 
 # ============ 20 CLOSE ============
