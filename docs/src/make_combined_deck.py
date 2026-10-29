@@ -124,7 +124,7 @@ txt(s, 8.3, 4.0, 4.3, 2.6, "Deo Grace Mwala\nJosiah Horn\nVictor Okwonna\nCannon
 notes(s, "Two parts, one arc: the record of what broke, then the deepest dive we made into the failure that kept returning.")
 
 # ============ 2 WHY FAILURES + THE CATALOG ============
-s = slide(); frame(s, "part i - the failures")
+s = slide(); frame(s, "part i - the failures", "JOSIAH")
 head(s, "Why the failures are the deliverable")
 pts = [("A failure is only useful once it has a signature", "Each catalog entry records the symptom exactly as it appears, the root cause, and the recovery, so the next person recognizes it in minutes, not days."),
        ("Each failure produced a rule or a feature", "Pre-flight checks, cadence-aware alarms, the course-up compass, the config snapshot, the LINK LOST alarm: none were in the plan. All came from something breaking."),
@@ -143,7 +143,7 @@ txt(s, 6.7, 5.75, 6.1, 0.8, "Eleven entries in this form. Every one happened on 
 notes(s, "Set expectations: this is not a list of embarrassments, it is the verification record of a system that is honest about itself. Show the entry on the right: symptom as a stranger would see it, root cause, recovery, and the rule. Ten failures in this deck, each in that form.")
 
 # ============ 3 TIMELINE ============
-s = slide(); frame(s, "part i - the failures")
+s = slide(); frame(s, "part i - the failures", "CANNON")
 head(s, "The semester on one line")
 pic(s, "g_failtimeline.png", 0.55, 1.3, 12.2)
 txt(s, 0.55, 6.45, 12.2, 0.35, "RED: FAILURES, ROOT-CAUSED.  GREEN: TESTS.  THE HOLLOW TRIANGLE IS NEW MEXICO: ON SITE, STOPPED BY A FLASH FLOOD WARNING; THE WEEKEND WENT INTO THE RADIOS.", 10.5, True, MUT, PP_ALIGN.CENTER, MONO)
@@ -177,7 +177,7 @@ fail_sheet("VICTOR", "Failures 7-9: silence, battery death, the compass", "Septe
     "Failure 7 is the project's idea 2: the name IS the frequency. The debug ladder was config diff, matched-power tests, traceroute, regression on the default channel, then the hash math. Failure 8 is the hinge of the deck: state the pattern (three of four losses after a flat battery, SF three times, partial and different each time) and the mitigation, but do not pre-empt Part II. Failure 9 came from thirty seconds of night footage.")
 
 # ============ 7 FAILURE 10 ============
-s = slide(); frame(s, "part i - the failures", "DEO")
+s = slide(); frame(s, "part i - the failures", "JOSIAH")
 head(s, "Failure 10: the night before the canyon (Oct 17)")
 cards = [("Display 1 \"dead\"", "Actually fine. Power banks shut off under the display's milliwatt draw, and a reflective screen in a dim room reads as off. Flashlight test first.", MUT),
          ("Display 2 half-dead USB-C", "Powers in ONE plug orientation - damaged pins on one side. A coin-flip failure on every plug-in. Marked the working orientation; a repair item.", ACC),
@@ -209,7 +209,7 @@ txt(s, 6.6, 5.0, 6.2, 0.8, "Same radios, four geometries: 0.5 to 4.7 mi. Terrain
 notes(s, "Seven campaigns; each found what the previous one could not. Ceta Canyon: behind rock the link is intermittent at any distance; the seven-minute outage healed with one packet and no operator action; the rim antenna held 4.7 mi, the quantitative case for a repeater.")
 
 # ============ 9 PART II: THE QUESTION ============
-s = slide(); gridpaper(s); frame(s, "part ii - root cause")
+s = slide(); gridpaper(s); frame(s, "part ii - root cause", "VICTOR")
 txt(s, 0.7, 0.5, 11.9, 0.5, "PART II", 16, True, ACC, PP_ALIGN.LEFT, HF, spc=400)
 txt(s, 0.7, 0.95, 11.9, 0.9, "WHY THE RADIOS FORGET", 34, True, INK, PP_ALIGN.LEFT, HF, spc=300)
 txt(s, 0.72, 1.85, 11.9, 0.95, "In October a Qualcomm engineer asked us: is it the memory itself? 'The memory' is a 16 MB flash chip beside the CPU, and the settings live in a 3.4 MB corner of it. The question can mean three different things. Each leaves a different fingerprint in the data and needs a different fix, so we treated it as a hypothesis to test, not an opinion to argue with.", 12.5, False, BODY)
@@ -241,7 +241,7 @@ txt(s, 0.55, 6.2, 12.2, 0.45, "Boya BY25Q128AS (JEDEC 68 40 18, read from the ch
 notes(s, "What this sheet achieves: it is the mechanism. The memory can be perfectly good and still end up holding garbage, because the chip that orders the write (the CPU) stays awake 260 mV below the point where the chip that stores the data (the flash) is guaranteed to work. A sector erase takes 50 ms; a transmit pulse on a nearly flat battery can pull the rail through 2.7 V and back inside that time without ever reaching the 2.44 V reset. The datasheet says VCC must be held in range during all operations; between 2.44 and 2.7 V the write proceeds and the result is undefined.")
 
 # ============ 12 UPSTREAM ============
-s = slide(); frame(s, "part ii - root cause")
+s = slide(); frame(s, "part ii - root cause", "CANNON")
 head(s, "Upstream already knows", "meshtastic/firmware issue tracker on GitHub")
 rows = [["Reference", "Boards", "Report", "Status"],
         ["#4555", "Heltec HT-CT62, V3, V4", "Power loss in early boot resets configuration after 2 to 3 attempts", "Closed 'not planned' Oct 2025"],
@@ -287,7 +287,7 @@ card(s, 8.15, 5.25, 4.65, 1.4, "How this was done", "Hypothesis: a Qualcomm engi
 notes(s, "Reproducible by anyone with the repository: scripts under docs/src, records under docs/src/flash_forensics. The LittleFS image also proved the configuration in flash on measurement day was correct: Group9, 32-byte key, precision 32, CLIENT_MUTE, No PIN, 60/10/20/10 s. If asked about the AI: the recruiter supplied the hypothesis, the AI supplied the experimental design and the code, the team supplied the hardware, the authorisation of each destructive step, and the checking; the records are in the repo and the measurements can be repeated without the AI.")
 
 # ============ 15 RESULT MAPS ============
-s = slide(); frame(s, "part ii - root cause")
+s = slide(); frame(s, "part ii - root cause", "DEO")
 head(s, "Result: the same sectors misread, every pass", "SF against RG, same day, same method")
 pic(s, "g_maps_compare.png", 0.55, 1.35, 12.2)                              # 12.2 x 3.55
 txt(s, 0.55, 4.95, 12.2, 0.65, "Each small square is one 4 KB sector of the settings area, 864 per radio. Red: the bytes came back different on consecutive reads with nothing running, the same sectors every time and at both serial speeds. Green: the sectors holding the live settings files that day. The program code read identically.", 11.5, False, BODY)
@@ -323,7 +323,7 @@ card(s, 6.75, 4.85, 6.05, 1.8, "Read it honestly", ["SF's flat-battery episode i
 notes(s, "SAY: This is the state today. The red bar is SF as we found it on the 27th; everything after it is zero, including SF after two days at zero percent battery on the new firmware. Be honest about what one cycle proves: the radio was stored flat, not transmitting while it died, so the dangerous write may simply not have happened this time. The five-cycle campaign is what proves the fix.")
 
 # ============ 17 CHAIN ============
-s = slide(); frame(s, "part ii - root cause")
+s = slide(); frame(s, "part ii - root cause", "VICTOR")
 head(s, "The chain of causation", "Every link tagged with its class of evidence")
 pic(s, "g_chain.png", 0.55, 1.4, 12.2)
 rows = [["Link", "Evidence", "Class"],
@@ -350,7 +350,7 @@ card(s, 6.75, 4.6, 6.05, 2.05, "Proven on both radios, 28 October", ["Flashed ea
 notes(s, "Fix 1 is the community's own answer to #4555 and costs one build per radio: build Meshtastic from source with a userPrefs.jsonc that names our channel, key, region, role, owner names, cadence, plus a one-line patch so the default Bluetooth mode is No PIN. Acceptance on SF and RG, 28 October: after a factory reset each radio was already configured; the snapshot then restored the smart-broadcast minimums (10 s / 20 m), the 21 presets and the original key pair. The ask: approve the flat-battery campaign before the next field test. Fix 2 removes the cause; fix 3 cleans up the past; fix 4 is the hardware-correct answer and the most work.")
 
 # ============ 19 REFERENCES AND ATTRIBUTION ============
-s = slide(); frame(s, "part ii - root cause")
+s = slide(); frame(s, "part ii - root cause", "CANNON")
 head(s, "References, records and attribution")
 rows = [["Source", "Used for"],
         ["Heltec WiFi LoRa 32 V4 datasheet V4.2.0: resource.heltec.cn/download/WiFi_LoRa_32_V4/datasheet/WiFi_LoRa_32_V4.2.0.pdf", "Supply rails, battery path, transmit current (tables 3.2, 3.4)"],
@@ -365,7 +365,7 @@ card(s, 8.65, 1.35, 4.15, 4.95, "How this work was done", ["The hypothesis that 
 notes(s, "Attribution policy: say exactly who supplied what. Hypothesis: the recruiter. Experimental design, code and analysis: the AI assistant, under the team's direction. Hardware, authorisation and checking: the team. Reproducibility: the repository. If the audience wants proof, open docs/src/flash_forensics and re-run the sector map on either radio; it takes four minutes.")
 
 # ============ 20 CLOSE ============
-s = slide(); frame(s, "close")
+s = slide(); frame(s, "close", "DEO")
 head(s, "The answer, and what the failures bought")
 card(s, 0.55, 1.45, 12.2, 1.55, "Is it the memory itself?", "Partly, and measurably, but not as the question implies. SF's settings flash carried 21 sectors that would not hold a value; rewritten under a healthy supply they became perfect. The cells had been left half-written below the flash's 2.7 V minimum but above the 2.44 V reset point, a window the firmware never checks and then punishes with factory defaults.", INK, 15, 13)
 stats = [("10", "root-caused failures, each with a written signature and recovery"), ("21 -> 0", "unstable flash sectors on SF; RG clean at 0"),
