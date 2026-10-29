@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>Group 9 - Slide guide for the 4 November presentation</title>
+<style>
+@page { size: Letter; margin: 0.7in 0.75in 0.8in 0.75in; }
+body { font-family: Cambria, Georgia, serif; color: #222A3F; font-size: 11.2pt; line-height: 1.42; margin: 0; }
+h1 { font-size: 24pt; color: #16213D; letter-spacing: 0.04em; margin: 0 0 4pt 0; }
+h2 { font-size: 15pt; color: #16213D; margin: 0 0 6pt 0; letter-spacing: 0.03em; border-bottom: 1.5px solid #16213D; padding-bottom: 3pt; }
+h3 { font-size: 11.5pt; color: #E58E1A; margin: 12pt 0 3pt 0; letter-spacing: 0.08em; text-transform: uppercase; }
+p { margin: 0 0 7pt 0; text-align: justify; }
+ul { margin: 0 0 7pt 18pt; padding: 0; } li { margin-bottom: 3pt; }
+.sheet { page-break-before: always; }
+.sheet:first-of-type { page-break-before: auto; }
+.owner { display: inline-block; font-family: "Courier New", monospace; font-size: 9.5pt; border: 1.2px solid #16213D; padding: 1pt 7pt; color: #16213D; margin-left: 8pt; vertical-align: middle; }
+.owner.DEO { color: #1199BD; border-color: #1199BD; } .owner.JOSIAH { color: #6D4BDB; border-color: #6D4BDB; }
+.owner.VICTOR { color: #E58E1A; border-color: #E58E1A; } .owner.CANNON { color: #D9488C; border-color: #D9488C; }
+img.slide { width: 100%; border: 1px solid #9AA7BE; margin: 4pt 0 8pt 0; }
+.say { background: #F2F5FA; border-left: 3px solid #1F9D68; padding: 6pt 10pt; margin: 6pt 0 8pt 0; font-style: italic; }
+.qa { background: #F2F5FA; border-left: 3px solid #E58E1A; padding: 6pt 10pt; margin: 6pt 0; }
+.qa b { color: #16213D; }
+table { border-collapse: collapse; width: 100%; margin: 4pt 0 8pt 0; font-size: 10.5pt; }
+th { background: #16213D; color: white; text-align: left; padding: 4pt 6pt; } td { padding: 4pt 6pt; border-bottom: 1px solid #E8EDF5; vertical-align: top; }
+.mono { font-family: "Courier New", monospace; font-size: 10pt; }
+.cover { height: 8.6in; }
+.cover p { text-align: left; }
+.muted { color: #5E6B85; }
+</style></head><body>
+
+<div class="cover">
+<p class="mono muted">GROUP 9 &nbsp;|&nbsp; OFF-GRID VEHICLE TRACKER &nbsp;|&nbsp; TEXAS TECH ECE CAPSTONE</p>
+<h1>SLIDE GUIDE</h1>
+<p style="font-size:14pt;color:#E58E1A;letter-spacing:0.05em"><b>WHAT BROKE, AND WHAT IT TAUGHT US</b> &mdash; presentation of 4 November 2026, 21 sheets</p>
+<p>This guide goes with <span class="mono">Group9_Presentation.pptx</span> (REV D). For every sheet it gives: a picture of the sheet, what is on it, the explanation in depth (the part a presenter has to understand, not just read), a suggested spoken opening, and the questions the audience is most likely to ask with the honest answers. The presenter named on the sheet should read that sheet's page before the talk; the technical sheets (4, 10, 13 to 17, 19, 21) belong to Deo.</p>
+<p><b>Speaking order and load</b></p>
+<table>
+<tr><th>Presenter</th><th>Sheets</th><th>Minutes</th></tr>
+<tr><td>Josiah</td><td>2, 5, 7</td><td>about 4</td></tr>
+<tr><td>Cannon</td><td>3, 8, 12, 20</td><td>about 4</td></tr>
+<tr><td>Victor</td><td>6, 9, 11, 18</td><td>about 5</td></tr>
+<tr><td>Deo</td><td>1 (open), 4, 10, 13, 14, 15, 16, 17, 19, 21</td><td>about 12</td></tr>
+</table>
+<p><b>Three sentences that carry the whole deck</b></p>
+<ul>
+<li>Part I: ten things broke this semester; every one got a written signature and became a rule or a feature.</li>
+<li>Part II: the worst one, the radios forgetting their settings after a flat battery, was traced to flash cells left half-written because the firmware writes to memory while the battery sags below what the chip needs. The chip is healthy.</li>
+<li>The fix: SF was repaired, both radios now run firmware whose factory defaults are our settings, and two days at zero percent battery no longer costs anything. The flat-battery campaign proves it.</li>
+</ul>
+<p class="muted">Team: Deo Grace Mwala, Josiah Horn, Victor Okwonna, Cannon Thomas. Sponsor: Dr. Richard Gale. Hypothesis for Part II from a Qualcomm engineer, October 2026; experiment design, scripts and analysis drafted with Claude (Anthropic) as an AI assistant; every measurement run and checked by the team. Records: <span class="mono">docs/src/flash_forensics</span>.</p>
+</div>
+
+<!-- ======================= 1 ======================= -->
+<div class="sheet">
+<h2>Sheet 1 &mdash; Title: what broke, and what it taught us <span class="owner DEO">OPEN: DEO</span></h2>
+<img class="slide" src="img/Slide1.PNG">
+<h3>What is on it</h3>
+<p>The title, the one-line summary of both parts, and the team. Part I is ten root-caused failures and seven test campaigns; Part II is the single failure chased to the flash cells.</p>
+<h3>In depth</h3>
+<p>The framing matters more than it looks. A failure deck can sound like a confession; this one is a verification record. The word to use is <i>signature</i>: every failure in the deck was reproduced or root-caused and written down in a form a stranger can recognise. That is what makes the system honest, and it is what turned a cancelled field test into the most rigorous piece of work in the project.</p>
+<div class="say">Say: "Two parts. First, the record of what broke this semester and the rule each failure left behind. Second, the one failure that kept coming back, the radios forgetting their settings, taken apart down to the memory cells, repaired, and fixed."</div>
+</div>
+
+<!-- ======================= 2 ======================= -->
+<div class="sheet">
+<h2>Sheet 2 &mdash; Why the failures are the deliverable <span class="owner JOSIAH">JOSIAH</span></h2>
+<img class="slide" src="img/Slide2.PNG">
+<h3>What is on it</h3>
+<p>Three short claims on the left; on the right, a real entry from the failure catalog (Technical Manual, Section 16) laid out field by field: symptom, root cause, recovery, and the rule it left.</p>
+<h3>In depth</h3>
+<p>The catalog is a table in Section 16 of the Technical Manual with eleven entries. Each has four columns: the <b>symptom</b> written exactly as it appears to someone who does not know the cause ("total mutual silence; configs read back identical; 0 percent channel utilization"), the <b>root cause</b>, the <b>recovery</b> as concrete steps, and the rule or feature that came out of it. The entry shown is number 1, the silent frequency revert, which is also failure 7 on sheet 6.</p>
+<p>The value of the catalog is time-to-diagnosis. Three of the ten failures happened the night before a test; every one was cleared in time because the signature had already been written down. That is the argument of the sheet: a failure that was merely survived will happen again; a failure with a signature is a test case.</p>
+<div class="say">Say: "Every failure in this deck is written down in this form. The symptom the way you would see it, the cause, the recovery, the rule. Three failures hit us the night before a test and all three were cleared in time, because the signature was already in this table."</div>
+<div class="qa"><b>Q: Eleven entries but ten failures in the deck?</b> The catalog also has the phantom 0.21 mi bench observation as entry 11; it was dropped from the deck for time. The manual has all eleven.</div>
+</div>
+
+<!-- ======================= 3 ======================= -->
+<div class="sheet">
+<h2>Sheet 3 &mdash; The semester on one line <span class="owner CANNON">CANNON</span></h2>
+<img class="slide" src="img/Slide3.PNG">
+<h3>What is on it</h3>
+<p>A timeline from late August to late October. Red dots above the line are failures; green triangles below are tests. The hollow triangle at the end is New Mexico: the team was on site and a flash flood warning stopped the drive.</p>
+<h3>In depth</h3>
+<p>Two patterns to point at. First, failures cluster right before tests, because preparing for a drive is when the equipment gets exercised. Second, the same villain returns: battery death reverting the configuration appears on 30 September (both radios), 17 October (SF) and 24 October (SF). That repetition is what justified spending the rained-out weekend on Part II instead of waiting for the next drive.</p>
+<div class="say">Say: "Read it left to right. Red is what broke, green is what we tested. Notice the failures bunch up right before each test, and notice the one that comes back three times: a flat battery wiping a radio's settings. That is the one Part II is about."</div>
+</div>
+
+<!-- ======================= 4 ======================= -->
+<div class="sheet">
+<h2>Sheet 4 &mdash; Failures 1 to 3: bring-up <span class="owner DEO">DEO</span></h2>
+<img class="slide" src="img/Slide4.PNG">
+<h3>What is on it</h3>
+<p>A five-column table (failure, cause, impact, fix, what it became) for the three day-one failures, and a figure of the display's start-up path showing where each one stopped it.</p>
+<h3>In depth</h3>
+<p><b>1. Boot-loop.</b> The official espressif32 PlatformIO platform ships Arduino core 2.x, which cannot start the chip revision on the Waveshare panel. The fix was the pioarduino platform with <span class="mono">dio_opi</span> memory mode and <span class="mono">dio</span> flash mode, which is what the vendor's own ESP-IDF configuration uses. Rule: the vendor's IDF config is ground truth, not the vendor's Arduino screenshot.</p>
+<p><b>2. Bonded radio goes invisible.</b> If a BLE bond is stored, the Meshtastic radio stops general advertising, so nothing can find it, including the display that bonded to it. The fix is to pair Just-Works on every connection (still encrypted, no stored bond) and never call <span class="mono">deleteAllBonds()</span> at boot. It produced the one-path BLE state machine: any failure tears down to SCANNING and starts over.</p>
+<p><b>3. PIN pairing refused, rc=1284.</b> The radio shipped in RANDOM_PIN mode: it shows a six-digit PIN and expects the other side to type it. The display has no keypad. In BLE pairing each side computes a "confirm value" from the PIN and random numbers; with different PINs the values do not match and the stack reports 1284, which in NimBLE is 0x500 (Security Manager error on our side) + 4 ("confirm value failed"). Fix: provision the radios with <span class="mono">bluetooth.mode NO_PIN</span>. This matters later: NO_PIN is a stored setting, so when a radio's configuration reverts, the display log shows "status 261, insufficient authentication", the signature of failures 8 and 10.</p>
+<div class="say">Say: "Day one, none of this was in a datasheet. The one to remember is number three: the radio wanted a PIN typed and the display has no keypad. We set the radios to No PIN. That setting is stored in the radio, and when a radio forgets its settings, the first thing we see is this pairing failing again."</div>
+<div class="qa"><b>Q: Is Just-Works pairing secure enough?</b> The link is still encrypted (LE Secure Connections). What Just-Works gives up is protection against a man in the middle during pairing, and the threat model is two boards a metre apart inside a locked vehicle.</div>
+</div>
+
+<!-- ======================= 5 ======================= -->
+<div class="sheet">
+<h2>Sheet 5 &mdash; Failures 4 to 6: first drive, wrong flash, lying CLI <span class="owner JOSIAH">JOSIAH</span></h2>
+<img class="slide" src="img/Slide5.PNG">
+<h3>What is on it</h3>
+<p>The five faults found on the first drive, the wrong-board flash, and the config write that silently reverted; under it, a chart of how big a grid cell each precision setting produces.</p>
+<h3>In depth</h3>
+<p><b>Precision 13.</b> Meshtastic sends latitude and longitude as 32-bit integers in units of 1e-7 degree. A channel's <span class="mono">position_precision</span> says how many of the 32 bits are kept; the rest are zeroed and the position is placed at the centre of the resulting cell. The private-channel default is 13 bits, so the cell is 2^(32-13) &times; 1e-7 = 0.0524 degree, which is 5.8 km north-south (about 4.9 km east-west at our latitude). A moving partner therefore appeared frozen until it crossed into the next cell. Precision 32 keeps everything: about 1 cm.</p>
+<p><b>GPS jitter.</b> A parked receiver's fix wanders a few metres between readings (satellite geometry, atmosphere, reflections). The receiver converts that wander into a speed, so a parked car reads 1 to 3 mph. The node table ignores any speed under 4.5 km/h. The other three faults: the GPS refresh default of 120 s made positions up to two minutes stale; speed is sent in km/h on the wire, not m/s; and the time zone boundary had to be carried to the New Mexico border.</p>
+<p><b>Failures 5 and 6 are tooling.</b> Radios and displays share the USB ID 303A:1001, so a tool that auto-picks a port can flash the wrong board; it erased Meshtastic from a radio for an afternoon. Rule: identify every board by its MAC before any upload. And closing the CLI's serial port toggles DTR/RTS, which resets the ESP32 in the middle of a save, so the write "succeeds" and the next read shows the old value. Rule: read back every write, and the radio's own screen outranks the CLI.</p>
+<div class="say">Say: "Five faults on one drive and none of them show on a desk. The big one is the chart: by default Meshtastic sends your position snapped to a six-kilometre grid. We send the full position. The lesson that outlived all of these: every feature gets validated on the road."</div>
+<div class="qa"><b>Q: Why would anyone default to 13 bits?</b> Privacy. On a public mesh you do not want to broadcast your exact location. On our private channel we do.</div>
+</div>
+
+<!-- ======================= 6 ======================= -->
+<div class="sheet">
+<h2>Sheet 6 &mdash; Failures 7 to 9: silence, battery death, the compass <span class="owner VICTOR">VICTOR</span></h2>
+<img class="slide" src="img/Slide6.PNG">
+<h3>What is on it</h3>
+<p>The silent frequency revert, the three battery-death incidents summarised in one row, and the hand-rotated compass; under it, the US band drawn as 104 slots with the public default and the Group9 slot marked.</p>
+<h3>In depth</h3>
+<p><b>The name is the frequency.</b> The US 915 band runs 902 to 928 MHz and the LONG_FAST preset divides it into 104 slots of 250 kHz. Meshtastic chooses the slot by hashing the channel <i>name</i>: djb2("Group9") mod 104 = 43, and 902.125 + 43 &times; 0.25 = 912.875 MHz. A radio whose channel reverts to the default name moves to 906.875 MHz. Same key, different slot: nothing is heard, both screens look healthy, and the CLI reads back the intended configuration because it reports what was written, not what is radiating. The OLED frequency line is the only honest instrument, which is why the pre-flight is "both screens read 912.875".</p>
+<p><b>Battery death.</b> 30 September both radios (RG lost channels, SF lost everything), 17 October SF, 24 October SF. Losses were partial and different each time. Mitigations in October: pre-flight, a configuration snapshot per radio restored with <span class="mono">--configure</span> in 90 s, a phone-app QR path when no laptop is at hand, and never storing a radio flat. The root cause is Part II; do not pre-empt it here.</p>
+<p><b>The compass.</b> A north-up ring at night made the driver turn the unit to read it, at which point nothing on it could be read. Course-up (nose at 12 o'clock, directions as clock positions) fixed that, and the staleness cue was made cadence-aware (30 s moving, 90 s parked) because it was crying wolf after 59 s of a parked partner's normal silence.</p>
+<div class="say">Say: "The frequency is not a setting you type; it comes from the channel name. One write reverted, one radio moved to the public slot, and two healthy-looking radios went silent for a day. The check that came out of it takes two seconds: both screens read 912.875."</div>
+<div class="qa"><b>Q: How did you find the slot mismatch?</b> Config diff, matched-power tests, traceroute, regression on the default channel, then the hash arithmetic.</div>
+</div>
+
+<!-- ======================= 7 ======================= -->
+<div class="sheet">
+<h2>Sheet 7 &mdash; Failure 10: the night before the canyon <span class="owner JOSIAH">JOSIAH</span></h2>
+<img class="slide" src="img/Slide7.PNG">
+<h3>What is on it</h3>
+<p>Three independent faults in one evening, and the display's serial log that named the third one in a single line.</p>
+<h3>In depth</h3>
+<p>Display 1 looked dead: power banks shut off under a milliwatt load, and a reflective screen in a dim room reads as off. Flashlight test first. Display 2 powers in one USB-C orientation only, damaged pins on one side; the working orientation is marked and it is a repair item. Radio EA:D4 (SF) had been idle a week with a flat battery; its Bluetooth mode, channel and name were gone. The signature is the log excerpt: pairing completes encrypted but not bonded, then a write returns status 261 (insufficient authentication, the radio is no longer in NO_PIN), then our side disconnects by design to retry. Forty minutes for all three, because each had a signature; the test ran the next morning.</p>
+<div class="say">Say: "Three faults the night before the canyon, diagnosed in forty minutes. The one in red is the radio forgetting its settings again; the display's log tells you in one line, status 261. That is the third time, and it is where Part II starts."</div>
+</div>
+
+<!-- ======================= 8 ======================= -->
+<div class="sheet">
+<h2>Sheet 8 &mdash; The test campaigns <span class="owner CANNON">CANNON</span></h2>
+<img class="slide" src="img/Slide8.PNG">
+<h3>What is on it</h3>
+<p>Seven campaigns in a table and the range in four geometries as a bar chart.</p>
+<h3>In depth</h3>
+<p>The chart is the honest envelope: 0.5 mi in town, 1.29 mi in canyon folds, 3.75 mi car-to-car on flat road, 4.7 mi with one antenna on a canyon rim. Terrain and antenna height set the range, not the hardware. The canyon result is the subtle one: behind rock the link is intermittent at any distance, stale from 1.29 mi yet a packet landed at 4.28 mi through a gap, and a seven-minute outage healed with one packet and no operator action. The New Mexico row is the open-road maximum with roof-top antennas, the one number still missing; the team was on site on 25 October and a National Weather Service flash flood warning stopped the drive. It is rescheduled for the next clear weekend.</p>
+<div class="say">Say: "Seven campaigns, each found what the previous one could not. Same radios, four terrains, half a mile to nearly five. The one still missing is open road with the antennas on the roof; we were there on the 25th and a flash flood warning sent us home."</div>
+</div>
+
+<!-- ======================= 9 ======================= -->
+<div class="sheet">
+<h2>Sheet 9 &mdash; Part II: why the radios forget <span class="owner VICTOR">VICTOR</span></h2>
+<img class="slide" src="img/Slide9.PNG">
+<h3>What is on it</h3>
+<p>The question a Qualcomm engineer put to the team, and its three possible meanings, each with the fingerprint it would leave in data and the fix it would require.</p>
+<h3>In depth</h3>
+<p>"The memory" is a 16 MB flash chip beside the CPU; the settings live in a 3.4 MB corner of it. "The memory itself is at fault" could mean three different things. <b>Worn out</b>: cells exhausted by write volume (100,000 erase cycles); it would look like scattered damage across many sectors and the fix is a new part. <b>Defective cells</b>: fixed bad spots that stay bad even after being rewritten; the fix is to avoid them. <b>Written under bad conditions</b>: healthy cells left half-written because the supply sagged during a write; fixed bad spots that heal once rewritten; the fix is never to write under low voltage. The three are distinguishable, so the suggestion was treated as a hypothesis to test rather than an opinion to argue with. The bottom card is the method in one sentence: read the chip with the firmware halted, read the firmware source at the exact version we run, read the datasheets, and line up the four incidents.</p>
+<div class="say">Say: "A recruiter from Qualcomm asked us a sharp question: is it the memory itself? That can mean three things, and each leaves a different fingerprint. So we measured, instead of guessing."</div>
+</div>
+
+<!-- ======================= 10 ======================= -->
+<div class="sheet">
+<h2>Sheet 10 &mdash; How the radio stores its settings <span class="owner DEO">DEO</span></h2>
+<img class="slide" src="img/Slide10.PNG">
+<h3>What is on it</h3>
+<p>The flash partition table read from SF, the save path and the load path of the firmware with the weak points in red, a plain-words card, and what the firmware checks versus what it never checks.</p>
+<h3>In depth</h3>
+<p>Six protobuf files (config, channels, device, module, nodes, cannedConf) live under <span class="mono">/prefs</span> in a 3.4 MB LittleFS partition at 0xC90000. <b>LittleFS</b> is a small file system designed for microcontrollers to survive power loss: it writes new data before releasing old, and keeps its directory in pairs of blocks. That protection assumes the chip stores what it was told; it cannot help if the chip itself was out of specification during the write.</p>
+<p>The save path (<span class="mono">SafeFile.cpp</span>) writes a temporary file, reads it back with a one-byte XOR check, then renames over the original. Two exceptions: <span class="mono">nodes.proto</span> is written non-atomically (the original is deleted first), and the result of <span class="mono">close()</span> is discarded, so a failed save logs "Can't write prefs!" and returns okay. The gate every save passes through, <span class="mono">powerHAL_isPowerLevelSafe()</span>, is a weak default that returns true; no ESP32 override exists in <span class="mono">src/platform/esp32</span>. The boot log shows <span class="mono">device.proto</span> re-saved on every boot.</p>
+<p>The load path (<span class="mono">NodeDB.cpp</span>): open the file; if it is missing or will not decode, call <span class="mono">installDefaultConfig()</span> (or Channels, DeviceState, ModuleConfig), then save the defaults. No retry, and the backup copy is only consulted when an operator runs <span class="mono">restorePreferences</span>. So one unreadable file is a permanent, silent factory reset. The one protection that exists: the low-battery deep sleep calls <span class="mono">doDeepSleep(skipSaveNodeDb=true)</span>, so a clean low-battery shutdown does not write. The damage happens in the reboot churn around it, not in the shutdown itself.</p>
+<div class="say">Say: "The settings are six small files on the flash chip. Every boot the firmware rewrites one of them without checking the supply. And if a file will not read, it does not retry or ask: it writes factory settings over it. The firmware refuses to write during its own low-battery shutdown, so the authors knew the danger; they just never put the check on the ordinary path."</div>
+<div class="qa"><b>Q: Is this an ESP32 problem or a Meshtastic problem?</b> Both, in layers: the Meshtastic save path has no voltage gate on ESP32, and the ESP32 brownout level is set below the flash chip's minimum (next sheet). The nRF52 boards received a fix for the first part in 2026 (sheet 12).</div>
+</div>
+
+<!-- ======================= 11 ======================= -->
+<div class="sheet">
+<h2>Sheet 11 &mdash; The physics: a 260 mV window <span class="owner VICTOR">VICTOR</span></h2>
+<img class="slide" src="img/Slide11.PNG">
+<h3>What is on it</h3>
+<p>A voltage diagram: the lithium cell on the left, the 3.3 V rail on the right with the flash chip's specified range in green, the brownout reset level, and the 260 mV band between them in red. Plain-words card, and a card on what a half-written cell does.</p>
+<h3>In depth</h3>
+<p>Two chips share one supply line. The CPU keeps running down to 2.44 V, which is where its brownout detector resets it (ESP-IDF level 7, as the Arduino core is built). The flash chip, a Boya BY25Q128AS identified by its JEDEC ID 68 40 18 read from the part, is specified for 2.7 to 3.6 V, and its datasheet says VCC must be held in range during all operations. Between 2.44 and 2.70 V, 260 mV, the CPU is alive and can order a write, but the chip makes no promise about what lands in its cells.</p>
+<p>How the rail gets there: a LoRa transmit at 27 dBm draws about 750 mA (Heltec datasheet table 3.4). On a nearly flat cell the regulator cannot hold the rail through that pulse; it dips and recovers in milliseconds. A page program takes 0.6 ms and a sector erase 50 ms, so a write in progress during the dip completes under an out-of-spec supply, and the CPU never resets because 2.44 V was never reached. The 3.10 V low-battery deep-sleep trigger protects a slow, clean discharge; it does not protect against these fast dips.</p>
+<p>What a half-written cell is: a flash cell stores a small charge, and reading it compares that charge against a threshold. A write cut short leaves the charge near the threshold, so the same cell reads 1 on one pass and 0 on the next. It is not damage; the cell was never finished. That is the fingerprint the measurement on sheet 15 looks for, and the firmware then turns it into a factory reset.</p>
+<div class="say">Say: "This is the mechanism. The CPU runs down to 2.44 volts. The flash only promises to work above 2.70. In that gap the CPU keeps writing and the flash keeps no promises. A transmit pulse on a flat battery can put the rail in that gap for a few milliseconds, and the firmware writes on every boot, so sooner or later a write lands in the dip."</div>
+<div class="qa"><b>Q: Did you measure the rail dipping?</b> Not yet. It is the one inferred link in the chain (sheet 18); an oscilloscope on the 3V3 pin during a transmit burst at a 3.4 V cell is on the plan. <b>Q: Why not just raise the brownout level?</b> That is fix 4: set it to 2.67 or 2.84 V so the CPU resets before the flash leaves spec. It needs a rebuild of the Arduino core.</div>
+</div>
+
+<!-- ======================= 12 ======================= -->
+<div class="sheet">
+<h2>Sheet 12 &mdash; Upstream already knows <span class="owner CANNON">CANNON</span></h2>
+<img class="slide" src="img/Slide12.PNG">
+<h3>What is on it</h3>
+<p>Five references from the Meshtastic firmware issue tracker on GitHub, a maintainer's quote, and a footnote explaining the "#" numbers.</p>
+<h3>In depth</h3>
+<p>"#4555" is issue number 4555 at github.com/meshtastic/firmware/issues: a public report, with the maintainers' replies. It describes power loss in early boot resetting the configuration on Heltec boards after two or three attempts, and was closed "not planned" in October 2025. #4622 is the same thing reported as "resets when the battery is empty". #2936 and #3260 are older reports on other boards. #5259 argues the 3.10 V low-battery cutoff is below what the regulators need. A PR (pull request) is a proposed code change; PR #11872, merged in 2026, added retries, a rail check before saving, and a stop on formatting under a low rail, but only for the nRF52 family. There is no ESP32 equivalent. The maintainer's sentence is our reading in their words: if the brownout circuit worked, it should hold the CPU in reset when the voltage is too low for flash. The community workaround on the last line, compiling the configuration in as the defaults, is what became our fix 1.</p>
+<div class="say">Say: "We are not the first. The same loss has been reported on these boards since 2023, and the maintainers' own explanation matches ours. The boards with a different processor got a fix this year; ours did not. The workaround people use is the one we built."</div>
+</div>
+
+<!-- ======================= 13 ======================= -->
+<div class="sheet">
+<h2>Sheet 13 &mdash; Hypotheses, predictions, verdicts <span class="owner DEO">DEO</span></h2>
+<img class="slide" src="img/Slide13.PNG">
+<h3>What is on it</h3>
+<p>Five hypotheses, what each would show in the data, and the verdict after measurement.</p>
+<h3>In depth</h3>
+<p>The discipline of this sheet is that the predictions were written before the measurement. <b>H1 wear-out</b> predicts diffuse failures and write counts near 100,000 per sector; the firmware touches about 20 sectors per boot over 864, so reaching the endurance limit would take millions of boots. Rejected. <b>H2 defective cells</b> and <b>H3 torn writes under low supply</b> both predict the same fixed set of unstable sectors; only the erase-and-reprogram test separates them, because defective cells fail again after a rewrite and torn cells do not. Rewritten sectors became perfect, so H2 is rejected and H3 confirmed. <b>H4 LittleFS bug</b> predicts mount failures or corrupted directory pairs; the image mounts and every file decodes on both radios. Rejected. <b>H5</b>, that the firmware turns any failure into a permanent reset, is confirmed in source (sheet 10). The bottom card is the discriminating experiment, detailed on the next sheet.</p>
+<div class="say">Say: "We wrote down what each explanation would look like before we measured. Two of them, defective cells and cells written under a bad supply, look identical until you erase and rewrite them. That one test is what decided it."</div>
+</div>
+
+<!-- ======================= 14 ======================= -->
+<div class="sheet">
+<h2>Sheet 14 &mdash; Method: reading the chip, firmware stopped <span class="owner DEO">DEO</span></h2>
+<img class="slide" src="img/Slide14.PNG">
+<h3>What is on it</h3>
+<p>The esptool procedure in a code box, the controls, a plain-words card, the pitfall, and the attribution card.</p>
+<h3>In depth</h3>
+<p>esptool loads a small stub program into the chip's RAM and takes over; the Meshtastic firmware is not running. Inside one open connection the settings partition (0xC90000, 3.4 MB) is read three times and a megabyte of program code twice. Each chunk is MD5-verified by the stub, so a transfer error raises an exception rather than producing a wrong byte; a byte that differs between reads is what the chip returned. The controls are the point: the program partition, the NVS partition and the bootloader read identically every time, and a 16 KB window read four times at 115200 and at 921600 baud gave the same differences. If the method were at fault, the controls would have changed too.</p>
+<p>The pitfall cost two attempts: this board resets whenever the USB serial port closes, so running three separate esptool commands silently inserts a boot, and a boot-time flash write, between "back-to-back" reads. Only reads inside one open connection count. The pitfall is itself evidence that the radio writes flash every time it starts. The LittleFS image was also mounted on the laptop and every file decoded, which proved the configuration in flash on measurement day was correct.</p>
+<p>Attribution, to be said plainly if asked: the hypothesis came from a Qualcomm engineer; the experiment design, the scripts and the analysis were drafted with Claude (Anthropic) as an AI assistant; Deo ran every measurement on the team's radios, authorised each erase or write, and checked each result against the raw records; the scripts and records are in the repository so the measurement can be repeated in four minutes without the AI.</p>
+<div class="say">Say: "Stop the firmware, read the whole settings area three times through one connection, compare. A healthy chip returns the same bytes every time. We also read a megabyte of program code the same way as the control, and it never changed."</div>
+</div>
+
+<!-- ======================= 15 ======================= -->
+<div class="sheet">
+<h2>Sheet 15 &mdash; Result: the same sectors misread, every pass <span class="owner DEO">DEO</span></h2>
+<img class="slide" src="img/Slide15.PNG">
+<h3>What is on it</h3>
+<p>Sector maps of SF (as found) and RG (same day, same method), a plain reading of the map, and three numbers.</p>
+<h3>In depth</h3>
+<p>Each small square is one 4 KB sector; the settings area has 864. Red sectors returned different bytes on consecutive reads with nothing running: the same sectors every time, at both serial speeds. Green sectors held the live settings files that day (on SF: 25, 26 and 470), which were clean, and that is why SF was still working when measured; LittleFS wear-levelling would eventually have moved a live file onto a red sector. Grey is stale data that read stably; pale is erased. SF: 21 unstable sectors, 12 of them heavily (30, 31, 35, 36, 51, 55, 56, 57, 65, 70, 71, 85), 117 and 107 differing bytes between consecutive reads, 118 bits flipped in both directions, none inside erased areas. RG: zero. Program code, NVS and bootloader: zero differences on both radios.</p>
+<div class="say">Say: "Each square is one block of the settings area. On SF, the red blocks gave a different answer every time we asked. RG, measured the same way the same day, has none. The program code read identically on both, so the method is sound and the difference is the chip's."</div>
+<div class="qa"><b>Q: Why was SF still working with 21 bad blocks?</b> Its live files happened to sit in clean blocks that day (green). The file system moves files around to spread wear, so it was a matter of time.</div>
+</div>
+
+<!-- ======================= 16 ======================= -->
+<div class="sheet">
+<h2>Sheet 16 &mdash; The numbers, the decisive test, the repair <span class="owner DEO">DEO</span></h2>
+<img class="slide" src="img/Slide16.PNG">
+<h3>What is on it</h3>
+<p>Four numbers, the decisive erase-and-reprogram test as a table, its verdict, the repair steps, and the plain-words reading.</p>
+<h3>In depth</h3>
+<p><b>Numbers.</b> Fixed sectors, both bit directions, independent of serial speed, code partition stable: that is the fingerprint of cells whose stored charge sits at the read threshold. Not a serial artifact (chunks are verified), not wear (the pattern would be diffuse), not a file-system bug (the image mounts and decodes).</p>
+<p><b>Decisive test</b> (27 October, with authorisation). Sectors 57 and 31, the worst as found (27 and 20 disagreeing bytes), were free in LittleFS, so nothing was lost. Each was erased, then programmed with all zeros, with alternating 0xA5/0x5A, and with a random page, and read five times after each pattern and after a final erase; sector 200, stable as found, was the control. Zero mismatches in 45 reads. Cells that were worn or defective would have failed again; these held every pattern once written under a healthy supply. H2 falls, H3 stands: the silicon is sound and the instability was the residue of earlier writes completed with the supply out of range.</p>
+<p><b>Repair</b> (same day, thirty minutes). Erase the settings partition on USB power; the first boot reports "Failed to initialize LittleFS", formats, and installs defaults; apply the configuration snapshot with <span class="mono">--configure</span> twice, because the region write reboots the radio mid-transaction and the first pass loses owner, role, channel and cadence (now a rule in User Guide 12.2); read back, reset, read back again; three reads of the partition: zero differing bytes. The node key pair is carried in the snapshot, so RG's node table stayed valid.</p>
+<div class="say">Say: "We took the two worst blocks, erased them, wrote three patterns, read each five times: zero errors. The memory is fine. It was disturbed by how it was written, not broken. So we erased the whole settings area on USB power and put the settings back: twenty-one bad blocks to zero, the same afternoon."</div>
+</div>
+
+<!-- ======================= 17 ======================= -->
+<div class="sheet">
+<h2>Sheet 17 &mdash; Now: two days later, both radios clean <span class="owner DEO">DEO</span></h2>
+<img class="slide" src="img/Slide17.PNG">
+<h3>What is on it</h3>
+<p>All five flash measurements on one chart, what was checked on 29 October, and an honest reading of what one cycle proves.</p>
+<h3>In depth</h3>
+<p>After the 28 October acceptance both radios were unplugged; SF sat two days at zero percent battery, the exact condition that wiped it three times before. On 29 October both were read back with zero provisioning: name, role, No PIN, Group9 with the key, precision 32, cadence, telemetry, 21 presets, all intact; SF reconnected at 18 percent and 3.40 V. The flash was then read three times each: zero differing bytes, zero unstable sectors on both (RG still holds 115 sectors of old data from before, all of it stable). This counts as cycle 1 of the flat-battery campaign for SF.</p>
+<p>The honest limit: SF was <i>stored</i> flat, not transmitting while it died, so the dangerous write of sheet 11 may simply not have happened this time. Fix 1 makes a revert harmless; it does not remove the cause. The five running-flat cycles per radio, radio on and transmitting until it dies, with the flash map read after each, are what separate "the cause did not fire" from "the cause cannot fire".</p>
+<div class="say">Say: "This is where things stand today. The red bar is SF as we found it; everything after it is zero, including SF after two days at zero percent battery on the new firmware. One cycle is evidence, not proof: the radio was stored flat, not running flat. The campaign of five running-flat cycles is what proves it."</div>
+</div>
+
+<!-- ======================= 18 ======================= -->
+<div class="sheet">
+<h2>Sheet 18 &mdash; The chain of causation <span class="owner VICTOR">VICTOR</span></h2>
+<img class="slide" src="img/Slide18.PNG">
+<h3>What is on it</h3>
+<p>The five links from a flat battery to lost settings, each tagged with the class of evidence behind it: observed, verified in source, inferred, measured.</p>
+<h3>In depth</h3>
+<p>Read it left to right. (1) The battery goes flat and on recovery the radio boots and reboots: observed in three of four incidents and reproduced in upstream issue 4555. (2) Every boot writes a settings file with no voltage check: verified in the boot log and in <span class="mono">PowerHAL.cpp</span>. (3) The rail sits between 2.44 and 2.7 V during a write: inferred from the datasheets, the brownout configuration and the 750 mA transmit pulses; this is the one link not yet measured, and the oscilloscope capture is what closes it. (4) Cells are left half-programmed: measured on SF and healed by a rewrite. (5) A file fails to decode and the firmware installs and saves factory defaults: verified in <span class="mono">NodeDB.cpp</span> and in the losses themselves. Tagging the evidence class is what makes the argument defensible: one link is inferred and we say so.</p>
+<div class="say">Say: "Five links. Four are measured or read straight from the source code. One is inferred, the rail voltage during the write, and we will put a scope on it. We are telling you which is which."</div>
+</div>
+
+<!-- ======================= 19 ======================= -->
+<div class="sheet">
+<h2>Sheet 19 &mdash; The fix: plan and proof <span class="owner DEO">DEO</span></h2>
+<img class="slide" src="img/Slide19.PNG">
+<h3>What is on it</h3>
+<p>Five fixes ranked by leverage with status, fix 1 in plain words, and its proof on both radios.</p>
+<h3>In depth</h3>
+<p><b>Fix 1</b>, done: Meshtastic 2.7.26 rebuilt from source with a <span class="mono">userPrefs.jsonc</span> that names the channel, key, precision, region, preset, owner names, role and cadence as the compiled-in factory defaults, plus a one-line patch so the default Bluetooth mode is No PIN. The firmware's failure path still "resets to defaults", but the defaults are now right. The channel key is compiled into the binary, so the images and the jsonc files never leave the private repository. Acceptance on 28 October: flash, send <span class="mono">--factory-reset</span>, read back with zero provisioning; SF came back as SF and RG as RG on Group9 at 912.875 with the key, precision 32, No PIN, CLIENT_MUTE, US LONG_FAST. Two things the defaults cannot carry, the smart-broadcast minimums and the 21 presets, come from the snapshot, which also restores the original key pair (a factory reset regenerates it). <b>Fix 2</b>, next: an ESP32 power gate that refuses saves below 3.5 V on battery and drops the boot-time rewrite; a ten-line patch to offer upstream. <b>Fix 3</b>, done on SF: the clean erase. <b>Fix 4</b>, planned: raise the brownout reset. <b>Fix 5</b>, in force: operations.</p>
+<div class="say">Say: "The radio ships with factory settings: public channel, random PIN, no name. We rebuilt the firmware so its factory settings are our settings. We proved it by forcing a factory reset on both radios: each came back on our channel with its name, nobody touching it. That hides the failure from the driver. Fix two removes the cause."</div>
+<div class="qa"><b>Q: Isn't compiling the key into firmware a security risk?</b> It is a private repository and the binaries are git-ignored; the key was already stored in the radios' flash, which is no harder to read. <b>Q: What is the ask?</b> Approve the flat-battery campaign before the next field drive.</div>
+</div>
+
+<!-- ======================= 20 ======================= -->
+<div class="sheet">
+<h2>Sheet 20 &mdash; References, records and attribution <span class="owner CANNON">CANNON</span></h2>
+<img class="slide" src="img/Slide20.PNG">
+<h3>What is on it</h3>
+<p>Every source used in Part II and what it was used for, and the statement of how the work was done.</p>
+<h3>In depth</h3>
+<p>The Heltec WiFi LoRa 32 V4 datasheet V4.2.0 gave the supply rails, the battery path and the transmit current (tables 3.2 and 3.4). The Boya BY25Q128AS datasheet gave the flash's 2.7 to 3.6 V range, program and erase times and endurance; the part was identified from its JEDEC ID read off the chip. ESP-IDF Kconfig and the Arduino core's sdkconfig gave the brownout level. The Meshtastic firmware at tag v2.7.26.54e0d8d gave the save and load behaviour. The GitHub issues gave the prior reports. esptool 4.11 read the flash; python-pptx and matplotlib built the deck. Every number in Part II is reproducible from <span class="mono">docs/src/flash_forensics</span> and the scripts in <span class="mono">docs/src</span>. The attribution card says who supplied what: hypothesis, a Qualcomm engineer; experiment design, scripts and analysis, Claude as an AI assistant under the team's direction; hardware, authorisation and checking, the team; reproducibility, the repository.</p>
+<div class="say">Say: "Everything here is checkable: the datasheets, the firmware at the exact version we run, the public issue tracker, and our own records in the repository. And we say exactly who contributed what, including the AI."</div>
+</div>
+
+<!-- ======================= 21 ======================= -->
+<div class="sheet">
+<h2>Sheet 21 &mdash; The answer, and what the failures bought <span class="owner DEO">DEO</span></h2>
+<img class="slide" src="img/Slide21.PNG">
+<h3>What is on it</h3>
+<p>The answer to the question in one paragraph, six numbers, and the closing line.</p>
+<h3>In depth</h3>
+<p>Is it the memory itself? Partly, and measurably, but not as the question implies. SF's settings flash carried 21 sectors that would not hold a value; rewritten under a healthy supply they became perfect. The cells had been left half-written below the flash's 2.7 V minimum but above the 2.44 V reset point, a window the firmware never checks and then punishes with factory defaults. The six numbers: ten root-caused failures, 21 to 0 unstable sectors on SF with RG clean, zero reflashes ever needed for a configuration failure, 90 s to recover a reverted radio and 2 s to detect one, 4.7 mi measured reach, and one build that makes a future revert restore our configuration, proven on both radios. Close on the bar, then the ask: approve the flat-battery campaign before the next field test.</p>
+<div class="say">Say: "So, is it the memory? Measurably yes, on one radio, and not in the way the question implies: the chip is healthy, it was written at the wrong moment. Every failure this semester became a rule. The worst one became a measurement, a repair, and a fix. The ask: let us run the flat-battery campaign before the next drive."</div>
+</div>
+
+</body></html>
