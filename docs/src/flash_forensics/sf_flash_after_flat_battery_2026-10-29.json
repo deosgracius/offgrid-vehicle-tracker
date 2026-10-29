@@ -1,0 +1,12 @@
+{
+ "radio": "SF",
+ "date": "2026-10-29",
+ "after": "two days stored at 0 % battery, then USB; fix-1 firmware",
+ "differing_bytes": {
+  "read1_vs_read2": 0,
+  "read2_vs_read3": 0,
+  "app_read1_vs_read2": 0
+ },
+ "unstable_sectors": [],
+ "sectors_with_data": 17
+}
