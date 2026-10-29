@@ -1,0 +1,498 @@
+[
+ {
+  "section": "Phase 0 — Close out & set up",
+  "name": "Capstone demo (Dec 10) + final report",
+  "owner": "Career",
+  "w0": 0,
+  "w1": 1,
+  "comp": 0
+ },
+ {
+  "section": "Phase 0 — Close out & set up",
+  "name": "Order boards: iCEBreaker/Tang Nano, Arty/Basys, Nucleo-F446, logic analyzer",
+  "owner": "Career",
+  "w0": 0,
+  "w1": 0,
+  "comp": 0
+ },
+ {
+  "section": "Phase 0 — Close out & set up",
+  "name": "Install toolchains: iverilog, Verilator, Yosys/nextpnr, Vivado, cocotb",
+  "owner": "RTL",
+  "w0": 0,
+  "w1": 1,
+  "comp": 0
+ },
+ {
+  "section": "Phase 0 — Close out & set up",
+  "name": "Install toolchains: arm-none-eabi-gcc, OpenOCD/pyOCD, CMake, Ceedling, Renode",
+  "owner": "C",
+  "w0": 0,
+  "w1": 1,
+  "comp": 0
+ },
+ {
+  "section": "Phase 0 — Close out & set up",
+  "name": "Create training repo layout + per-project READMEs",
+  "owner": "Career",
+  "w0": 1,
+  "w1": 1,
+  "comp": 0
+ },
+ {
+  "section": "Phase 1 — Foundations (Dec 14 – Jan 3)",
+  "name": "Harris & Harris ch 1–5: logic, sequential, Verilog, building blocks",
+  "owner": "RTL",
+  "w0": 2,
+  "w1": 4,
+  "comp": 0
+ },
+ {
+  "section": "Phase 1 — Foundations (Dec 14 – Jan 3)",
+  "name": "HDLBits to 60 % (local sim first, GTKWave)",
+  "owner": "RTL",
+  "w0": 2,
+  "w1": 4,
+  "comp": 0
+ },
+ {
+  "section": "Phase 1 — Foundations (Dec 14 – Jan 3)",
+  "name": "Cummings: nonblocking assignments paper; redo HDLBits mistakes",
+  "owner": "RTL",
+  "w0": 4,
+  "w1": 4,
+  "comp": 0
+ },
+ {
+  "section": "Phase 1 — Foundations (Dec 14 – Jan 3)",
+  "name": "Modern C + Effective C ch 1–8: UB, promotion, aliasing, volatile",
+  "owner": "C",
+  "w0": 2,
+  "w1": 4,
+  "comp": 0
+ },
+ {
+  "section": "Phase 1 — Foundations (Dec 14 – Jan 3)",
+  "name": "CS:APP ch 1–3; read Cortex-M asm of your own nav.c",
+  "owner": "C",
+  "w0": 3,
+  "w1": 4,
+  "comp": 0
+ },
+ {
+  "section": "Phase 1 — Foundations (Dec 14 – Jan 3)",
+  "name": "Host katas (TDD, Unity): ring buffer, fixed-point haversine, CRC, formatter, allocator",
+  "owner": "C",
+  "w0": 2,
+  "w1": 4,
+  "comp": 0
+ },
+ {
+  "section": "Phase 1 — Foundations (Dec 14 – Jan 3)",
+  "name": "Bare-metal blink: own linker script, startup, vector table (Zero to main)",
+  "owner": "C",
+  "w0": 3,
+  "w1": 4,
+  "comp": 0
+ },
+ {
+  "section": "Phase 2 — First real hardware (Jan 4 – 31)",
+  "name": "FSM coding styles (Cummings): debounce, edge detect, PWM, seven-seg",
+  "owner": "RTL",
+  "w0": 5,
+  "w1": 5,
+  "comp": 0
+ },
+ {
+  "section": "Phase 2 — First real hardware (Jan 4 – 31)",
+  "name": "UART TX/RX from scratch + sync FIFO + line command parser",
+  "owner": "RTL",
+  "w0": 5,
+  "w1": 7,
+  "comp": 0
+ },
+ {
+  "section": "Phase 2 — First real hardware (Jan 4 – 31)",
+  "name": "First bitstream: Yosys/nextpnr on iCEBreaker; read resource report",
+  "owner": "RTL",
+  "w0": 5,
+  "w1": 6,
+  "comp": 0
+ },
+ {
+  "section": "Phase 2 — First real hardware (Jan 4 – 31)",
+  "name": "Vivado on Arty: hand-written XDC, timing summary, WNS, 100 MHz",
+  "owner": "RTL",
+  "w0": 7,
+  "w1": 8,
+  "comp": 0
+ },
+ {
+  "section": "Phase 2 — First real hardware (Jan 4 – 31)",
+  "name": "Finish HDLBits (100 %)",
+  "owner": "RTL",
+  "w0": 5,
+  "w1": 8,
+  "comp": 0
+ },
+ {
+  "section": "Phase 2 — First real hardware (Jan 4 – 31)",
+  "name": "STM32 register-level drivers: GPIO, SysTick, NVIC, EXTI, TIM",
+  "owner": "C",
+  "w0": 5,
+  "w1": 6,
+  "comp": 0
+ },
+ {
+  "section": "Phase 2 — First real hardware (Jan 4 – 31)",
+  "name": "USART polling → interrupt → DMA ring; SPI; I2C — with host tests",
+  "owner": "C",
+  "w0": 6,
+  "w1": 8,
+  "comp": 0
+ },
+ {
+  "section": "Phase 2 — First real hardware (Jan 4 – 31)",
+  "name": "ISR discipline, barriers, PRIMASK/BASEPRI, lock-free SPSC buffer",
+  "owner": "C",
+  "w0": 6,
+  "w1": 7,
+  "comp": 0
+ },
+ {
+  "section": "Phase 2 — First real hardware (Jan 4 – 31)",
+  "name": "Yiu ch on exceptions/faults; HardFault handler decodes CFSR + stacked PC",
+  "owner": "C",
+  "w0": 7,
+  "w1": 8,
+  "comp": 0
+ },
+ {
+  "section": "Phase 2 — First real hardware (Jan 4 – 31)",
+  "name": "Samek video course lessons 1–20",
+  "owner": "C",
+  "w0": 5,
+  "w1": 8,
+  "comp": 0
+ },
+ {
+  "section": "Phase 2 — First real hardware (Jan 4 – 31)",
+  "name": "Fridays: logic-analyzer captures of FPGA UART vs STM32 UART, write-up",
+  "owner": "SoC",
+  "w0": 5,
+  "w1": 8,
+  "comp": 0
+ },
+ {
+  "section": "Phase 3 — Hard interview topics (Feb 1 – 28)",
+  "name": "CDC: metastability, 2-flop sync, Gray pointers, MTBF (Cummings CDC paper)",
+  "owner": "RTL",
+  "w0": 9,
+  "w1": 10,
+  "comp": 0
+ },
+ {
+  "section": "Phase 3 — Hard interview topics (Feb 1 – 28)",
+  "name": "Async FIFO, parameterized; cocotb random stress across clock ratios",
+  "owner": "RTL",
+  "w0": 9,
+  "w1": 11,
+  "comp": 0
+ },
+ {
+  "section": "Phase 3 — Hard interview topics (Feb 1 – 28)",
+  "name": "SPI slave + register map, I2C slave, BRAM inference, pipelined MAC",
+  "owner": "RTL",
+  "w0": 10,
+  "w1": 12,
+  "comp": 0
+ },
+ {
+  "section": "Phase 3 — Hard interview topics (Feb 1 – 28)",
+  "name": "SystemVerilog for design (Sutherland ch 1–9): always_ff, packages, interfaces",
+  "owner": "RTL",
+  "w0": 9,
+  "w1": 12,
+  "comp": 0
+ },
+ {
+  "section": "Phase 3 — Hard interview topics (Feb 1 – 28)",
+  "name": "Verification first pass: self-checking TBs, cocotb+Verilator, SVA basics",
+  "owner": "ASIC",
+  "w0": 11,
+  "w1": 12,
+  "comp": 0
+ },
+ {
+  "section": "Phase 3 — Hard interview topics (Feb 1 – 28)",
+  "name": "Write a preemptive scheduler (PendSV) — Samek lessons 21–30",
+  "owner": "C",
+  "w0": 9,
+  "w1": 10,
+  "comp": 0
+ },
+ {
+  "section": "Phase 3 — Hard interview topics (Feb 1 – 28)",
+  "name": "Mastering the FreeRTOS Kernel; inversion, stacks, static alloc, MPU",
+  "owner": "C",
+  "w0": 10,
+  "w1": 12,
+  "comp": 0
+ },
+ {
+  "section": "Phase 3 — Hard interview topics (Feb 1 – 28)",
+  "name": "Move driver suite onto FreeRTOS; logger task; tickless low power + current measurement",
+  "owner": "C",
+  "w0": 11,
+  "w1": 12,
+  "comp": 0
+ },
+ {
+  "section": "Phase 3 — Hard interview topics (Feb 1 – 28)",
+  "name": "Fridays: spi-regs — STM32 master ↔ FPGA slave register map, tests both sides",
+  "owner": "SoC",
+  "w0": 9,
+  "w1": 12,
+  "comp": 0
+ },
+ {
+  "section": "Phase 4 — A CPU, and the toolchain beneath C (Mar 1 – Apr 4)",
+  "name": "RV32I single-cycle core (H&H ch 7, P&H ch 4)",
+  "owner": "RTL",
+  "w0": 13,
+  "w1": 14,
+  "comp": 0
+ },
+ {
+  "section": "Phase 4 — A CPU, and the toolchain beneath C (Mar 1 – Apr 4)",
+  "name": "5-stage pipeline: forwarding, hazards; riscv-tests rv32ui pass in Verilator",
+  "owner": "RTL",
+  "w0": 15,
+  "w1": 17,
+  "comp": 0
+ },
+ {
+  "section": "Phase 4 — A CPU, and the toolchain beneath C (Mar 1 – Apr 4)",
+  "name": "Timing closure on Arty: slack, critical path, false/multicycle paths; verilator lint clean",
+  "owner": "ASIC",
+  "w0": 16,
+  "w1": 17,
+  "comp": 0
+ },
+ {
+  "section": "Phase 4 — A CPU, and the toolchain beneath C (Mar 1 – Apr 4)",
+  "name": "Linking in depth (CS:APP ch 7): sections, map files, code in RAM",
+  "owner": "C",
+  "w0": 13,
+  "w1": 13,
+  "comp": 0
+ },
+ {
+  "section": "Phase 4 — A CPU, and the toolchain beneath C (Mar 1 – Apr 4)",
+  "name": "Bootloader + app: VTOR, UART update, CRC, rollback, power-loss test",
+  "owner": "C",
+  "w0": 14,
+  "w1": 16,
+  "comp": 0
+ },
+ {
+  "section": "Phase 4 — A CPU, and the toolchain beneath C (Mar 1 – Apr 4)",
+  "name": "Flash KV store with wear leveling and power-loss safety",
+  "owner": "C",
+  "w0": 16,
+  "w1": 17,
+  "comp": 0
+ },
+ {
+  "section": "Phase 4 — A CPU, and the toolchain beneath C (Mar 1 – Apr 4)",
+  "name": "CMake/Ninja, clang-tidy, cppcheck, Barr standard; GitHub Actions CI with Renode",
+  "owner": "C",
+  "w0": 15,
+  "w1": 17,
+  "comp": 0
+ },
+ {
+  "section": "Phase 4 — A CPU, and the toolchain beneath C (Mar 1 – Apr 4)",
+  "name": "Fridays: rv32-core README — pipeline diagram, test signature, timing table",
+  "owner": "SoC",
+  "w0": 13,
+  "w1": 17,
+  "comp": 0
+ },
+ {
+  "section": "Phase 5 — The ASIC flow (Apr 5 – May 2)",
+  "name": "OpenLane 2 + Sky130: UART+regmap RTL → GDS; read reports per stage",
+  "owner": "ASIC",
+  "w0": 18,
+  "w1": 20,
+  "comp": 0
+ },
+ {
+  "section": "Phase 5 — The ASIC flow (Apr 5 – May 2)",
+  "name": "Concepts: std cells, .lib, SDC, CTS, hold fixing, DFT/scan, clock gating (Weste & Harris)",
+  "owner": "ASIC",
+  "w0": 18,
+  "w1": 21,
+  "comp": 0
+ },
+ {
+  "section": "Phase 5 — The ASIC flow (Apr 5 – May 2)",
+  "name": "Gate-level sim of post-synth netlist vs RTL testbench",
+  "owner": "ASIC",
+  "w0": 20,
+  "w1": 21,
+  "comp": 0
+ },
+ {
+  "section": "Phase 5 — The ASIC flow (Apr 5 – May 2)",
+  "name": "Tiny Tapeout: pick tile-sized design, run template flow, submit for next shuttle",
+  "owner": "ASIC",
+  "w0": 19,
+  "w1": 21,
+  "comp": 0
+ },
+ {
+  "section": "Phase 5 — The ASIC flow (Apr 5 – May 2)",
+  "name": "Robust drivers: timeouts, I2C bus recovery, watchdog policy, brown-out, RTT/ITM tracing",
+  "owner": "C",
+  "w0": 18,
+  "w1": 20,
+  "comp": 0
+ },
+ {
+  "section": "Phase 5 — The ASIC flow (Apr 5 – May 2)",
+  "name": "nanopb on bare metal over framed UART (COBS + CRC); optional USB CDC",
+  "owner": "C",
+  "w0": 20,
+  "w1": 21,
+  "comp": 0
+ },
+ {
+  "section": "Phase 5 — The ASIC flow (Apr 5 – May 2)",
+  "name": "Making Embedded Systems (White) in full",
+  "owner": "C",
+  "w0": 18,
+  "w1": 21,
+  "comp": 0
+ },
+ {
+  "section": "Phase 5 — The ASIC flow (Apr 5 – May 2)",
+  "name": "Fridays: tt-tapeout repo — GDS render, reports, testbench, newcomer README",
+  "owner": "SoC",
+  "w0": 18,
+  "w1": 21,
+  "comp": 0
+ },
+ {
+  "section": "Phase 5 — The ASIC flow (Apr 5 – May 2)",
+  "name": "72 h bench soak of Nucleo firmware, no reset",
+  "owner": "C",
+  "w0": 21,
+  "w1": 21,
+  "comp": 0
+ },
+ {
+  "section": "Phase 6 — Verification depth + the SoC (May 3 – 30)",
+  "name": "SV classes, constraints, covergroups (Spear ch 1–9); UVM roles mirrored in cocotb",
+  "owner": "ASIC",
+  "w0": 22,
+  "w1": 24,
+  "comp": 0
+ },
+ {
+  "section": "Phase 6 — Verification depth + the SoC (May 3 – 30)",
+  "name": "Verification plan for RV32I core; close coverage holes to ≥ 90 %",
+  "owner": "ASIC",
+  "w0": 23,
+  "w1": 25,
+  "comp": 0
+ },
+ {
+  "section": "Phase 6 — Verification depth + the SoC (May 3 – 30)",
+  "name": "Formal with SymbiYosys: FIFO proofs; AXI4-Lite slave + Wishbone",
+  "owner": "ASIC",
+  "w0": 24,
+  "w1": 25,
+  "comp": 0
+ },
+ {
+  "section": "Phase 6 — Verification depth + the SoC (May 3 – 30)",
+  "name": "rv32-soc: core + UART + GPIO + timer + SPI + boot ROM over AXI-Lite on Arty",
+  "owner": "RTL",
+  "w0": 22,
+  "w1": 24,
+  "comp": 0
+ },
+ {
+  "section": "Phase 6 — Verification depth + the SoC (May 3 – 30)",
+  "name": "crt0.S, linker script, drivers for your own peripherals, printf, timer ISR",
+  "owner": "C",
+  "w0": 23,
+  "w1": 25,
+  "comp": 0
+ },
+ {
+  "section": "Phase 6 — Verification depth + the SoC (May 3 – 30)",
+  "name": "Port capstone nav math to the SoC; optional HW MAC/CRC peripheral with cycle counts",
+  "owner": "SoC",
+  "w0": 24,
+  "w1": 25,
+  "comp": 0
+ },
+ {
+  "section": "Phase 6 — Verification depth + the SoC (May 3 – 30)",
+  "name": "Performance: mcycle profiling, fixed-point vs float on a no-FPU core",
+  "owner": "C",
+  "w0": 25,
+  "w1": 25,
+  "comp": 0
+ },
+ {
+  "section": "Phase 7 — Portfolio, interviews, buffer (May 31 – Jul 4)",
+  "name": "Polish three repos: rv32-soc, stm32-bare, tt-tapeout (diagrams, 5-min run, CI badge)",
+  "owner": "Career",
+  "w0": 26,
+  "w1": 27,
+  "comp": 0
+ },
+ {
+  "section": "Phase 7 — Portfolio, interviews, buffer (May 31 – Jul 4)",
+  "name": "One technical write-up per repo",
+  "owner": "Career",
+  "w0": 27,
+  "w1": 28,
+  "comp": 0
+ },
+ {
+  "section": "Phase 7 — Portfolio, interviews, buffer (May 31 – Jul 4)",
+  "name": "Daily interview drills: RTL/DV topics",
+  "owner": "RTL",
+  "w0": 26,
+  "w1": 30,
+  "comp": 0
+ },
+ {
+  "section": "Phase 7 — Portfolio, interviews, buffer (May 31 – Jul 4)",
+  "name": "Daily interview drills: embedded C topics",
+  "owner": "C",
+  "w0": 26,
+  "w1": 30,
+  "comp": 0
+ },
+ {
+  "section": "Phase 7 — Portfolio, interviews, buffer (May 31 – Jul 4)",
+  "name": "Applications 3–5/week from Jun 1; two mock interviews/week",
+  "owner": "Career",
+  "w0": 26,
+  "w1": 30,
+  "comp": 0
+ },
+ {
+  "section": "Phase 7 — Portfolio, interviews, buffer (May 31 – Jul 4)",
+  "name": "Buffer for slippage from phases 4–6",
+  "owner": "SoC",
+  "w0": 29,
+  "w1": 30,
+  "comp": 0
+ }
+]

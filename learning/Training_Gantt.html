@@ -1,0 +1,183 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Deo · RTL/ASIC + Embedded C · Dec 2026 – Jun 2027</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#ffffff;--line:rgba(40,90,160,.18);--txt:#16233d;--mut:#5b6b8a;--ok:#1f9d68;
+ --a:#1199bd;--b:#6d4bdb;}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(160deg,#ffffff 0%,#ffffff 68%,#e6f0fb 100%);color:var(--txt);
+ font-family:"Outfit",system-ui,sans-serif;padding:26px clamp(16px,4vw,48px) 60px}
+.mono{font-family:"JetBrains Mono",monospace}
+h1{font-size:28px;margin:0;letter-spacing:.06em;font-weight:800;
+ background:linear-gradient(90deg,var(--a),var(--b));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--mut);margin:4px 0 0;font-size:13px;letter-spacing:.04em}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin:16px 0 6px;font-size:12.5px}
+.legend b{display:inline-flex;align-items:center;gap:7px;font-weight:600}
+.dot{width:12px;height:12px;border-radius:4px;display:inline-block}
+.note{margin:10px 0 18px;padding:11px 14px;border:1px solid var(--line);border-radius:12px;background:#eef5fd;
+ font-size:12.5px;color:#3f5170;max-width:1080px}
+.note b{color:#16233d}
+.gwrap{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#ffffff;position:relative;box-shadow:0 10px 30px rgba(40,90,160,.10)}
+.grid{display:grid;position:relative}
+.gh{position:sticky;top:0;z-index:4;background:#eaf2fc;border-bottom:1px solid var(--line)}
+.cell{padding:8px 6px;border-right:1px solid var(--line);font-size:11px}
+.wk{text-align:center}
+.wk .l{font-weight:700;font-size:12px;letter-spacing:.08em}
+.wk .r{color:var(--mut);font-size:9px}
+.namecell{position:sticky;left:0;z-index:3;background:#f5f9ff;border-right:1px solid var(--line);
+ padding:7px 12px;font-size:12.5px;display:flex;align-items:center;gap:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sec{grid-column:1/-1;background:rgba(17,153,189,.10);border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+ padding:7px 12px;font-weight:700;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--a);position:sticky;left:0}
+.track{position:relative;border-bottom:1px solid rgba(110,160,235,.07);height:34px}
+.bar{position:absolute;top:6px;height:22px;border-radius:7px;display:flex;align-items:center;padding:0 8px;
+ font-size:10.5px;color:#fff;font-weight:700;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.25);white-space:nowrap}
+.bar .fill{position:absolute;left:0;top:0;bottom:0;background:rgba(255,255,255,.30);border-radius:7px}
+.bar .lbl{position:relative;z-index:1}
+.nowcol{position:absolute;top:0;bottom:0;border-left:2px solid var(--ok);box-shadow:0 0 14px rgba(52,211,153,.4);z-index:2;pointer-events:none}
+.nowtag{position:absolute;top:-1px;transform:translateX(-50%);background:var(--ok);color:#042018;font-size:9px;font-weight:800;
+ padding:2px 7px;border-radius:0 0 6px 6px;letter-spacing:.1em}
+.hovlayer{position:absolute;top:0;bottom:0;z-index:5}
+.hstrip{position:absolute;top:0;bottom:0}
+.hstrip:hover{background:rgba(110,160,235,.06)}
+#tip{position:fixed;z-index:50;max-width:360px;background:#ffffff;border:1px solid var(--line);border-radius:12px;
+ padding:12px 14px;box-shadow:0 20px 50px rgba(40,90,160,.28);font-size:12px;pointer-events:none;opacity:0;transition:opacity .12s}
+#tip h4{margin:0 0 8px;font-size:12.5px;letter-spacing:.04em}
+#tip .grp{margin:7px 0 0}
+#tip .who{font-weight:700;font-size:11px;display:flex;align-items:center;gap:6px;margin-bottom:2px}
+#tip ul{margin:2px 0 0;padding-left:16px;color:var(--mut)}
+#tip li{margin:1px 0}
+#tip .none{color:var(--mut);font-style:italic}
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 12px}
+.toolbar button{font-family:"Outfit",sans-serif;font-size:12px;font-weight:700;padding:8px 13px;border-radius:9px;border:0;cursor:pointer;background:linear-gradient(90deg,var(--a),var(--b));color:#fff}
+.toolbar button.ghost{background:#fff;color:#16233d;border:1px solid var(--line)}
+.toolbar #editBtn.on{background:var(--ok)}
+.toolbar .hint{font-size:11px;color:var(--mut)}
+.mini{margin-left:6px;border:0;background:rgba(40,90,160,.12);color:#16233d;border-radius:6px;cursor:pointer;font-size:11px;width:20px;height:20px;line-height:1;padding:0}
+.mini.del{background:rgba(248,113,113,.20);color:#c0392b}
+.editing .bar{cursor:pointer}
+.gmodal{position:fixed;inset:0;background:rgba(20,40,70,.45);display:none;align-items:center;justify-content:center;z-index:60}
+.gmodal.show{display:flex}
+.gsheet{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px 22px;width:min(440px,92vw);box-shadow:0 30px 70px rgba(20,50,90,.35)}
+.gsheet h3{margin:0 0 10px;color:#16233d}
+.gsheet label{display:block;font-size:11px;color:var(--mut);margin:9px 0 0}
+.gsheet input,.gsheet select{width:100%;margin-top:3px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:13px;color:#16233d;background:#fff}
+.gsheet .row2{display:flex;gap:10px}.gsheet .row2 label{flex:1}
+.gmrow{display:flex;gap:8px;margin-top:16px;align-items:center}
+.gmrow button{font-family:"Outfit",sans-serif;font-weight:700;font-size:13px;padding:9px 14px;border-radius:9px;border:0;cursor:pointer;background:var(--a);color:#fff}
+.gmrow .ghost{background:#fff;border:1px solid var(--line);color:#16233d}
+.gmrow .del{background:#fbe3e3;color:#c0392b;margin-left:auto}
+</style></head><body>
+<h1>DEO · RTL/ASIC + EMBEDDED C TRAINING</h1>
+<div class="sub mono">Dec 1, 2026 – Jun 30, 2027 · 31 weeks · hover any week to see what each track is doing</div>
+<div class="legend" id="legend"></div>
+<div class="note">Two tracks that converge: <b>RTL</b> (Verilog → SystemVerilog → FPGA → <b>ASIC</b> flow and verification)
+ and <b>Embedded C</b> (bare-metal Cortex-M → RTOS → bootloader → firmware on your own RISC-V SoC). Fridays are the
+ <b>convergence project</b> for the month; they are the portfolio. Full curriculum and "done when" checks in
+ <b>PLAN.md</b>. Edits here are saved in your browser only — the source of truth is
+ <b>tasks.json</b> (edit it, run <span class="mono">Update_Gantt.bat</span> or <span class="mono">python build_gantt.py</span>, commit).</div>
+<div class="toolbar">
+ <button id="editBtn" onclick="toggleEdit()">&#9998; Edit</button>
+ <button class="ghost" onclick="addTask()">+ Add task</button>
+ <button class="ghost" onclick="resetGantt()">&#8634; Reset</button>
+ <span class="hint" id="editHint"></span>
+</div>
+<div class="gwrap"><div class="grid" id="grid"></div>
+ <div class="hovlayer" id="hov"></div>
+ <div class="nowcol" id="nowcol"><span class="nowtag">NOW</span></div>
+</div>
+<div id="tip"></div>
+<div class="gmodal" id="gmodal"><div class="gsheet">
+ <h3 id="gmtitle">Edit task</h3>
+ <label>Name<input id="gm_name"></label>
+ <label>Section<input id="gm_section" placeholder="e.g. Protocol Firmware — Deo"></label>
+ <label>Owner<select id="gm_owner"></select></label>
+ <div class="row2"><label>Start week<select id="gm_w0"></select></label><label>End week<select id="gm_w1"></select></label></div>
+ <label>Completion %<input id="gm_comp" type="number" min="0" max="100"></label>
+ <div class="gmrow"><button onclick="saveModal()">Save</button><button class="ghost" onclick="closeModal()">Cancel</button><button class="del" id="gm_del" onclick="deleteFromModal()">Delete</button></div>
+</div></div>
+<script>
+const D = {"tasks": [{"section": "Phase 0 \u2014 Close out & set up", "name": "Capstone demo (Dec 10) + final report", "owner": "Career", "w0": 0, "w1": 1, "comp": 0}, {"section": "Phase 0 \u2014 Close out & set up", "name": "Order boards: iCEBreaker/Tang Nano, Arty/Basys, Nucleo-F446, logic analyzer", "owner": "Career", "w0": 0, "w1": 0, "comp": 0}, {"section": "Phase 0 \u2014 Close out & set up", "name": "Install toolchains: iverilog, Verilator, Yosys/nextpnr, Vivado, cocotb", "owner": "RTL", "w0": 0, "w1": 1, "comp": 0}, {"section": "Phase 0 \u2014 Close out & set up", "name": "Install toolchains: arm-none-eabi-gcc, OpenOCD/pyOCD, CMake, Ceedling, Renode", "owner": "C", "w0": 0, "w1": 1, "comp": 0}, {"section": "Phase 0 \u2014 Close out & set up", "name": "Create training repo layout + per-project READMEs", "owner": "Career", "w0": 1, "w1": 1, "comp": 0}, {"section": "Phase 1 \u2014 Foundations (Dec 14 \u2013 Jan 3)", "name": "Harris & Harris ch 1\u20135: logic, sequential, Verilog, building blocks", "owner": "RTL", "w0": 2, "w1": 4, "comp": 0}, {"section": "Phase 1 \u2014 Foundations (Dec 14 \u2013 Jan 3)", "name": "HDLBits to 60 % (local sim first, GTKWave)", "owner": "RTL", "w0": 2, "w1": 4, "comp": 0}, {"section": "Phase 1 \u2014 Foundations (Dec 14 \u2013 Jan 3)", "name": "Cummings: nonblocking assignments paper; redo HDLBits mistakes", "owner": "RTL", "w0": 4, "w1": 4, "comp": 0}, {"section": "Phase 1 \u2014 Foundations (Dec 14 \u2013 Jan 3)", "name": "Modern C + Effective C ch 1\u20138: UB, promotion, aliasing, volatile", "owner": "C", "w0": 2, "w1": 4, "comp": 0}, {"section": "Phase 1 \u2014 Foundations (Dec 14 \u2013 Jan 3)", "name": "CS:APP ch 1\u20133; read Cortex-M asm of your own nav.c", "owner": "C", "w0": 3, "w1": 4, "comp": 0}, {"section": "Phase 1 \u2014 Foundations (Dec 14 \u2013 Jan 3)", "name": "Host katas (TDD, Unity): ring buffer, fixed-point haversine, CRC, formatter, allocator", "owner": "C", "w0": 2, "w1": 4, "comp": 0}, {"section": "Phase 1 \u2014 Foundations (Dec 14 \u2013 Jan 3)", "name": "Bare-metal blink: own linker script, startup, vector table (Zero to main)", "owner": "C", "w0": 3, "w1": 4, "comp": 0}, {"section": "Phase 2 \u2014 First real hardware (Jan 4 \u2013 31)", "name": "FSM coding styles (Cummings): debounce, edge detect, PWM, seven-seg", "owner": "RTL", "w0": 5, "w1": 5, "comp": 0}, {"section": "Phase 2 \u2014 First real hardware (Jan 4 \u2013 31)", "name": "UART TX/RX from scratch + sync FIFO + line command parser", "owner": "RTL", "w0": 5, "w1": 7, "comp": 0}, {"section": "Phase 2 \u2014 First real hardware (Jan 4 \u2013 31)", "name": "First bitstream: Yosys/nextpnr on iCEBreaker; read resource report", "owner": "RTL", "w0": 5, "w1": 6, "comp": 0}, {"section": "Phase 2 \u2014 First real hardware (Jan 4 \u2013 31)", "name": "Vivado on Arty: hand-written XDC, timing summary, WNS, 100 MHz", "owner": "RTL", "w0": 7, "w1": 8, "comp": 0}, {"section": "Phase 2 \u2014 First real hardware (Jan 4 \u2013 31)", "name": "Finish HDLBits (100 %)", "owner": "RTL", "w0": 5, "w1": 8, "comp": 0}, {"section": "Phase 2 \u2014 First real hardware (Jan 4 \u2013 31)", "name": "STM32 register-level drivers: GPIO, SysTick, NVIC, EXTI, TIM", "owner": "C", "w0": 5, "w1": 6, "comp": 0}, {"section": "Phase 2 \u2014 First real hardware (Jan 4 \u2013 31)", "name": "USART polling \u2192 interrupt \u2192 DMA ring; SPI; I2C \u2014 with host tests", "owner": "C", "w0": 6, "w1": 8, "comp": 0}, {"section": "Phase 2 \u2014 First real hardware (Jan 4 \u2013 31)", "name": "ISR discipline, barriers, PRIMASK/BASEPRI, lock-free SPSC buffer", "owner": "C", "w0": 6, "w1": 7, "comp": 0}, {"section": "Phase 2 \u2014 First real hardware (Jan 4 \u2013 31)", "name": "Yiu ch on exceptions/faults; HardFault handler decodes CFSR + stacked PC", "owner": "C", "w0": 7, "w1": 8, "comp": 0}, {"section": "Phase 2 \u2014 First real hardware (Jan 4 \u2013 31)", "name": "Samek video course lessons 1\u201320", "owner": "C", "w0": 5, "w1": 8, "comp": 0}, {"section": "Phase 2 \u2014 First real hardware (Jan 4 \u2013 31)", "name": "Fridays: logic-analyzer captures of FPGA UART vs STM32 UART, write-up", "owner": "SoC", "w0": 5, "w1": 8, "comp": 0}, {"section": "Phase 3 \u2014 Hard interview topics (Feb 1 \u2013 28)", "name": "CDC: metastability, 2-flop sync, Gray pointers, MTBF (Cummings CDC paper)", "owner": "RTL", "w0": 9, "w1": 10, "comp": 0}, {"section": "Phase 3 \u2014 Hard interview topics (Feb 1 \u2013 28)", "name": "Async FIFO, parameterized; cocotb random stress across clock ratios", "owner": "RTL", "w0": 9, "w1": 11, "comp": 0}, {"section": "Phase 3 \u2014 Hard interview topics (Feb 1 \u2013 28)", "name": "SPI slave + register map, I2C slave, BRAM inference, pipelined MAC", "owner": "RTL", "w0": 10, "w1": 12, "comp": 0}, {"section": "Phase 3 \u2014 Hard interview topics (Feb 1 \u2013 28)", "name": "SystemVerilog for design (Sutherland ch 1\u20139): always_ff, packages, interfaces", "owner": "RTL", "w0": 9, "w1": 12, "comp": 0}, {"section": "Phase 3 \u2014 Hard interview topics (Feb 1 \u2013 28)", "name": "Verification first pass: self-checking TBs, cocotb+Verilator, SVA basics", "owner": "ASIC", "w0": 11, "w1": 12, "comp": 0}, {"section": "Phase 3 \u2014 Hard interview topics (Feb 1 \u2013 28)", "name": "Write a preemptive scheduler (PendSV) \u2014 Samek lessons 21\u201330", "owner": "C", "w0": 9, "w1": 10, "comp": 0}, {"section": "Phase 3 \u2014 Hard interview topics (Feb 1 \u2013 28)", "name": "Mastering the FreeRTOS Kernel; inversion, stacks, static alloc, MPU", "owner": "C", "w0": 10, "w1": 12, "comp": 0}, {"section": "Phase 3 \u2014 Hard interview topics (Feb 1 \u2013 28)", "name": "Move driver suite onto FreeRTOS; logger task; tickless low power + current measurement", "owner": "C", "w0": 11, "w1": 12, "comp": 0}, {"section": "Phase 3 \u2014 Hard interview topics (Feb 1 \u2013 28)", "name": "Fridays: spi-regs \u2014 STM32 master \u2194 FPGA slave register map, tests both sides", "owner": "SoC", "w0": 9, "w1": 12, "comp": 0}, {"section": "Phase 4 \u2014 A CPU, and the toolchain beneath C (Mar 1 \u2013 Apr 4)", "name": "RV32I single-cycle core (H&H ch 7, P&H ch 4)", "owner": "RTL", "w0": 13, "w1": 14, "comp": 0}, {"section": "Phase 4 \u2014 A CPU, and the toolchain beneath C (Mar 1 \u2013 Apr 4)", "name": "5-stage pipeline: forwarding, hazards; riscv-tests rv32ui pass in Verilator", "owner": "RTL", "w0": 15, "w1": 17, "comp": 0}, {"section": "Phase 4 \u2014 A CPU, and the toolchain beneath C (Mar 1 \u2013 Apr 4)", "name": "Timing closure on Arty: slack, critical path, false/multicycle paths; verilator lint clean", "owner": "ASIC", "w0": 16, "w1": 17, "comp": 0}, {"section": "Phase 4 \u2014 A CPU, and the toolchain beneath C (Mar 1 \u2013 Apr 4)", "name": "Linking in depth (CS:APP ch 7): sections, map files, code in RAM", "owner": "C", "w0": 13, "w1": 13, "comp": 0}, {"section": "Phase 4 \u2014 A CPU, and the toolchain beneath C (Mar 1 \u2013 Apr 4)", "name": "Bootloader + app: VTOR, UART update, CRC, rollback, power-loss test", "owner": "C", "w0": 14, "w1": 16, "comp": 0}, {"section": "Phase 4 \u2014 A CPU, and the toolchain beneath C (Mar 1 \u2013 Apr 4)", "name": "Flash KV store with wear leveling and power-loss safety", "owner": "C", "w0": 16, "w1": 17, "comp": 0}, {"section": "Phase 4 \u2014 A CPU, and the toolchain beneath C (Mar 1 \u2013 Apr 4)", "name": "CMake/Ninja, clang-tidy, cppcheck, Barr standard; GitHub Actions CI with Renode", "owner": "C", "w0": 15, "w1": 17, "comp": 0}, {"section": "Phase 4 \u2014 A CPU, and the toolchain beneath C (Mar 1 \u2013 Apr 4)", "name": "Fridays: rv32-core README \u2014 pipeline diagram, test signature, timing table", "owner": "SoC", "w0": 13, "w1": 17, "comp": 0}, {"section": "Phase 5 \u2014 The ASIC flow (Apr 5 \u2013 May 2)", "name": "OpenLane 2 + Sky130: UART+regmap RTL \u2192 GDS; read reports per stage", "owner": "ASIC", "w0": 18, "w1": 20, "comp": 0}, {"section": "Phase 5 \u2014 The ASIC flow (Apr 5 \u2013 May 2)", "name": "Concepts: std cells, .lib, SDC, CTS, hold fixing, DFT/scan, clock gating (Weste & Harris)", "owner": "ASIC", "w0": 18, "w1": 21, "comp": 0}, {"section": "Phase 5 \u2014 The ASIC flow (Apr 5 \u2013 May 2)", "name": "Gate-level sim of post-synth netlist vs RTL testbench", "owner": "ASIC", "w0": 20, "w1": 21, "comp": 0}, {"section": "Phase 5 \u2014 The ASIC flow (Apr 5 \u2013 May 2)", "name": "Tiny Tapeout: pick tile-sized design, run template flow, submit for next shuttle", "owner": "ASIC", "w0": 19, "w1": 21, "comp": 0}, {"section": "Phase 5 \u2014 The ASIC flow (Apr 5 \u2013 May 2)", "name": "Robust drivers: timeouts, I2C bus recovery, watchdog policy, brown-out, RTT/ITM tracing", "owner": "C", "w0": 18, "w1": 20, "comp": 0}, {"section": "Phase 5 \u2014 The ASIC flow (Apr 5 \u2013 May 2)", "name": "nanopb on bare metal over framed UART (COBS + CRC); optional USB CDC", "owner": "C", "w0": 20, "w1": 21, "comp": 0}, {"section": "Phase 5 \u2014 The ASIC flow (Apr 5 \u2013 May 2)", "name": "Making Embedded Systems (White) in full", "owner": "C", "w0": 18, "w1": 21, "comp": 0}, {"section": "Phase 5 \u2014 The ASIC flow (Apr 5 \u2013 May 2)", "name": "Fridays: tt-tapeout repo \u2014 GDS render, reports, testbench, newcomer README", "owner": "SoC", "w0": 18, "w1": 21, "comp": 0}, {"section": "Phase 5 \u2014 The ASIC flow (Apr 5 \u2013 May 2)", "name": "72 h bench soak of Nucleo firmware, no reset", "owner": "C", "w0": 21, "w1": 21, "comp": 0}, {"section": "Phase 6 \u2014 Verification depth + the SoC (May 3 \u2013 30)", "name": "SV classes, constraints, covergroups (Spear ch 1\u20139); UVM roles mirrored in cocotb", "owner": "ASIC", "w0": 22, "w1": 24, "comp": 0}, {"section": "Phase 6 \u2014 Verification depth + the SoC (May 3 \u2013 30)", "name": "Verification plan for RV32I core; close coverage holes to \u2265 90 %", "owner": "ASIC", "w0": 23, "w1": 25, "comp": 0}, {"section": "Phase 6 \u2014 Verification depth + the SoC (May 3 \u2013 30)", "name": "Formal with SymbiYosys: FIFO proofs; AXI4-Lite slave + Wishbone", "owner": "ASIC", "w0": 24, "w1": 25, "comp": 0}, {"section": "Phase 6 \u2014 Verification depth + the SoC (May 3 \u2013 30)", "name": "rv32-soc: core + UART + GPIO + timer + SPI + boot ROM over AXI-Lite on Arty", "owner": "RTL", "w0": 22, "w1": 24, "comp": 0}, {"section": "Phase 6 \u2014 Verification depth + the SoC (May 3 \u2013 30)", "name": "crt0.S, linker script, drivers for your own peripherals, printf, timer ISR", "owner": "C", "w0": 23, "w1": 25, "comp": 0}, {"section": "Phase 6 \u2014 Verification depth + the SoC (May 3 \u2013 30)", "name": "Port capstone nav math to the SoC; optional HW MAC/CRC peripheral with cycle counts", "owner": "SoC", "w0": 24, "w1": 25, "comp": 0}, {"section": "Phase 6 \u2014 Verification depth + the SoC (May 3 \u2013 30)", "name": "Performance: mcycle profiling, fixed-point vs float on a no-FPU core", "owner": "C", "w0": 25, "w1": 25, "comp": 0}, {"section": "Phase 7 \u2014 Portfolio, interviews, buffer (May 31 \u2013 Jul 4)", "name": "Polish three repos: rv32-soc, stm32-bare, tt-tapeout (diagrams, 5-min run, CI badge)", "owner": "Career", "w0": 26, "w1": 27, "comp": 0}, {"section": "Phase 7 \u2014 Portfolio, interviews, buffer (May 31 \u2013 Jul 4)", "name": "One technical write-up per repo", "owner": "Career", "w0": 27, "w1": 28, "comp": 0}, {"section": "Phase 7 \u2014 Portfolio, interviews, buffer (May 31 \u2013 Jul 4)", "name": "Daily interview drills: RTL/DV topics", "owner": "RTL", "w0": 26, "w1": 30, "comp": 0}, {"section": "Phase 7 \u2014 Portfolio, interviews, buffer (May 31 \u2013 Jul 4)", "name": "Daily interview drills: embedded C topics", "owner": "C", "w0": 26, "w1": 30, "comp": 0}, {"section": "Phase 7 \u2014 Portfolio, interviews, buffer (May 31 \u2013 Jul 4)", "name": "Applications 3\u20135/week from Jun 1; two mock interviews/week", "owner": "Career", "w0": 26, "w1": 30, "comp": 0}, {"section": "Phase 7 \u2014 Portfolio, interviews, buffer (May 31 \u2013 Jul 4)", "name": "Buffer for slippage from phases 4\u20136", "owner": "SoC", "w0": 29, "w1": 30, "comp": 0}], "weeks": [{"i": 0, "label": "W1", "range": "Nov 30 \u2013 Dec 6"}, {"i": 1, "label": "W2", "range": "Dec 7\u201313"}, {"i": 2, "label": "W3", "range": "Dec 14\u201320"}, {"i": 3, "label": "W4", "range": "Dec 21\u201327"}, {"i": 4, "label": "W5", "range": "Dec 28 \u2013 Jan 3"}, {"i": 5, "label": "W6", "range": "Jan 4\u201310"}, {"i": 6, "label": "W7", "range": "Jan 11\u201317"}, {"i": 7, "label": "W8", "range": "Jan 18\u201324"}, {"i": 8, "label": "W9", "range": "Jan 25\u201331"}, {"i": 9, "label": "W10", "range": "Feb 1\u20137"}, {"i": 10, "label": "W11", "range": "Feb 8\u201314"}, {"i": 11, "label": "W12", "range": "Feb 15\u201321"}, {"i": 12, "label": "W13", "range": "Feb 22\u201328"}, {"i": 13, "label": "W14", "range": "Mar 1\u20137"}, {"i": 14, "label": "W15", "range": "Mar 8\u201314"}, {"i": 15, "label": "W16", "range": "Mar 15\u201321"}, {"i": 16, "label": "W17", "range": "Mar 22\u201328"}, {"i": 17, "label": "W18", "range": "Mar 29 \u2013 Apr 4"}, {"i": 18, "label": "W19", "range": "Apr 5\u201311"}, {"i": 19, "label": "W20", "range": "Apr 12\u201318"}, {"i": 20, "label": "W21", "range": "Apr 19\u201325"}, {"i": 21, "label": "W22", "range": "Apr 26 \u2013 May 2"}, {"i": 22, "label": "W23", "range": "May 3\u20139"}, {"i": 23, "label": "W24", "range": "May 10\u201316"}, {"i": 24, "label": "W25", "range": "May 17\u201323"}, {"i": 25, "label": "W26", "range": "May 24\u201330"}, {"i": 26, "label": "W27", "range": "May 31 \u2013 Jun 6"}, {"i": 27, "label": "W28", "range": "Jun 7\u201313"}, {"i": 28, "label": "W29", "range": "Jun 14\u201320"}, {"i": 29, "label": "W30", "range": "Jun 21\u201327"}, {"i": 30, "label": "W31", "range": "Jun 28 \u2013 Jul 4"}], "now": 0, "owners": [{"key": "RTL", "label": "RTL \u2014 Verilog / FPGA", "color": "#1199bd"}, {"key": "ASIC", "label": "ASIC \u2014 flow, STA, verification", "color": "#6d4bdb"}, {"key": "C", "label": "Embedded C \u2014 bare metal / RTOS", "color": "#e0861e"}, {"key": "SoC", "label": "Convergence projects (Fridays)", "color": "#d9488c"}, {"key": "Career", "label": "Portfolio, setup & interviews", "color": "#7b8794"}], "version": "20261029-220311"};
+const NW = D.weeks.length, NAMECOL = 280;
+const COLOR = {}; D.owners.forEach(o=>COLOR[o.key]=o.color);
+const grid = document.getElementById("grid"), tip = document.getElementById("tip");
+const KEY = "deo_training_gantt_v1";
+const SECORDER = [...new Set(D.tasks.map(t=>t.section))];
+let editMode=false, editIdx=-1;
+function esc(s){return (s+"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function clone(o){return JSON.parse(JSON.stringify(o));}
+function load(){ try{const s=JSON.parse(localStorage.getItem(KEY)||"null");
+  if(s && s.version===D.version && Array.isArray(s.tasks)) return s.tasks; }catch(e){} return clone(D.tasks); }
+function persist(){ try{localStorage.setItem(KEY,JSON.stringify({version:D.version,tasks:state}));}catch(e){} }
+function secIdx(s){const k=SECORDER.indexOf(s);return k<0?999:k;}
+function sortState(){ state.sort((a,b)=>secIdx(a.section)-secIdx(b.section)); }
+let state=load(); sortState();
+
+document.getElementById("legend").innerHTML =
+  D.owners.map(o=>'<b><span class="dot" style="background:'+o.color+'"></span>'+esc(o.label)+'</b>').join('')
+  + '<b><span class="dot" style="background:var(--ok)"></span>This week</b>';
+
+function renderGrid(){
+  grid.style.gridTemplateColumns=NAMECOL+"px repeat("+NW+",1fr)";
+  let h='<div class="gh namecell" style="font-weight:700">Task</div>';
+  D.weeks.forEach(w=>{ h+='<div class="gh cell wk"><div class="l">'+w.label+'</div><div class="r mono">'+w.range+'</div></div>'; });
+  grid.innerHTML=h;
+  let cur=null;
+  state.forEach((t,idx)=>{
+    if(t.section!==cur){ cur=t.section; grid.insertAdjacentHTML("beforeend",'<div class="sec">'+esc(cur)+'</div>'); }
+    let nm='<div class="namecell" title="'+esc(t.name)+'"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:'+COLOR[t.owner]+'"></span>'
+      +'<span style="flex:1;overflow:hidden;text-overflow:ellipsis">'+esc(t.name)+'</span>';
+    if(editMode) nm+='<button class="mini" onclick="editTask('+idx+')">&#9998;</button><button class="mini del" onclick="delTask('+idx+')">&times;</button>';
+    nm+='</div>';
+    let tr='<div class="track" style="grid-column:2 / span '+NW+'">';
+    if(t.w0!=null){ const left=(t.w0/NW*100), width=((t.w1-t.w0+1)/NW*100);
+      tr+='<div class="bar" style="left:'+left+'%;width:calc('+width+'% - 6px);background:'+COLOR[t.owner]+'"'+(editMode?' onclick="editTask('+idx+')"':'')
+        +'><span class="fill" style="width:'+(t.comp||0)+'%"></span><span class="lbl">'+(t.comp||0)+'%</span></div>'; }
+    tr+='</div>';
+    grid.insertAdjacentHTML("beforeend", nm+tr);
+  });
+  document.querySelector(".gwrap").classList.toggle("editing", editMode);
+  place();
+  document.getElementById("hov").style.pointerEvents = editMode ? "none" : "auto";
+}
+function place(){
+  const r=grid.getBoundingClientRect(); const colW=(r.width-NAMECOL)/NW;
+  const nc=document.getElementById("nowcol"); nc.style.left=(NAMECOL+D.now*colW)+"px"; nc.style.width=colW+"px"; nc.querySelector(".nowtag").style.left="50%";
+  const hov=document.getElementById("hov"); hov.style.left=NAMECOL+"px"; hov.style.right="0"; hov.innerHTML="";
+  for(let i=0;i<NW;i++){ const s=document.createElement("div"); s.className="hstrip"; s.style.left=(i*colW)+"px"; s.style.width=colW+"px";
+    s.addEventListener("mousemove",e=>showTip(i,e)); s.addEventListener("mouseleave",hideTip); hov.appendChild(s); }
+}
+function tasksFor(w,o){ return state.filter(t=>t.owner===o && t.w0!=null && t.w0<=w && t.w1>=w); }
+function listHtml(a){ return a.length? '<ul>'+a.map(t=>'<li>'+esc(t.name)+' <span class="mono" style="color:var(--mut)">'+(t.comp||0)+'%</span></li>').join('')+'</ul>' : '<div class="none">&mdash; nothing scheduled &mdash;</div>'; }
+function showTip(w,e){ const wk=D.weeks[w];
+  let inner='<h4>'+wk.label+' &middot; <span class="mono" style="color:var(--mut)">'+wk.range+'</span></h4>';
+  D.owners.forEach(o=>{ inner+='<div class="grp"><div class="who"><span class="dot" style="background:'+o.color+'"></span>'+esc(o.label)+'</div>'+listHtml(tasksFor(w,o.key))+'</div>'; });
+  tip.innerHTML=inner;
+  tip.style.opacity="1"; const pad=14; let x=e.clientX+16,y=e.clientY+16; const tw=tip.offsetWidth,th=tip.offsetHeight;
+  if(x+tw+pad>innerWidth)x=e.clientX-tw-16; if(y+th+pad>innerHeight)y=innerHeight-th-pad; tip.style.left=x+"px"; tip.style.top=y+"px";
+}
+function hideTip(){ tip.style.opacity="0"; }
+
+// ---- editing (browser-local only; tasks.json is the source of truth) ----
+function toggleEdit(){ editMode=!editMode; const b=document.getElementById("editBtn"); b.classList.toggle("on",editMode);
+  b.textContent=editMode?"✓ Done":"✎ Edit"; document.getElementById("editHint").textContent=editMode?"Click a task or bar to edit · × to delete · saved in this browser only":""; renderGrid(); }
+function delTask(i){ if(confirm('Delete "'+state[i].name+'"?')){ state.splice(i,1); persist(); renderGrid(); } }
+function wkSel(id){ document.getElementById(id).innerHTML=D.weeks.map((w,i)=>'<option value="'+i+'">'+w.label+' ('+w.range+')</option>').join(''); }
+function ownerSel(){ document.getElementById("gm_owner").innerHTML=D.owners.map(o=>'<option value="'+o.key+'">'+esc(o.label)+'</option>').join(''); }
+function editTask(i){ editIdx=i; openModal("Edit task", state[i], true); }
+function addTask(){ editIdx=-1; openModal("Add task", {section:"Custom",name:"",owner:D.owners[0].key,comp:0,w0:D.now,w1:D.now}, false); }
+function openModal(title,t,canDel){ document.getElementById("gmtitle").textContent=title;
+  gm_name.value=t.name||""; gm_section.value=t.section||"Custom"; ownerSel(); gm_owner.value=t.owner||D.owners[0].key; gm_comp.value=t.comp||0;
+  wkSel("gm_w0"); wkSel("gm_w1"); gm_w0.value=(t.w0!=null?t.w0:D.now); gm_w1.value=(t.w1!=null?t.w1:D.now);
+  document.getElementById("gm_del").style.display=canDel?"":"none"; document.getElementById("gmodal").classList.add("show"); }
+function closeModal(){ document.getElementById("gmodal").classList.remove("show"); }
+function deleteFromModal(){ if(editIdx>=0 && confirm('Delete "'+state[editIdx].name+'"?')){ state.splice(editIdx,1); persist(); closeModal(); renderGrid(); } }
+function saveModal(){ let w0=+gm_w0.value,w1=+gm_w1.value; if(w1<w0){const x=w0;w0=w1;w1=x;}
+  const rec={section:(gm_section.value||"Custom").trim(),name:(gm_name.value||"Untitled").trim(),owner:gm_owner.value,
+    comp:Math.max(0,Math.min(100,+gm_comp.value||0)),w0:w0,w1:w1};
+  if(editIdx>=0) state[editIdx]=rec; else state.push(rec); sortState(); persist(); closeModal(); renderGrid(); }
+function resetGantt(){ if(confirm("Reset to the plan from tasks.json? Your browser edits will be lost.")){ try{localStorage.removeItem(KEY);}catch(e){} state=clone(D.tasks); sortState(); renderGrid(); } }
+document.getElementById("gmodal").addEventListener("click",e=>{ if(e.target.id==="gmodal") closeModal(); });
+
+window.addEventListener("resize",place); renderGrid();
+</script></body></html>
